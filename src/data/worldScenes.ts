@@ -33,7 +33,7 @@ export const worldScenes = [
     environment:
       "A distant neo-minimal skyline viewed from beyond the city, with restrained architectural silhouettes emerging through deep atmospheric space.",
     atmosphere:
-      "Dark, calm, and mysterious, with low fog, sparse particles, and enough negative space to make the city feel monumental rather than crowded.",
+      "Dark, calm, and mysterious, with low fog, restrained depth, and enough negative space to make the city feel monumental rather than crowded.",
     lighting:
       "A dim blue horizon glow outlines the skyline while soft volumetric light remains concentrated behind the central arrival point.",
     dominantColors: [
@@ -45,7 +45,7 @@ export const worldScenes = [
     landmarks: [
       "Distant central skyline",
       "Low atmospheric fog bank",
-      "Sparse suspended particles",
+      "Deep atmospheric haze",
       "Quiet horizon light",
     ],
     transitionToNext:

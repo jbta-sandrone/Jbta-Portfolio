@@ -1,1 +1,45 @@
 @import "tailwindcss";
+
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+}
+
+.cinematic-background__stage {
+  position: absolute;
+  top: 85%;
+  left: 50%;
+  width: max(100vw, 147.64vh);
+  aspect-ratio: 896 / 1821;
+  translate: -50% -20%;
+}
+
+.cinematic-background__camera {
+  position: absolute;
+  inset: 0;
+  transform-origin: center;
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .cinematic-background__stage {
+    top: 42vh;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .cinematic-background__stage {
+    top: 38vh;
+    width: max(200vw, 118.1vh);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-background__camera {
+    will-change: auto;
+  }
+}

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" role="img" aria-labelledby="title description">
+  <title id="title">Editorial portrait placeholder</title>
+  <desc id="description">A warm, cinematic silhouette reserved for Jonel's future portrait.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#080b12"/>
+      <stop offset="0.55" stop-color="#17151a"/>
+      <stop offset="1" stop-color="#3d261b"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="50%" cy="34%" r="58%">
+      <stop offset="0" stop-color="#f7c878" stop-opacity=".55"/>
+      <stop offset=".45" stop-color="#b66a32" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#080b12" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="silhouette" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#28272b"/>
+      <stop offset="1" stop-color="#090a0e"/>
+    </linearGradient>
+    <filter id="soften" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+  </defs>
+  <rect width="800" height="1000" fill="url(#background)"/>
+  <ellipse cx="400" cy="335" rx="310" ry="300" fill="url(#halo)" filter="url(#soften)"/>
+  <circle cx="400" cy="360" r="142" fill="url(#silhouette)"/>
+  <path d="M122 1000c18-261 121-411 278-411s260 150 278 411H122Z" fill="url(#silhouette)"/>
+  <path d="M0 820c150-62 277-93 400-93s250 31 400 93v180H0V820Z" fill="#030407" fill-opacity=".38"/>
+  <g fill="#f8d795">
+    <circle cx="118" cy="148" r="3" opacity=".7"/>
+    <circle cx="682" cy="218" r="2" opacity=".75"/>
+    <circle cx="640" cy="94" r="1.5" opacity=".55"/>
+    <circle cx="192" cy="284" r="1.5" opacity=".5"/>
+  </g>
+</svg>

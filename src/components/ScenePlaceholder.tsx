@@ -14,10 +14,11 @@ export default function ScenePlaceholder({
   return (
     <section
       data-cinematic-scene={number}
+      data-scene-scroll
       aria-labelledby={headingId}
-      className="relative min-h-[125vh] overflow-hidden text-white"
+      className="relative h-full overflow-y-auto overscroll-contain text-white"
     >
-      <div className="sticky top-0 flex min-h-screen items-center px-6 py-20 sm:px-10 lg:px-16">
+      <div className="flex min-h-full items-center px-6 py-20 sm:px-10 lg:px-16">
         <div
           className={`mx-auto w-full max-w-6xl ${
             align === "right" ? "text-right" : "text-left"
