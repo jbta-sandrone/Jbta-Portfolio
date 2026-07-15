@@ -16,7 +16,7 @@ export default function ScenePlaceholder({
       data-cinematic-scene={number}
       data-scene-scroll
       aria-labelledby={headingId}
-      className="relative h-full overflow-y-auto overscroll-contain text-white"
+      className="portfolio-scene relative h-full overflow-y-auto overscroll-contain"
     >
       <div className="flex min-h-full items-center px-6 py-20 sm:px-10 lg:px-16">
         <div
@@ -24,18 +24,18 @@ export default function ScenePlaceholder({
             align === "right" ? "text-right" : "text-left"
           }`}
         >
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-blue-300/70 sm:text-sm">
+          <p className="portfolio-eyebrow text-xs font-semibold uppercase tracking-[0.28em] sm:text-sm">
             Scene {String(number).padStart(2, "0")}
           </p>
           <h2
             id={headingId}
-            className="mt-4 text-3xl font-medium text-white/90 sm:text-5xl lg:text-6xl"
+            className="portfolio-heading mt-4 text-3xl font-medium sm:text-5xl lg:text-6xl"
           >
             {label}
           </h2>
           <div
             aria-hidden="true"
-            className={`mt-8 h-px w-24 bg-gradient-to-r from-blue-300/70 to-transparent ${
+            className={`portfolio-divider mt-8 h-px w-24 ${
               align === "right" ? "ml-auto rotate-180" : ""
             }`}
           />

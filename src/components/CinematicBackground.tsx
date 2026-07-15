@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { useReducedMotion } from "motion/react";
-import eclipseBackground from "../assets/images/traveljourney.webp";
+import eclipseBackground from "../assets/images/metropolisbg.webp";
 
 type CinematicBackgroundProps = {
   activeScene: number;
@@ -88,7 +88,7 @@ export default function CinematicBackground({
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-black"
+      className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[var(--portfolio-bg)]"
     >
       <div className="cinematic-background__stage">
         <div
@@ -107,7 +107,7 @@ export default function CinematicBackground({
         </div>
       </div>
 
-      <div className="absolute inset-0 bg-black/50" />
+      <div className="portfolio-background-overlay absolute inset-0" />
     </div>
   );
 }

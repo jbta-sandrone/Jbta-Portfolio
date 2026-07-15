@@ -9,6 +9,7 @@ import {
   useScroll,
   type Variants,
 } from "motion/react";
+import projectVideo from "../assets/videos/Project video.mp4";
 
 type PreviewFrame = {
   eyebrow: string;
@@ -22,13 +23,18 @@ type Project = {
   subtitle: string;
   description: string;
   technologies: readonly string[];
+  presentation: {
+    category: string;
+    status: string;
+    highlight: string;
+  };
+  preview?: {
+    theme: "future";
+    frames: readonly PreviewFrame[];
+  };
   liveUrl?: string;
   githubUrl?: string;
   demoVideoUrl?: string;
-  preview: {
-    theme: "memory" | "cafe" | "future";
-    frames: readonly PreviewFrame[];
-  };
 };
 
 const projects: readonly Project[] = [
@@ -48,25 +54,10 @@ const projects: readonly Project[] = [
       "Cloudinary",
       "Gemini AI",
     ],
-    preview: {
-      theme: "memory",
-      frames: [
-        {
-          eyebrow: "Memory library",
-          title: "Moments worth returning to",
-          detail: "Albums, stories, and meaningful dates in one private space.",
-        },
-        {
-          eyebrow: "Timeline",
-          title: "Rediscover every chapter",
-          detail: "Browse memories naturally across years, months, and milestones.",
-        },
-        {
-          eyebrow: "AI memory search",
-          title: "Find the moment you remember",
-          detail: "Search the feeling, place, or story—not only the filename.",
-        },
-      ],
+    presentation: {
+      category: "Memory platform",
+      status: "Featured build",
+      highlight: "AI-assisted memory discovery",
     },
   },
   {
@@ -84,46 +75,54 @@ const projects: readonly Project[] = [
       "Express",
       "Gemini AI",
     ],
-    preview: {
-      theme: "cafe",
-      frames: [
-        {
-          eyebrow: "Today's menu",
-          title: "Your next favorite, one tap away",
-          detail: "A fast, responsive ordering flow designed around the customer.",
-        },
-        {
-          eyebrow: "Live orders",
-          title: "From checkout to pickup",
-          detail: "Clear status updates keep every order moving confidently.",
-        },
-        {
-          eyebrow: "Smart recommendations",
-          title: "A menu that learns",
-          detail: "AI-assisted suggestions make discovery feel more personal.",
-        },
-      ],
+    presentation: {
+      category: "Ordering experience",
+      status: "Featured build",
+      highlight: "Real-time café ordering",
     },
   },
   {
-    id: "coming-soon",
-    title: "Coming Soon",
-    subtitle: "The Next Thoughtful Experience",
+    id: "nelume",
+    title: "Nelume",
+    subtitle: "AI Resume Viewer",
     description:
-      "A new digital product is taking shape—grounded in careful research, purposeful design, and the same attention to useful, human experiences.",
-    technologies: ["Research", "Product Design", "In Development"],
+      "An AI-powered resume analysis platform that extracts resume content, presents it in a structured viewer, and uses Google Gemini to provide intelligent evaluation and insights.",
+    technologies: [
+      "React",
+      "TypeScript",
+      "Vite",
+      "FastAPI",
+      "Python",
+      "Google Gemini",
+      "pdfplumber",
+      "Vercel",
+      "Render",
+    ],
+    presentation: {
+      category: "Resume viewer",
+      status: "AI-powered analysis",
+      highlight: "Structured resume insights",
+    },
     preview: {
       theme: "future",
       frames: [
         {
-          eyebrow: "In development",
-          title: "The next chapter is taking shape",
-          detail: "A new challenge, a new story, and more thoughtful work ahead.",
+          eyebrow: "Resume viewer",
+          title: "Understand every resume clearly",
+          detail:
+            "Uploaded resumes are extracted and organized into a clean, readable digital view.",
         },
         {
-          eyebrow: "Exploration",
-          title: "Built from questions first",
-          detail: "Research and experimentation are defining what comes next.",
+          eyebrow: "AI evaluation",
+          title: "Turn resume content into useful insights",
+          detail:
+            "Gemini analyzes the resume and highlights strengths, weaknesses, and areas for improvement.",
+        },
+        {
+          eyebrow: "Structured analysis",
+          title: "Review skills and experience faster",
+          detail:
+            "Important information is presented clearly so users can evaluate a resume without reading an unstructured document.",
         },
       ],
     },
@@ -162,7 +161,7 @@ export default function SceneThree() {
       data-cinematic-scene={3}
       data-scene-scroll
       aria-labelledby="featured-work-title"
-      className={`relative h-full snap-y snap-mandatory overflow-y-auto overflow-x-hidden overscroll-contain text-stone-100 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
+      className={`portfolio-scene relative h-full snap-y snap-mandatory overflow-y-auto overflow-x-hidden overscroll-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
         reducedMotion ? "" : "scroll-smooth"
       }`}
     >
@@ -170,21 +169,21 @@ export default function SceneThree() {
         <div className="sticky top-0 z-10 h-dvh overflow-hidden">
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-x-[12%] top-[8%] h-[72%] rounded-full bg-[radial-gradient(ellipse,rgba(96,165,250,0.1),rgba(124,58,237,0.035)_48%,transparent_72%)] blur-2xl"
+            className="portfolio-scene-glow pointer-events-none absolute inset-x-[12%] top-[8%] h-[72%] rounded-full blur-2xl"
           />
 
           <div className="relative mx-auto flex h-full w-full max-w-7xl flex-col px-5 pb-24 pt-7 sm:px-8 sm:pt-8 lg:px-12 lg:pb-20 xl:px-16">
             <header className="mx-auto shrink-0 text-center">
-              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.3em] text-blue-200/70 sm:text-xs">
+              <p className="portfolio-eyebrow text-[0.68rem] font-semibold uppercase tracking-[0.3em] sm:text-xs">
                 Scene 03 — Featured Work
               </p>
               <h1
                 id="featured-work-title"
-                className="mt-2 text-2xl font-semibold tracking-tight text-stone-50 sm:text-3xl lg:text-4xl"
+                className="portfolio-heading mt-2 text-2xl font-semibold tracking-tight sm:text-3xl lg:text-4xl"
               >
                 Selected projects, built with purpose.
               </h1>
-              <p className="mx-auto mt-2 max-w-xl text-xs leading-5 text-stone-400 sm:text-sm">
+              <p className="portfolio-muted mx-auto mt-2 max-w-xl text-xs leading-5 sm:text-sm">
                 Each project represents a challenge, a story, and something I’m proud of.
               </p>
             </header>
@@ -203,7 +202,7 @@ export default function SceneThree() {
             </div>
 
             <div className="pointer-events-none absolute bottom-7 left-5 flex items-center gap-3 sm:left-8 lg:left-12 xl:left-16">
-              <span className="text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-stone-500">
+              <span className="portfolio-subtle text-[0.62rem] font-semibold uppercase tracking-[0.24em]">
                 Scroll to reveal
               </span>
               <div className="flex gap-1.5" aria-hidden="true">
@@ -212,8 +211,8 @@ export default function SceneThree() {
                     key={item.id}
                     className={`h-1 rounded-full transition-[width,background-color] duration-500 ${
                       index === activeProject
-                        ? "w-6 bg-blue-200/75"
-                        : "w-1.5 bg-white/20"
+                        ? "portfolio-progress-active w-6"
+                        : "portfolio-progress-idle w-1.5"
                     }`}
                   />
                 ))}
@@ -314,15 +313,15 @@ function ProjectShowcase({
 
       <div className="mt-3 w-full max-w-3xl text-center sm:mt-4">
         <div className="flex items-baseline justify-center gap-3">
-          <p className="text-[0.62rem] font-semibold tracking-[0.2em] text-blue-200/55 tabular-nums">
+          <p className="portfolio-eyebrow text-[0.62rem] font-semibold tracking-[0.2em] tabular-nums">
             {String(projectNumber).padStart(2, "0")} / {String(projectCount).padStart(2, "0")}
           </p>
-          <h2 className="text-xl font-semibold tracking-tight text-stone-50 sm:text-2xl">
+          <h2 className="portfolio-heading text-xl font-semibold tracking-tight sm:text-2xl">
             {project.title}
           </h2>
-          <span className="hidden text-sm text-stone-400 sm:inline">— {project.subtitle}</span>
+          <span className="portfolio-muted hidden text-sm sm:inline">— {project.subtitle}</span>
         </div>
-        <p className="mx-auto mt-2 line-clamp-3 max-w-2xl text-xs leading-5 text-stone-300 sm:text-sm sm:leading-6">
+        <p className="portfolio-copy mx-auto mt-2 line-clamp-3 max-w-2xl text-xs leading-5 sm:text-sm sm:leading-6">
           {project.description}
         </p>
 
@@ -333,7 +332,7 @@ function ProjectShowcase({
           {project.technologies.map((technology) => (
             <li
               key={technology}
-              className="rounded-full border border-white/10 bg-black/25 px-2.5 py-1 text-[0.62rem] text-stone-300 backdrop-blur-sm sm:text-[0.68rem]"
+              className="portfolio-chip rounded-full border px-2.5 py-1 text-[0.62rem] sm:text-[0.68rem]"
             >
               {technology}
             </li>
@@ -364,9 +363,9 @@ function LaptopMockup({ project, reducedMotion }: DevicePreviewProps) {
       transition={{ duration: 0.35, ease: "easeInOut" }}
       className="w-[min(66vw,43rem)] [filter:drop-shadow(0_24px_32px_rgba(0,0,0,0.42))]"
     >
-      <div className="relative rounded-[1.15rem] border border-white/20 bg-[#111318] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_0_55px_rgba(96,165,250,0.1)]">
+      <div className="portfolio-device-frame relative rounded-[1.15rem] border p-2">
         <span className="absolute left-1/2 top-1.5 z-20 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-black ring-1 ring-white/10" />
-        <div className="aspect-video overflow-hidden rounded-[0.72rem] border border-black bg-[#08090d]">
+        <div className="portfolio-device-screen aspect-video overflow-hidden rounded-[0.72rem] border">
           <ProjectPreview project={project} reducedMotion={reducedMotion} />
         </div>
       </div>
@@ -381,9 +380,9 @@ function PhoneMockup({ project, reducedMotion }: DevicePreviewProps) {
     <motion.div
       whileHover={reducedMotion ? undefined : { y: -3 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="h-[min(29dvh,15rem)] aspect-[9/18.5] rounded-[1.8rem] border border-white/25 bg-[#111318] p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.48),0_0_36px_rgba(96,165,250,0.1)]"
+      className="portfolio-device-frame portfolio-device-frame--phone h-[min(29dvh,15rem)] aspect-[9/18.5] rounded-[1.8rem] border p-1.5"
     >
-      <div className="relative h-full overflow-hidden rounded-[1.45rem] border border-black bg-[#08090d]">
+      <div className="portfolio-device-screen relative h-full overflow-hidden rounded-[1.45rem] border">
         <span className="absolute left-1/2 top-1.5 z-20 h-1.5 w-10 -translate-x-1/2 rounded-full bg-black/90" />
         <ProjectPreview project={project} reducedMotion={reducedMotion} />
       </div>
@@ -397,92 +396,233 @@ type DevicePreviewProps = {
 };
 
 function ProjectPreview({ project, reducedMotion }: DevicePreviewProps) {
-  const [activeFrame, setActiveFrame] = useState(0);
+  const [activePreviewFrame, setActivePreviewFrame] = useState(0);
+  const previewFrames = project.preview?.frames;
 
   useEffect(() => {
-    setActiveFrame(0);
-    if (reducedMotion || project.preview.frames.length < 2) return;
+    setActivePreviewFrame(0);
+    if (reducedMotion || !previewFrames || previewFrames.length < 2) return;
 
-    const interval = window.setInterval(() => {
-      setActiveFrame((current) => (current + 1) % project.preview.frames.length);
-    }, 3200);
+    const frameTimer = window.setInterval(() => {
+      setActivePreviewFrame((current) => (current + 1) % previewFrames.length);
+    }, 4200);
 
-    return () => window.clearInterval(interval);
-  }, [project, reducedMotion]);
+    return () => window.clearInterval(frameTimer);
+  }, [previewFrames, project.id, reducedMotion]);
 
-  const frame = project.preview.frames[activeFrame];
+  const previewFrame = previewFrames?.[activePreviewFrame];
+
+  const overlayContainerVariants: Variants = {
+    hidden: {},
+    visible: {
+      transition: reducedMotion
+        ? { staggerChildren: 0.02 }
+        : { delayChildren: 0.22, staggerChildren: 0.1 },
+    },
+  };
+
+  const overlayItemVariants: Variants = {
+    hidden: reducedMotion
+      ? { opacity: 0 }
+      : { opacity: 0, y: 8, scale: 0.97 },
+    visible: reducedMotion
+      ? { opacity: 1, transition: { duration: 0.14 } }
+      : {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          transition: { duration: 0.58, ease: cinematicEase },
+        },
+  };
 
   return (
-    <div
-      aria-hidden="true"
-      className={`relative h-full overflow-hidden ${previewThemeClass[project.preview.theme]}`}
-    >
-      <div className="absolute inset-0 opacity-35 [background-image:linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] [background-size:28px_28px]" />
-      <div className="relative flex h-full flex-col p-4 sm:p-5">
-        <div className="flex items-center justify-between text-[0.4rem] font-semibold uppercase tracking-[0.22em] text-white/45 sm:text-[0.55rem]">
-          <span>{project.title}</span>
-          <div className="flex gap-1">
-            <span className="size-1.5 rounded-full bg-white/20" />
-            <span className="size-1.5 rounded-full bg-white/20" />
-            <span className="size-1.5 rounded-full bg-white/20" />
+    <div className="relative h-full w-full overflow-hidden">
+      <video
+        src={projectVideo}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        aria-label={`${project.title} project demonstration`}
+        className="absolute inset-0 h-full w-full select-none object-cover"
+      />
+
+      <motion.div
+        aria-hidden="true"
+        variants={overlayContainerVariants}
+        initial="hidden"
+        animate="visible"
+        className="pointer-events-none absolute inset-0 z-10"
+      >
+        <PreviewOverlayItem
+          variants={overlayItemVariants}
+          reducedMotion={reducedMotion}
+          drift={-2}
+          delay={0}
+          className="left-2 top-2 max-w-[72%] md:left-4 md:top-4 md:max-w-[48%]"
+        >
+          <div className="portfolio-surface rounded-lg border bg-black/60 px-2 py-1.5 md:rounded-xl md:px-3.5 md:py-2.5">
+            <p className="portfolio-eyebrow text-[0.38rem] font-semibold uppercase tracking-[0.2em] md:text-[0.58rem]">
+              {project.presentation.category}
+            </p>
+            <p className="portfolio-heading mt-0.5 truncate text-[0.56rem] font-semibold md:mt-1 md:text-sm">
+              {project.title}
+            </p>
           </div>
-        </div>
+        </PreviewOverlayItem>
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={`${project.id}-${activeFrame}`}
-            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.985 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -8, scale: 0.99 }}
-            transition={{ duration: reducedMotion ? 0.15 : 0.6, ease: cinematicEase }}
-            className="flex flex-1 flex-col justify-center"
-          >
-            <p className="text-[0.42rem] font-semibold uppercase tracking-[0.2em] text-white/45 sm:text-[0.62rem]">
-              {frame.eyebrow}
-            </p>
-            <h3 className="mt-1.5 max-w-[75%] text-sm font-semibold leading-tight text-white sm:mt-2 sm:text-2xl">
-              {frame.title}
-            </h3>
-            <p className="mt-1.5 max-w-[72%] text-[0.48rem] leading-relaxed text-white/55 sm:mt-2 sm:text-xs">
-              {frame.detail}
-            </p>
+        <PreviewOverlayItem
+          variants={overlayItemVariants}
+          reducedMotion={reducedMotion}
+          drift={-1.5}
+          delay={0.35}
+          className="right-2 top-2 md:right-4 md:top-4"
+        >
+          <div className="portfolio-surface flex items-center gap-1 rounded-full border bg-black/60 p-1.5 md:gap-2 md:px-3 md:py-2">
+            <span className="size-1.5 rounded-full bg-[var(--portfolio-accent)] shadow-[0_0_10px_var(--portfolio-glow)] md:size-2" />
+            <span className="portfolio-copy hidden text-[0.58rem] font-medium md:inline">
+              {project.presentation.status}
+            </span>
+          </div>
+        </PreviewOverlayItem>
 
-            <div className="mt-3 grid grid-cols-3 gap-1.5 sm:mt-5 sm:gap-2.5">
-              {[0, 1, 2].map((item) => (
-                <div
-                  key={item}
-                  className="h-8 rounded-md border border-white/10 bg-white/[0.055] shadow-inner sm:h-14 sm:rounded-lg"
-                >
-                  <div className="m-1.5 h-1 w-1/2 rounded-full bg-white/15 sm:m-2" />
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        </AnimatePresence>
+        <PreviewOverlayItem
+          variants={overlayItemVariants}
+          reducedMotion={reducedMotion}
+          drift={-2.5}
+          delay={0.7}
+          className="bottom-4 left-4 hidden max-w-[46%] md:block"
+        >
+          <div className="portfolio-surface rounded-xl border bg-black/60 px-3.5 py-2.5">
+            <span className="mb-2 block h-px w-8 bg-[var(--portfolio-accent-strong)] shadow-[0_0_10px_var(--portfolio-glow)]" />
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={previewFrame?.title ?? project.presentation.highlight}
+                initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -3 }}
+                transition={{
+                  duration: reducedMotion ? 0.14 : 0.42,
+                  ease: cinematicEase,
+                }}
+              >
+                <p className="portfolio-muted text-[0.55rem] font-semibold uppercase tracking-[0.18em]">
+                  {previewFrame?.eyebrow ?? "Product highlight"}
+                </p>
+                <p className="portfolio-heading mt-1 text-xs font-medium">
+                  {previewFrame?.title ?? project.presentation.highlight}
+                </p>
+                {previewFrame && (
+                  <p className="portfolio-copy mt-1 line-clamp-2 text-[0.55rem] leading-relaxed">
+                    {previewFrame.detail}
+                  </p>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </PreviewOverlayItem>
 
-        <div className="flex gap-1" aria-hidden="true">
-          {project.preview.frames.map((previewFrame, index) => (
-            <span
-              key={previewFrame.title}
-              className={`h-0.5 rounded-full transition-all duration-500 ${
-                index === activeFrame ? "w-5 bg-white/65" : "w-2 bg-white/20"
-              }`}
-            />
+        <motion.div
+          variants={overlayItemVariants}
+          className="absolute bottom-4 right-4 hidden max-w-[48%] flex-wrap justify-end gap-1.5 md:flex"
+        >
+          {project.technologies.slice(0, 3).map((technology, index) => (
+            <motion.span
+              key={technology}
+              animate={
+                reducedMotion
+                  ? undefined
+                  : { y: [0, index % 2 === 0 ? -2 : -1, 0] }
+              }
+              transition={{
+                duration: 4.8 + index * 0.45,
+                repeat: reducedMotion ? 0 : Infinity,
+                ease: "easeInOut",
+                delay: index * 0.18,
+              }}
+              className="pointer-events-auto"
+            >
+              <motion.span
+                whileHover={
+                  reducedMotion
+                    ? undefined
+                    : { y: -2, scale: 1.025, filter: "brightness(1.08)" }
+                }
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="bg-black/60 portfolio-chip inline-flex rounded-full border px-2.5 py-1 text-[0.55rem] font-medium shadow-[0_8px_20px_rgba(0,0,0,0.24)]"
+              >
+                {technology}
+              </motion.span>
+            </motion.span>
           ))}
-        </div>
-      </div>
+        </motion.div>
+
+        <motion.div
+          variants={overlayItemVariants}
+          className="absolute inset-x-2 bottom-1.5 md:inset-x-4 md:bottom-2"
+        >
+          <div className="h-px overflow-hidden rounded-full bg-black/45">
+            <motion.span
+              className="block h-full origin-left bg-[var(--portfolio-accent-strong)] shadow-[0_0_12px_var(--portfolio-glow)]"
+              initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scaleX: 0 }}
+              animate={{ opacity: 0.85, scaleX: 1 }}
+              transition={{
+                duration: reducedMotion ? 0.14 : 1.1,
+                delay: reducedMotion ? 0 : 0.65,
+                ease: cinematicEase,
+              }}
+            />
+          </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }
 
-const previewThemeClass: Record<Project["preview"]["theme"], string> = {
-  memory:
-    "bg-[radial-gradient(circle_at_72%_25%,rgba(167,139,250,0.25),transparent_32%),linear-gradient(135deg,#151225,#090a12_62%,#111827)]",
-  cafe:
-    "bg-[radial-gradient(circle_at_75%_22%,rgba(251,191,36,0.24),transparent_30%),linear-gradient(135deg,#28170f,#110d0b_62%,#1c1410)]",
-  future:
-    "bg-[radial-gradient(circle_at_72%_25%,rgba(56,189,248,0.2),transparent_32%),linear-gradient(135deg,#101b24,#090c12_62%,#101827)]",
+type PreviewOverlayItemProps = {
+  children: ReactNode;
+  className: string;
+  variants: Variants;
+  reducedMotion: boolean;
+  drift: number;
+  delay: number;
 };
+
+function PreviewOverlayItem({
+  children,
+  className,
+  variants,
+  reducedMotion,
+  drift,
+  delay,
+}: PreviewOverlayItemProps) {
+  return (
+    <motion.div variants={variants} className={`absolute ${className}`}>
+      <motion.div
+        animate={reducedMotion ? undefined : { y: [0, drift, 0] }}
+        transition={{
+          duration: 5.2 + Math.abs(drift) * 0.35,
+          delay,
+          repeat: reducedMotion ? 0 : Infinity,
+          ease: "easeInOut",
+        }}
+        className="pointer-events-auto"
+      >
+        <motion.div
+          whileHover={
+            reducedMotion
+              ? undefined
+              : { y: -2, scale: 1.012, filter: "brightness(1.08)" }
+          }
+          transition={{ duration: 0.32, ease: "easeInOut" }}
+        >
+          {children}
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  );
+}
 
 type ProjectActionProps = {
   href?: string;
@@ -492,7 +632,7 @@ type ProjectActionProps = {
 
 function ProjectAction({ href, label, icon }: ProjectActionProps) {
   const className =
-    "inline-flex min-h-9 items-center justify-center gap-1.5 rounded-full border border-white/15 bg-black/30 px-3.5 text-xs font-medium text-stone-200 backdrop-blur-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-blue-200";
+    "portfolio-button-secondary portfolio-focus inline-flex min-h-9 items-center justify-center gap-1.5 rounded-full border px-3.5 text-xs font-medium transition-colors";
 
   if (!href) {
     return (
@@ -515,7 +655,7 @@ function ProjectAction({ href, label, icon }: ProjectActionProps) {
       href={href}
       target="_blank"
       rel="noreferrer"
-      className={`${className} hover:border-blue-200/35 hover:bg-white/10`}
+      className={className}
     >
       <span className="inline-flex size-3.5 [&>svg]:size-3.5" aria-hidden="true">
         {icon}

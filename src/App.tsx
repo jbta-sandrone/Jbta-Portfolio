@@ -309,7 +309,7 @@ function App() {
   return (
     <SceneNavigationContext.Provider value={sceneNavigationValue}>
       <div
-        className="relative isolate h-dvh overflow-hidden bg-black text-white"
+        className="portfolio-scene relative isolate h-dvh overflow-hidden bg-[var(--portfolio-bg)]"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onTouchCancel={() => {
@@ -339,7 +339,7 @@ function App() {
 
         <nav
           aria-label="Scene navigation"
-          className="fixed right-4 z-30 flex items-center gap-1 rounded-full border border-white/15 bg-black/55 p-1.5 shadow-2xl shadow-black/30 backdrop-blur-md sm:right-8"
+          className="portfolio-navigation fixed right-4 z-30 flex items-center gap-1 rounded-full border p-1.5 sm:right-8"
           style={{ bottom: "max(1rem, env(safe-area-inset-bottom))" }}
         >
           <button
@@ -347,7 +347,7 @@ function App() {
             aria-label="Previous scene"
             onClick={() => moveBy(-1)}
             disabled={activeScene === 0 || isTransitioning}
-            className="flex size-11 items-center justify-center rounded-full text-white transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:cursor-not-allowed disabled:opacity-25"
+            className="portfolio-navigation-button portfolio-focus flex size-11 items-center justify-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-25"
           >
             <ChevronUp aria-hidden="true" className="size-5" />
           </button>
@@ -355,7 +355,7 @@ function App() {
           <div
             aria-live="polite"
             aria-atomic="true"
-            className="min-w-16 px-2 text-center text-xs font-medium tracking-[0.18em] text-white/75 tabular-nums"
+            className="portfolio-copy min-w-16 px-2 text-center text-xs font-medium tracking-[0.18em] tabular-nums"
           >
             <span className="sr-only">{SCENES[activeScene].label}, scene </span>
             {activeScene + 1} / {SCENES.length}
@@ -366,7 +366,7 @@ function App() {
             aria-label="Next scene"
             onClick={() => moveBy(1)}
             disabled={activeScene === SCENES.length - 1 || isTransitioning}
-            className="flex size-11 items-center justify-center rounded-full text-white transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white disabled:cursor-not-allowed disabled:opacity-25"
+            className="portfolio-navigation-button portfolio-focus flex size-11 items-center justify-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-25"
           >
             <ChevronDown aria-hidden="true" className="size-5" />
           </button>

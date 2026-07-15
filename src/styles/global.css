@@ -1,16 +1,251 @@
 @import "tailwindcss";
 
+:root {
+  color-scheme: dark;
+  --portfolio-bg: #000000;
+  --portfolio-bg-secondary: #17130f;
+  --portfolio-surface: rgba(0, 0, 0, 0.3);
+  --portfolio-surface-strong: #1a1712;
+  --portfolio-surface-hover: rgba(255, 255, 255, 0.1);
+  --portfolio-text: #fafaf9;
+  --portfolio-text-soft: #f5f5f4;
+  --portfolio-text-muted: #d6d3d1;
+  --portfolio-text-subtle: #a8a29e;
+  --portfolio-accent: #fcd34d;
+  --portfolio-accent-strong: #fde68a;
+  --portfolio-accent-bright: #fef3c7;
+  --portfolio-accent-soft: rgba(252, 211, 77, 0.14);
+  --portfolio-border: rgba(254, 243, 199, 0.25);
+  --portfolio-border-subtle: rgba(255, 255, 255, 0.15);
+  --portfolio-glow: rgba(245, 158, 11, 0.18);
+  --portfolio-shadow: rgba(0, 0, 0, 0.38);
+  --portfolio-overlay: rgba(0, 0, 0, 0.5);
+  --portfolio-status: #34d399;
+  --portfolio-status-soft: rgba(167, 243, 208, 0.9);
+}
+
 html,
 body,
 #root {
   height: 100%;
   overflow: hidden;
-  background: #000;
+  background: var(--portfolio-bg);
+  color: var(--portfolio-text-soft);
+}
+
+@layer components {
+  .portfolio-scene {
+    color: var(--portfolio-text-soft);
+  }
+
+  .portfolio-eyebrow {
+    color: rgba(252, 211, 77, 0.72);
+  }
+
+  .portfolio-heading {
+    color: var(--portfolio-text);
+  }
+
+  .portfolio-copy {
+    color: var(--portfolio-text-muted);
+  }
+
+  .portfolio-muted {
+    color: var(--portfolio-text-subtle);
+  }
+
+  .portfolio-subtle {
+    color: #78716c;
+  }
+
+  .portfolio-surface {
+    border-color: var(--portfolio-border-subtle);
+    background: var(--portfolio-surface);
+    box-shadow: 0 18px 50px var(--portfolio-shadow);
+    backdrop-filter: blur(12px);
+  }
+
+  .portfolio-chip {
+    border-color: rgba(254, 243, 199, 0.16);
+    background: rgba(0, 0, 0, 0.25);
+    color: var(--portfolio-text-muted);
+    backdrop-filter: blur(8px);
+  }
+
+  .portfolio-button-primary {
+    border-color: rgba(253, 230, 138, 0.35);
+    background: rgba(253, 230, 138, 0.9);
+    color: #0c0a09;
+    box-shadow: 0 12px 36px var(--portfolio-glow);
+  }
+
+  .portfolio-button-primary:hover {
+    background: var(--portfolio-accent-bright);
+  }
+
+  .portfolio-button-secondary {
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.25);
+    color: var(--portfolio-text-soft);
+    backdrop-filter: blur(12px);
+  }
+
+  .portfolio-button-secondary:hover {
+    border-color: rgba(254, 243, 199, 0.35);
+    background: var(--portfolio-surface-hover);
+  }
+
+  .portfolio-focus:focus-visible {
+    outline: 2px solid var(--portfolio-accent-strong);
+    outline-offset: 3px;
+  }
+
+  .portfolio-scene-glow {
+    background: radial-gradient(
+      ellipse,
+      rgba(245, 158, 11, 0.12),
+      rgba(252, 211, 77, 0.035) 48%,
+      transparent 72%
+    );
+  }
+
+  .portfolio-progress-active {
+    background: rgba(253, 230, 138, 0.78);
+  }
+
+  .portfolio-progress-idle {
+    background: rgba(254, 243, 199, 0.18);
+  }
+
+  .portfolio-device-frame {
+    border-color: var(--portfolio-border);
+    background: var(--portfolio-bg-secondary);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 0 55px var(--portfolio-glow);
+  }
+
+  .portfolio-device-frame--phone {
+    box-shadow:
+      0 20px 50px rgba(0, 0, 0, 0.48),
+      0 0 36px var(--portfolio-glow);
+  }
+
+  .portfolio-device-screen {
+    border-color: #0c0a09;
+    background: var(--portfolio-bg);
+  }
+
+  .portfolio-navigation {
+    border-color: var(--portfolio-border);
+    background: rgba(0, 0, 0, 0.55);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(12px);
+  }
+
+  .portfolio-navigation-button {
+    color: var(--portfolio-text-soft);
+  }
+
+  .portfolio-navigation-button:hover {
+    background: var(--portfolio-accent-soft);
+    color: var(--portfolio-accent-bright);
+  }
+
+  .portfolio-divider {
+    background: linear-gradient(to right, rgba(253, 230, 138, 0.72), transparent);
+  }
+
+  .portfolio-divider-vertical {
+    background: linear-gradient(to bottom, transparent, rgba(253, 230, 138, 0.4), transparent);
+  }
+
+  .portfolio-portrait-wash {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.75), transparent, rgba(254, 243, 199, 0.05));
+  }
+
+  .portfolio-status-pill {
+    border-color: rgba(167, 243, 208, 0.15);
+    background: var(--portfolio-surface);
+    color: var(--portfolio-status-soft);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(12px);
+  }
+
+  .portfolio-status-pulse {
+    background: rgba(52, 211, 153, 0.6);
+  }
+
+  .portfolio-status-dot {
+    background: var(--portfolio-status);
+    box-shadow: 0 0 12px rgba(52, 211, 153, 0.8);
+  }
+
+  .portfolio-text-scrim {
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.2), transparent);
+  }
+
+  .portfolio-background-overlay {
+    background: var(--portfolio-overlay);
+  }
+
+  .portfolio-notebook-frame {
+    border-color: var(--portfolio-border);
+    background: var(--portfolio-bg-secondary);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 24px 70px var(--portfolio-shadow);
+  }
+
+  .portfolio-notebook-page {
+    background: var(--portfolio-surface-strong);
+    color: var(--portfolio-text-soft);
+  }
+
+  .portfolio-notebook-lines {
+    background-image: repeating-linear-gradient(
+      180deg,
+      transparent 0 31px,
+      rgba(251, 191, 36, 0.16) 31px 32px
+    );
+  }
+}
+
+@keyframes portfolio-tech-orbit {
+  from {
+    transform: rotate(var(--orbit-start));
+  }
+
+  to {
+    transform: rotate(calc(var(--orbit-start) + 360deg));
+  }
+}
+
+@keyframes portfolio-tech-counter-orbit {
+  from {
+    transform: rotate(var(--orbit-start-negative));
+  }
+
+  to {
+    transform: rotate(calc(var(--orbit-start-negative) - 360deg));
+  }
+}
+
+.portfolio-tech-orbit {
+  animation: portfolio-tech-orbit var(--orbit-duration) linear infinite;
+  transform-origin: center;
+  will-change: transform;
+}
+
+.portfolio-tech-counter-orbit {
+  animation: portfolio-tech-counter-orbit var(--orbit-duration) linear infinite;
+  transform-origin: center;
+  will-change: transform;
 }
 
 .cinematic-background__stage {
   position: absolute;
-  top: 85%;
+  top: 70%;
   left: 50%;
   width: max(100vw, 147.64vh);
   aspect-ratio: 896 / 1821;
@@ -40,6 +275,18 @@ body,
 
 @media (prefers-reduced-motion: reduce) {
   .cinematic-background__camera {
+    will-change: auto;
+  }
+
+  .portfolio-tech-orbit {
+    animation: none;
+    transform: rotate(var(--orbit-start));
+    will-change: auto;
+  }
+
+  .portfolio-tech-counter-orbit {
+    animation: none;
+    transform: rotate(var(--orbit-start-negative));
     will-change: auto;
   }
 }

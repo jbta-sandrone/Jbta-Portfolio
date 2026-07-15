@@ -74,11 +74,11 @@ export default function SceneTwo() {
       data-cinematic-scene={2}
       data-scene-scroll
       aria-labelledby="behind-the-work-title"
-      className="relative h-full overflow-y-auto overscroll-contain text-stone-100"
+      className="portfolio-scene relative h-full overflow-y-auto overscroll-contain"
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-y-0 left-0 w-full bg-gradient-to-r from-black/50 via-black/20 to-transparent lg:w-4/5"
+        className="portfolio-text-scrim pointer-events-none absolute inset-y-0 left-0 w-full lg:w-4/5"
       />
 
       <div className="relative mx-auto grid min-h-full w-full max-w-6xl items-center gap-9 px-5 py-12 pb-32 sm:px-8 md:gap-10 lg:grid-cols-[minmax(290px,0.44fr)_minmax(0,0.56fr)] lg:px-12 lg:py-8 xl:gap-16">
@@ -105,12 +105,12 @@ export default function SceneTwo() {
               initial="hidden"
               animate="visible"
             >
-              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-amber-300/70">
+              <p className="portfolio-eyebrow text-[0.68rem] font-semibold uppercase tracking-[0.28em]">
                 Scene 02 — Depth
               </p>
               <h1
                 id="behind-the-work-title"
-                className="mt-1.5 text-xl font-medium tracking-tight text-stone-100 sm:text-2xl"
+                className="mt-1.5 text-xl font-medium tracking-tight sm:text-2xl"
               >
                 Behind the Work
               </h1>
@@ -121,17 +121,17 @@ export default function SceneTwo() {
               variants={revealVariants}
               initial="hidden"
               animate="visible"
-              className="inline-flex items-center gap-2 rounded-full border border-emerald-200/15 bg-black/30 px-3 py-1.5 text-xs font-medium text-emerald-100/90 shadow-[0_8px_30px_rgba(0,0,0,0.2)] backdrop-blur-md"
+              className="portfolio-status-pill inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium"
             >
               <span className="relative flex size-2" aria-hidden="true">
                 {!reducedMotion && (
                   <motion.span
-                    className="absolute inset-0 rounded-full bg-emerald-400/60"
+                    className="portfolio-status-pulse absolute inset-0 rounded-full"
                     animate={{ opacity: [0.55, 0, 0.55], scale: [1, 2.1, 1] }}
                     transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
                   />
                 )}
-                <span className="relative size-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.8)]" />
+                <span className="portfolio-status-dot relative size-2 rounded-full" />
               </span>
               Available for Work
             </motion.div>
@@ -142,7 +142,7 @@ export default function SceneTwo() {
             variants={revealVariants}
             initial="hidden"
             animate="visible"
-            className="mt-5 max-w-2xl text-4xl font-semibold leading-[1.08] tracking-tight text-stone-50 sm:text-5xl lg:text-[3.4rem]"
+            className="portfolio-heading mt-5 max-w-2xl text-4xl font-semibold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.4rem]"
           >
             Get to know me and my story.
           </motion.h2>
@@ -152,7 +152,7 @@ export default function SceneTwo() {
             variants={revealVariants}
             initial="hidden"
             animate="visible"
-            className="mt-5 max-w-xl space-y-4 text-sm leading-6 text-stone-300 sm:text-base sm:leading-7"
+            className="portfolio-copy mt-5 max-w-xl space-y-4 text-sm leading-6 sm:text-base sm:leading-7"
           >
             <p>
               Hi, my name is Jonel. I’m a web developer from the Philippines who enjoys
@@ -178,7 +178,7 @@ export default function SceneTwo() {
               aria-label="Explore My Projects — go to Scene 03"
               disabled={isTransitioning}
               onClick={() => navigateToScene(2)}
-              className="inline-flex min-h-12 items-center justify-center rounded-full border border-amber-200/35 bg-amber-200/90 px-6 text-sm font-semibold text-stone-950 shadow-[0_12px_36px_rgba(245,158,11,0.18)] transition-colors hover:bg-amber-100 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-200 disabled:cursor-not-allowed disabled:opacity-50"
+              className="portfolio-button-primary portfolio-focus inline-flex min-h-12 items-center justify-center rounded-full border px-6 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50"
             >
               Explore My Projects
             </button>
@@ -187,7 +187,7 @@ export default function SceneTwo() {
               aria-label="Contact Me — go to Scene 05"
               disabled={isTransitioning}
               onClick={() => navigateToScene(4)}
-              className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/20 bg-black/25 px-6 text-sm font-semibold text-stone-100 backdrop-blur-md transition-colors hover:border-amber-100/35 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-stone-100 disabled:cursor-not-allowed disabled:opacity-50"
+              className="portfolio-button-secondary portfolio-focus inline-flex min-h-12 items-center justify-center rounded-full border px-6 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50"
             >
               Contact Me
             </button>
@@ -301,8 +301,8 @@ function NotebookPortrait({
       onPointerLeave={onPointerLeave}
     >
       <div className="pointer-events-none absolute -inset-2 rounded-[1.8rem] bg-black/25 shadow-[0_28px_90px_rgba(0,0,0,0.48)] backdrop-blur-sm" />
-      <div className="absolute inset-0 overflow-hidden rounded-[1.5rem] border border-amber-100/25 bg-[#17130f] p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_24px_70px_rgba(0,0,0,0.38)]">
-        <div className="pointer-events-none absolute inset-y-4 left-3 z-30 w-px bg-gradient-to-b from-transparent via-amber-200/35 to-transparent" />
+      <div className="portfolio-notebook-frame absolute inset-0 overflow-hidden rounded-[1.5rem] border p-2">
+        <div className="portfolio-divider-vertical pointer-events-none absolute inset-y-4 left-3 z-30 w-px" />
 
         <div className="relative h-full overflow-hidden rounded-[1.15rem] [perspective:1400px]">
           {reducedMotion ? (
@@ -407,7 +407,7 @@ function PortraitPage({
         style={{ x: smoothPortraitX, y: smoothPortraitY }}
         className="h-full w-full scale-[1.025] select-none object-cover"
       />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-amber-100/5" />
+      <div className="portfolio-portrait-wash pointer-events-none absolute inset-0" />
       <button
         ref={buttonRef}
         type="button"
@@ -415,7 +415,7 @@ function PortraitPage({
         tabIndex={isActive ? 0 : -1}
         disabled={!isActive}
         onClick={onOpen}
-        className="absolute bottom-4 right-4 z-20 rounded-full border border-white/20 bg-black/65 px-4 py-2 text-xs font-semibold text-stone-100 shadow-lg backdrop-blur-md transition-colors hover:bg-black/85 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-amber-200 disabled:pointer-events-none"
+        className="portfolio-button-secondary portfolio-focus absolute bottom-4 right-4 z-20 rounded-full border bg-black/65 px-4 py-2 text-xs font-semibold shadow-lg transition-colors hover:bg-black/85 disabled:pointer-events-none"
       >
         Next Page →
       </button>
@@ -431,30 +431,30 @@ type StoryPageProps = {
 
 function StoryPage({ buttonRef, isActive, onClose }: StoryPageProps) {
   return (
-    <div className="relative flex h-full flex-col overflow-hidden bg-[#1a1712] p-7 text-stone-100 sm:p-8">
+    <div className="portfolio-notebook-page relative flex h-full flex-col overflow-hidden p-7 sm:p-8">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-20 [background-image:repeating-linear-gradient(180deg,transparent_0_31px,rgba(251,191,36,0.16)_31px_32px)]"
+        className="portfolio-notebook-lines pointer-events-none absolute inset-0 opacity-20"
       />
-      <div className="pointer-events-none absolute inset-y-5 left-4 w-px bg-gradient-to-b from-transparent via-amber-200/40 to-transparent" />
+      <div className="portfolio-divider-vertical pointer-events-none absolute inset-y-5 left-4 w-px" />
 
       <div className="relative flex flex-1 flex-col justify-center gap-8 pl-3">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-amber-300/75">
+          <p className="portfolio-eyebrow text-xs font-semibold uppercase tracking-[0.25em]">
             Education
           </p>
-          <p className="mt-3 text-lg font-medium leading-6 text-stone-50">
+          <p className="portfolio-heading mt-3 text-lg font-medium leading-6">
             Bachelor of Science in Information Technology
           </p>
-          <p className="mt-2 text-sm text-stone-300">2022–2026</p>
+          <p className="portfolio-copy mt-2 text-sm">2022–2026</p>
         </div>
 
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-amber-300/75">
+          <p className="portfolio-eyebrow text-xs font-semibold uppercase tracking-[0.25em]">
             Career Goal
           </p>
-          <p className="mt-3 text-lg font-medium text-stone-50">Software Engineer</p>
-          <p className="mt-2 text-sm leading-6 text-stone-300">
+          <p className="portfolio-heading mt-3 text-lg font-medium">Software Engineer</p>
+          <p className="portfolio-copy mt-2 text-sm leading-6">
             Building thoughtful digital experiences.
           </p>
         </div>
@@ -467,7 +467,7 @@ function StoryPage({ buttonRef, isActive, onClose }: StoryPageProps) {
         tabIndex={isActive ? 0 : -1}
         disabled={!isActive}
         onClick={onClose}
-        className="relative mt-5 self-start rounded-full border border-amber-100/20 bg-black/25 px-4 py-2 text-xs font-semibold text-stone-100 transition-colors hover:bg-black/45 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-amber-200 disabled:pointer-events-none"
+        className="portfolio-button-secondary portfolio-focus relative mt-5 self-start rounded-full border px-4 py-2 text-xs font-semibold transition-colors hover:bg-black/45 disabled:pointer-events-none"
       >
         ← Previous Page
       </button>

@@ -11,7 +11,7 @@ export default function SceneOne() {
       data-cinematic-scene={1}
       data-scene-scroll
       aria-label="Introduction"
-      className="relative h-full overflow-y-auto overscroll-contain text-white"
+      className="portfolio-scene relative h-full overflow-y-auto overscroll-contain"
     >
       <div className="flex min-h-full items-center justify-center px-6 py-20">
         <motion.div
@@ -39,7 +39,7 @@ export default function SceneOne() {
             }}
           >
             <motion.p
-              className="text-xs font-semibold uppercase tracking-[0.3em] text-blue-400 sm:text-sm"
+              className="portfolio-eyebrow text-xs font-semibold uppercase tracking-[0.3em] sm:text-sm"
             >
               {hero.name}
             </motion.p>
@@ -59,7 +59,7 @@ export default function SceneOne() {
             }}
           >
             <motion.h1
-              className="mx-auto mt-6 max-w-4xl break-words text-4xl font-semibold leading-tight sm:text-7xl lg:text-8xl"
+              className="portfolio-heading mx-auto mt-6 max-w-4xl break-words text-4xl font-semibold leading-tight sm:text-7xl lg:text-8xl"
             >
               {hero.headline}
             </motion.h1>
@@ -76,7 +76,7 @@ export default function SceneOne() {
             }}
           >
             <motion.p
-              className="mx-auto mt-6 max-w-2xl text-base leading-7 text-slate-400 sm:text-lg sm:leading-8"
+              className="portfolio-copy mx-auto mt-6 max-w-2xl text-base leading-7 sm:text-lg sm:leading-8"
             >
               {hero.subheadline}
             </motion.p>
@@ -93,11 +93,11 @@ export default function SceneOne() {
             className="mt-14"
           >
             <motion.div className="flex flex-col items-center gap-3">
-              <span className="text-sm text-slate-500">{hero.scrollText}</span>
+              <span className="portfolio-muted text-sm">{hero.scrollText}</span>
 
               <motion.span
                 aria-hidden="true"
-                className="h-8 w-px bg-gradient-to-b from-blue-400 to-transparent"
+                className="portfolio-divider-vertical h-8 w-px"
                 animate={
                   prefersReducedMotion
                     ? { opacity: 0.65 }
