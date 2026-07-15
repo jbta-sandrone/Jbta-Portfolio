@@ -93,15 +93,15 @@ export default function SceneOne() {
             className="mt-14"
           >
             <motion.div className="flex flex-col items-center gap-3">
-              <span className="portfolio-muted text-sm">{hero.scrollText}</span>
+              <span className="portfolio-muted text-xl">{hero.scrollText}</span>
 
               <motion.span
                 aria-hidden="true"
-                className="portfolio-divider-vertical h-8 w-px"
+                className="portfolio-divider-vertical h-8 w-0.5 rounded-full bg-[var(--portfolio-accent-strong)]"
                 animate={
                   prefersReducedMotion
-                    ? { opacity: 0.65 }
-                    : { y: [0, 8, 0], opacity: [0.35, 1, 0.35] }
+                    ? { opacity: 0.1 }
+                    : { y: [0, 15, 0], opacity: [0.35, 1, 0.35] }
                 }
                 transition={{
                   duration: 1.8,

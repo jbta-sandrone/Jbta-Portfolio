@@ -403,6 +403,7 @@ export default function SceneFour() {
                   />
                 </motion.div>
               </AnimatePresence>
+
             </div>
 
             <CategoryProgress activeGroup={activeGroup} />

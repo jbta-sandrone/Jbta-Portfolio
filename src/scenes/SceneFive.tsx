@@ -1,24 +1,29 @@
 import {
+  useCallback,
   useEffect,
   useRef,
   useState,
+  type FocusEvent as ReactFocusEvent,
   type KeyboardEvent as ReactKeyboardEvent,
+  type PointerEvent as ReactPointerEvent,
 } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowUpRight,
   Check,
-  ChevronDown,
-  ChevronUp,
   Copy,
   FileText,
   Mail,
 } from "lucide-react";
 import {
   AnimatePresence,
+  animate,
   motion,
   useIsPresent,
+  useMotionValue,
   useReducedMotion,
+  useTransform,
+  type MotionValue,
   type Variants,
 } from "motion/react";
 import type { IconType } from "react-icons";
@@ -118,7 +123,11 @@ const connectionItems: readonly ConnectionItem[] = [
 
 const cinematicEase = [0.65, 0, 0.35, 1] as const;
 const revealEase = [0.22, 1, 0.36, 1] as const;
-const TABLET_LOADING_MS = 560;
+const towerCycleEase = [0.45, 0.05, 0.55, 0.95] as const;
+const TABLET_LOADING_MS = 340;
+const TOWER_CYCLE_SECONDS = 5.2;
+const TOWER_ENTRANCE_DELAY_MS = 900;
+const INTERACTION_GRACE_MS = 450;
 
 const towerFloors = [
   { top: "16%", width: "18%", rotate: -2.4 },
@@ -178,75 +187,330 @@ const towerItemRevealVariants: Variants = {
 };
 
 function getWrappedIndex(index: number) {
-  return (index + connectionItems.length) % connectionItems.length;
+  const total = connectionItems.length;
+  return ((index % total) + total) % total;
 }
 
-function getRelativeIndex(index: number, activeIndex: number) {
+function getContinuousRelativeIndex(index: number, towerPosition: number) {
   const total = connectionItems.length;
-  let relativeIndex = (index - activeIndex + total) % total;
+  const rawRelativeIndex = index - towerPosition;
 
-  if (relativeIndex > total / 2) relativeIndex -= total;
-  return relativeIndex;
+  return (
+    ((rawRelativeIndex + total / 2) % total + total) % total - total / 2
+  );
+}
+
+function getNearestVirtualPosition(currentPosition: number, targetIndex: number) {
+  const total = connectionItems.length;
+  const normalizedPosition = ((currentPosition % total) + total) % total;
+  let distance = targetIndex - normalizedPosition;
+
+  if (distance > total / 2) distance -= total;
+  if (distance < -total / 2) distance += total;
+  return currentPosition + distance;
 }
 
 export default function SceneFive() {
   const prefersReducedMotion = useReducedMotion();
   const reducedMotion = Boolean(prefersReducedMotion);
   const isPresent = useIsPresent();
+  const sectionRef = useRef<HTMLElement>(null);
+  const tabletRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [direction, setDirection] = useState<1 | -1>(1);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [copyResult, setCopyResult] = useState<{ id: string; status: CopyStatus } | null>(null);
   const [tabletPressed, setTabletPressed] = useState(false);
+  const [sceneIntersecting, setSceneIntersecting] = useState(true);
+  const [documentVisible, setDocumentVisible] = useState(true);
+  const [rotationReady, setRotationReady] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [rotationCycle, setRotationCycle] = useState(0);
+  const activeIndexRef = useRef(0);
+  const centerPositionRef = useRef(0);
+  const pauseReasonsRef = useRef(new Set<string>());
+  const inputModalityRef = useRef<"keyboard" | "pointer">("pointer");
+  const sceneCanAnimateRef = useRef(true);
   const loadTimerRef = useRef<number | null>(null);
   const copyTimerRef = useRef<number | null>(null);
+  const interactionGraceTimerRef = useRef<number | null>(null);
+  const entranceTimerRef = useRef<number | null>(null);
+  const autoAnimationRef = useRef<ReturnType<typeof animate> | null>(null);
+  const manualAnimationRef = useRef<ReturnType<typeof animate> | null>(null);
+  const manualTargetRef = useRef<{
+    position: number;
+    index: number;
+    direction: 1 | -1;
+  } | null>(null);
+  const towerPosition = useMotionValue(0);
 
   const activeItem = connectionItems[activeIndex];
 
-  useEffect(() => {
-    if (loadTimerRef.current !== null) window.clearTimeout(loadTimerRef.current);
+  const setPauseReason = useCallback((reason: string, paused: boolean) => {
+    const reasons = pauseReasonsRef.current;
+    const wasPaused = reasons.size > 0;
 
-    loadTimerRef.current = window.setTimeout(
-      () => setLoading(false),
-      reducedMotion ? 120 : TABLET_LOADING_MS,
+    if (paused) reasons.add(reason);
+    else reasons.delete(reason);
+
+    const nextPaused = reasons.size > 0;
+    if (nextPaused !== wasPaused) setIsPaused(nextPaused);
+  }, []);
+
+  const clearInteractionGrace = useCallback(() => {
+    if (interactionGraceTimerRef.current !== null) {
+      window.clearTimeout(interactionGraceTimerRef.current);
+      interactionGraceTimerRef.current = null;
+    }
+    setPauseReason("grace", false);
+  }, [setPauseReason]);
+
+  const scheduleInteractionResume = useCallback(() => {
+    clearInteractionGrace();
+    setPauseReason("grace", true);
+    interactionGraceTimerRef.current = window.setTimeout(() => {
+      setPauseReason("grace", false);
+      interactionGraceTimerRef.current = null;
+    }, INTERACTION_GRACE_MS);
+  }, [clearInteractionGrace, setPauseReason]);
+
+  const commitActiveIndex = useCallback(
+    (nextIndex: number, travelDirection: 1 | -1) => {
+      const wrappedIndex = getWrappedIndex(nextIndex);
+      if (wrappedIndex === activeIndexRef.current) return;
+
+      activeIndexRef.current = wrappedIndex;
+      setDirection(travelDirection);
+      setCopyResult(null);
+      setLoading(true);
+      setActiveIndex(wrappedIndex);
+
+      if (loadTimerRef.current !== null) window.clearTimeout(loadTimerRef.current);
+      loadTimerRef.current = window.setTimeout(
+        () => setLoading(false),
+        reducedMotion ? 120 : TABLET_LOADING_MS,
+      );
+    },
+    [reducedMotion],
+  );
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setSceneIntersecting(Boolean(entry?.isIntersecting && entry.intersectionRatio >= 0.2));
+      },
+      { threshold: [0, 0.2, 0.6] },
+    );
+
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const syncDocumentVisibility = () => {
+      setDocumentVisible(document.visibilityState === "visible");
+    };
+
+    syncDocumentVisibility();
+    document.addEventListener("visibilitychange", syncDocumentVisibility);
+    return () => document.removeEventListener("visibilitychange", syncDocumentVisibility);
+  }, []);
+
+  useEffect(() => {
+    if (reducedMotion) {
+      setRotationReady(false);
+      return;
+    }
+
+    entranceTimerRef.current = window.setTimeout(
+      () => setRotationReady(true),
+      TOWER_ENTRANCE_DELAY_MS,
     );
 
     return () => {
-      if (loadTimerRef.current !== null) window.clearTimeout(loadTimerRef.current);
+      if (entranceTimerRef.current !== null) window.clearTimeout(entranceTimerRef.current);
     };
-  }, [activeIndex, reducedMotion]);
+  }, [reducedMotion]);
+
+  useEffect(() => {
+    const markKeyboardInput = () => {
+      inputModalityRef.current = "keyboard";
+    };
+    const markPointerInput = () => {
+      inputModalityRef.current = "pointer";
+    };
+
+    window.addEventListener("keydown", markKeyboardInput, true);
+    window.addEventListener("pointerdown", markPointerInput, true);
+    return () => {
+      window.removeEventListener("keydown", markKeyboardInput, true);
+      window.removeEventListener("pointerdown", markPointerInput, true);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleSelectionChange = () => {
+      const selection = document.getSelection();
+      const anchorNode = selection?.anchorNode;
+      const selectionInsideTablet = Boolean(
+        selection &&
+          !selection.isCollapsed &&
+          anchorNode &&
+          tabletRef.current?.contains(anchorNode),
+      );
+
+      setPauseReason("selection", selectionInsideTablet);
+    };
+
+    document.addEventListener("selectionchange", handleSelectionChange);
+    return () => document.removeEventListener("selectionchange", handleSelectionChange);
+  }, [setPauseReason]);
 
   useEffect(
     () => () => {
+      autoAnimationRef.current?.stop();
+      manualAnimationRef.current?.stop();
+      if (loadTimerRef.current !== null) window.clearTimeout(loadTimerRef.current);
       if (copyTimerRef.current !== null) window.clearTimeout(copyTimerRef.current);
+      if (interactionGraceTimerRef.current !== null) {
+        window.clearTimeout(interactionGraceTimerRef.current);
+      }
+      if (entranceTimerRef.current !== null) window.clearTimeout(entranceTimerRef.current);
     },
     [],
   );
 
-  const activateIndex = (nextIndex: number, travelDirection: 1 | -1) => {
-    const wrappedIndex = getWrappedIndex(nextIndex);
-    if (wrappedIndex === activeIndex) return;
+  const sceneCanAnimate = isPresent && sceneIntersecting && documentVisible;
+  const ambientMotionEnabled = sceneCanAnimate && !reducedMotion;
 
-    setDirection(travelDirection);
-    setLoading(true);
-    setCopyResult(null);
-    setActiveIndex(wrappedIndex);
-  };
+  const runManualTarget = useCallback(
+    (target: { position: number; index: number; direction: 1 | -1 }) => {
+      if (!sceneCanAnimateRef.current && !reducedMotion) return;
 
-  const moveTower = (amount: 1 | -1) => {
-    activateIndex(activeIndex + amount, amount);
-  };
+      manualAnimationRef.current?.stop();
+      const currentPosition = towerPosition.get();
+      const distance = Math.abs(target.position - currentPosition);
 
-  const activateVisibleItem = (index: number) => {
-    const relativeIndex = getRelativeIndex(index, activeIndex);
-    if (relativeIndex === 0) return;
+      const completeTarget = () => {
+        if (manualTargetRef.current?.position !== target.position) return;
 
-    activateIndex(index, relativeIndex > 0 ? 1 : -1);
-  };
+        centerPositionRef.current = target.position;
+        manualTargetRef.current = null;
+        manualAnimationRef.current = null;
+        commitActiveIndex(target.index, target.direction);
+        setPauseReason("navigation", false);
+        scheduleInteractionResume();
+        setRotationCycle((cycle) => cycle + 1);
+      };
+
+      if (distance < 0.001) {
+        towerPosition.set(target.position);
+        completeTarget();
+        return;
+      }
+
+      if (reducedMotion) {
+        const controls = animate(towerPosition, target.position, {
+          duration: 0.18,
+          ease: "easeOut",
+          onComplete: completeTarget,
+        });
+        manualAnimationRef.current = controls;
+        return;
+      }
+
+      const controls = animate(towerPosition, target.position, {
+        duration: Math.min(1.65, Math.max(0.48, distance * 0.72)),
+        ease: cinematicEase,
+        onComplete: completeTarget,
+      });
+      manualAnimationRef.current = controls;
+    },
+    [commitActiveIndex, reducedMotion, scheduleInteractionResume, setPauseReason, towerPosition],
+  );
+
+  useEffect(() => {
+    sceneCanAnimateRef.current = sceneCanAnimate;
+
+    if (!sceneCanAnimate) {
+      autoAnimationRef.current?.stop();
+      autoAnimationRef.current = null;
+      manualAnimationRef.current?.stop();
+      manualAnimationRef.current = null;
+      return;
+    }
+
+    if (manualTargetRef.current) runManualTarget(manualTargetRef.current);
+  }, [runManualTarget, sceneCanAnimate]);
+
+  const navigateToIndex = useCallback(
+    (nextIndex: number) => {
+      const wrappedIndex = getWrappedIndex(nextIndex);
+      const currentPosition = towerPosition.get();
+      const targetPosition = getNearestVirtualPosition(currentPosition, wrappedIndex);
+      const travelDirection: 1 | -1 = targetPosition >= currentPosition ? 1 : -1;
+      const target = {
+        position: targetPosition,
+        index: wrappedIndex,
+        direction: travelDirection,
+      };
+
+      clearInteractionGrace();
+      setPauseReason("navigation", true);
+      setCopyResult(null);
+      autoAnimationRef.current?.stop();
+      autoAnimationRef.current = null;
+      manualAnimationRef.current?.stop();
+      manualTargetRef.current = target;
+      runManualTarget(target);
+    },
+    [clearInteractionGrace, runManualTarget, setPauseReason, towerPosition],
+  );
+
+  const autoRotationEnabled =
+    rotationReady &&
+    sceneCanAnimate &&
+    !isPaused &&
+    !reducedMotion &&
+    manualTargetRef.current === null;
+
+  useEffect(() => {
+    if (!autoRotationEnabled) {
+      autoAnimationRef.current?.stop();
+      autoAnimationRef.current = null;
+      return;
+    }
+
+    const currentPosition = towerPosition.get();
+    const targetPosition = centerPositionRef.current + 1;
+    const distance = Math.max(0.001, targetPosition - currentPosition);
+    const controls = animate(towerPosition, targetPosition, {
+      duration: distance * TOWER_CYCLE_SECONDS,
+      ease: towerCycleEase,
+      onComplete: () => {
+        if (autoAnimationRef.current !== controls) return;
+
+        centerPositionRef.current = targetPosition;
+        autoAnimationRef.current = null;
+        commitActiveIndex(Math.round(targetPosition), 1);
+      },
+    });
+
+    autoAnimationRef.current = controls;
+    return () => {
+      controls.stop();
+      if (autoAnimationRef.current === controls) autoAnimationRef.current = null;
+    };
+  }, [activeIndex, autoRotationEnabled, commitActiveIndex, rotationCycle, towerPosition]);
 
   const copyConnectionValue = async (item: ConnectionItem) => {
     if (!item.copyValue) return;
 
+    clearInteractionGrace();
+    setPauseReason("copy", true);
     if (copyTimerRef.current !== null) window.clearTimeout(copyTimerRef.current);
 
     try {
@@ -255,23 +519,74 @@ export default function SceneFive() {
       setCopyResult({ id: item.id, status: "copied" });
     } catch {
       setCopyResult({ id: item.id, status: "failed" });
+    } finally {
+      setPauseReason("copy", false);
+      scheduleInteractionResume();
     }
 
     copyTimerRef.current = window.setTimeout(() => setCopyResult(null), 1800);
   };
 
-  const handleTowerKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
-    if (event.key === "ArrowUp") {
-      event.preventDefault();
-      moveTower(-1);
-    } else if (event.key === "ArrowDown") {
-      event.preventDefault();
-      moveTower(1);
+  const handleTabletPointerEnter = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== "mouse") return;
+    clearInteractionGrace();
+    setPauseReason("hover", true);
+  };
+
+  const handleTabletPointerLeave = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== "mouse") return;
+    setPauseReason("hover", false);
+    scheduleInteractionResume();
+  };
+
+  const handleTabletPointerDown = () => {
+    inputModalityRef.current = "pointer";
+    clearInteractionGrace();
+    setPauseReason("pointer", true);
+    setTabletPressed(true);
+  };
+
+  const handleTabletPointerEnd = () => {
+    setPauseReason("pointer", false);
+    setTabletPressed(false);
+    scheduleInteractionResume();
+  };
+
+  const handleTabletFocus = () => {
+    if (inputModalityRef.current !== "keyboard") return;
+    clearInteractionGrace();
+    setPauseReason("focus", true);
+  };
+
+  const handleTowerItemFocus = () => {
+    if (inputModalityRef.current !== "keyboard") return;
+    clearInteractionGrace();
+    setPauseReason("tower-focus", true);
+  };
+
+  const handleTowerItemBlur = () => {
+    setPauseReason("tower-focus", false);
+    scheduleInteractionResume();
+  };
+
+  const handleTabletBlur = (event: ReactFocusEvent<HTMLDivElement>) => {
+    if (
+      event.relatedTarget instanceof Node &&
+      event.currentTarget.contains(event.relatedTarget)
+    ) {
+      return;
     }
+    setPauseReason("focus", false);
+    scheduleInteractionResume();
   };
 
   const handleTabletKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    inputModalityRef.current = "keyboard";
     if (event.key === "Enter" || event.key === " ") setTabletPressed(true);
+  };
+
+  const handleTabletKeyUp = () => {
+    setTabletPressed(false);
   };
 
   const headingSequence: Variants = {
@@ -286,6 +601,7 @@ export default function SceneFive() {
 
   return (
     <section
+      ref={sectionRef}
       data-cinematic-scene="5"
       data-scene-scroll
       aria-labelledby="scene-five-title"
@@ -320,17 +636,13 @@ export default function SceneFive() {
           initial="hidden"
           animate="visible"
         >
-          <motion.p className="portfolio-eyebrow" variants={reducedMotion ? reducedRevealVariants : revealVariants}>
-            Scene 05 / Connection
+          <motion.p className="portfolio-eyebrow portfolio-eyebrow text-[0.68rem] font-semibold uppercase tracking-[0.3em] sm:text-xs" variants={reducedMotion ? reducedRevealVariants : revealVariants}>
+            Scene 05 - Connection
           </motion.p>
-          <motion.h1 id="scene-five-title" className="portfolio-heading mt-2.5" variants={reducedMotion ? reducedRevealVariants : revealVariants}>
+          <motion.h1 id="scene-five-title" className="portfolio-heading mt-2.5 text-3xl font-semibold tracking-tight sm:text-2xl lg:text-4xl" variants={reducedMotion ? reducedRevealVariants : revealVariants}>
             Beyond This Journey
           </motion.h1>
-          <motion.div
-            aria-hidden="true"
-            className="mx-auto mt-3.5 h-px w-16 bg-[var(--portfolio-accent)] shadow-[0_0_14px_var(--portfolio-glow)]"
-            variants={reducedMotion ? reducedRevealVariants : revealVariants}
-          />
+          
           <motion.p className="portfolio-copy mx-auto mt-3.5 max-w-2xl" variants={reducedMotion ? reducedRevealVariants : revealVariants}>
             Every meaningful project begins with a conversation.
           </motion.p>
@@ -342,27 +654,25 @@ export default function SceneFive() {
               aria-hidden="true"
               className="absolute left-[58%] right-[-2.5rem] top-1/2 z-0 hidden h-px bg-gradient-to-r from-[rgba(252,211,77,0.5)] via-[rgba(252,211,77,0.2)] to-transparent md:block"
               animate={
-                reducedMotion
+                !ambientMotionEnabled
                   ? { opacity: 0.35 }
                   : { opacity: [0.24, 0.55, 0.24], scaleX: [0.96, 1, 0.96] }
               }
-              transition={{ duration: 4.8, repeat: reducedMotion ? 0 : Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+              transition={{ duration: 4.8, repeat: ambientMotionEnabled ? Number.POSITIVE_INFINITY : 0, ease: "easeInOut" }}
             >
               <span className="absolute right-0 top-1/2 size-1.5 -translate-y-1/2 rounded-full bg-[var(--portfolio-accent)] shadow-[0_0_12px_var(--portfolio-glow)]" />
             </motion.div>
 
             <div
               role="group"
-              aria-label="Connection tower. Use Up and Down Arrow keys to change the active destination."
-              tabIndex={0}
-              onKeyDown={handleTowerKeyDown}
-              className="portfolio-focus relative z-10 h-full overflow-hidden rounded-xl border border-white/[0.09] bg-[linear-gradient(180deg,rgba(8,8,7,0.25),rgba(20,17,13,0.48))] shadow-[0_24px_64px_rgba(0,0,0,0.32)] backdrop-blur-[3px]"
+              aria-label="Continuously rotating connection tower"
+              className="portfolio-focus relative z-10 h-full overflow-hidden"
             >
               <div aria-hidden="true" className="pointer-events-none absolute inset-0">
                 <motion.div
                   className="absolute inset-x-[12%] bottom-[5%] top-[7%] bg-[radial-gradient(ellipse_at_center,rgba(252,211,77,0.13),transparent_67%)] blur-xl"
-                  animate={reducedMotion ? { opacity: 0.55 } : { opacity: [0.42, 0.68, 0.42] }}
-                  transition={{ duration: 6.8, repeat: reducedMotion ? 0 : Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+                  animate={!ambientMotionEnabled ? { opacity: 0.55 } : { opacity: [0.42, 0.68, 0.42] }}
+                  transition={{ duration: 6.8, repeat: ambientMotionEnabled ? Number.POSITIVE_INFINITY : 0, ease: "easeInOut" }}
                 />
 
                 <div className="absolute inset-x-[7%] bottom-[7%] top-[8%] overflow-hidden bg-[linear-gradient(105deg,rgba(255,255,255,0.015),rgba(252,211,77,0.075),rgba(255,255,255,0.02))] [clip-path:polygon(48%_0%,52%_0%,59%_18%,68%_42%,79%_70%,94%_100%,6%_100%,21%_70%,32%_42%,41%_18%)]">
@@ -370,11 +680,11 @@ export default function SceneFive() {
                   <motion.div
                     className="absolute inset-y-0 w-[22%] -skew-x-12 bg-gradient-to-r from-transparent via-white/[0.055] to-transparent"
                     animate={
-                      reducedMotion
+                      !ambientMotionEnabled
                         ? { opacity: 0, x: "-140%" }
                         : { opacity: [0, 0.75, 0], x: ["-140%", "520%", "520%"] }
                     }
-                    transition={{ duration: 9, repeat: Number.POSITIVE_INFINITY, repeatDelay: 4.5, ease: "easeInOut" }}
+                    transition={{ duration: 9, repeat: ambientMotionEnabled ? Number.POSITIVE_INFINITY : 0, repeatDelay: 4.5, ease: "easeInOut" }}
                   />
                 </div>
 
@@ -408,11 +718,11 @@ export default function SceneFive() {
                       width: brace.width,
                       transform: `translateX(-50%) rotate(${brace.rotate}deg)`,
                     }}
-                    animate={reducedMotion ? { opacity: 0.45 } : { opacity: [0.28, 0.62, 0.28] }}
+                    animate={!ambientMotionEnabled ? { opacity: 0.45 } : { opacity: [0.28, 0.62, 0.28] }}
                     transition={{
                       duration: 5.6,
                       delay: Number.parseFloat(brace.top) * 0.035,
-                      repeat: reducedMotion ? 0 : Number.POSITIVE_INFINITY,
+                      repeat: ambientMotionEnabled ? Number.POSITIVE_INFINITY : 0,
                       ease: "easeInOut",
                     }}
                   />
@@ -424,14 +734,14 @@ export default function SceneFive() {
                     className="absolute bottom-[10%] size-1 rounded-full bg-[var(--portfolio-accent-bright)] shadow-[0_0_12px_rgba(252,211,77,0.72)]"
                     style={{ left: `calc(50% + ${light.x}px)` }}
                     animate={
-                      reducedMotion
+                      !ambientMotionEnabled
                         ? { opacity: 0.28 }
                         : { opacity: [0, 0.9, 0], y: [0, -480] }
                     }
                     transition={{
                       duration: light.duration,
                       delay: light.delay,
-                      repeat: reducedMotion ? 0 : Number.POSITIVE_INFINITY,
+                      repeat: ambientMotionEnabled ? Number.POSITIVE_INFINITY : 0,
                       ease: "linear",
                     }}
                   />
@@ -441,16 +751,6 @@ export default function SceneFive() {
                 <div className="absolute bottom-[3.5%] left-1/2 h-px w-[88%] -translate-x-1/2 bg-gradient-to-r from-transparent via-[rgba(253,230,138,0.48)] to-transparent" />
               </div>
 
-              <button
-                type="button"
-                aria-label="Previous connection"
-                data-cursor-label="Previous"
-                onClick={() => moveTower(-1)}
-                className="portfolio-focus absolute right-3 top-3 z-50 flex size-10 items-center justify-center rounded-full border border-[var(--portfolio-border-subtle)] bg-[rgba(23,19,15,0.78)] text-[var(--portfolio-text-secondary)] shadow-[0_8px_24px_rgba(0,0,0,0.24)] backdrop-blur-md transition duration-200 hover:-translate-y-0.5 hover:border-[var(--portfolio-border)] hover:text-[var(--portfolio-accent-bright)] focus-visible:-translate-y-0.5"
-              >
-                <ChevronUp aria-hidden="true" className="size-5" />
-              </button>
-
               <motion.div
                 className="absolute inset-x-0 bottom-14 top-14 z-20"
                 variants={reducedMotion ? undefined : towerRevealVariants}
@@ -458,120 +758,21 @@ export default function SceneFive() {
                 animate={reducedMotion ? undefined : "visible"}
                 style={{ perspective: 950 }}
               >
-                {connectionItems.map((item, index) => {
-                  const Icon = item.icon;
-                  const relativeIndex = getRelativeIndex(index, activeIndex);
-                  const depth = Math.abs(relativeIndex);
-                  const active = relativeIndex === 0;
-                  const x = reducedMotion
-                    ? 0
-                    : relativeIndex === -2
-                      ? 34
-                      : relativeIndex === -1
-                        ? -52
-                        : relativeIndex === 1
-                          ? 58
-                          : relativeIndex === 2
-                            ? -72
-                            : 0;
-                  const y = relativeIndex * 94;
-                  const scale = active ? 1 : depth === 1 ? 0.84 : 0.69;
-                  const opacity = active ? 1 : depth === 1 ? 0.68 : 0.4;
-                  const blur = reducedMotion ? 0 : depth === 0 ? 0 : depth === 1 ? 1.3 : 3.2;
-
-                  return (
-                    <motion.div
-                      key={item.id}
-                      variants={reducedMotion ? undefined : towerItemRevealVariants}
-                      className="pointer-events-none absolute inset-0"
-                      style={{ zIndex: 40 - depth }}
-                    >
-                      <div className="absolute left-1/2 top-1/2 h-[4.25rem] w-[9.5rem] -translate-x-1/2 -translate-y-1/2">
-                        <motion.button
-                          type="button"
-                          aria-label={`${item.shortLabel}: ${item.label}${active ? ", currently active" : ""}`}
-                          aria-pressed={active}
-                          aria-controls="connection-tablet"
-                          data-cursor-label={active ? undefined : "Select"}
-                          onClick={() => activateVisibleItem(index)}
-                          animate={{
-                            x,
-                            y,
-                            z: reducedMotion ? 0 : -depth * 92,
-                            scale,
-                            opacity,
-                            rotateY: reducedMotion || active ? 0 : x > 0 ? -16 : 16,
-                            rotateZ: reducedMotion ? 0 : relativeIndex * 1.1,
-                            filter: `blur(${blur}px)`,
-                          }}
-                          transition={{
-                            duration: reducedMotion ? 0.18 : 0.66,
-                            ease: cinematicEase,
-                          }}
-                          className={`portfolio-focus pointer-events-auto group relative flex h-full w-full items-center gap-2.5 rounded-md border px-3 text-left backdrop-blur-md transition-colors duration-300 ${
-                            active
-                              ? "border-[rgba(253,230,138,0.68)] bg-[linear-gradient(100deg,rgba(47,37,24,0.94),rgba(20,17,13,0.9))] shadow-[0_14px_38px_rgba(0,0,0,0.38),0_0_30px_rgba(252,211,77,0.24)]"
-                              : "border-[rgba(255,255,255,0.13)] bg-[rgba(16,15,12,0.76)] shadow-[0_12px_28px_rgba(0,0,0,0.28)] hover:border-[rgba(253,230,138,0.4)] hover:bg-[rgba(31,26,19,0.84)]"
-                          }`}
-                        >
-                          <span
-                            className="flex size-9 shrink-0 items-center justify-center rounded-md border border-white/10 bg-black/25"
-                            style={{ color: item.brandColor }}
-                          >
-                            <Icon aria-hidden="true" className="size-4.5" />
-                          </span>
-                          <span className="min-w-0 flex-1">
-                            <span className="block truncate text-xs font-semibold text-[var(--portfolio-text-primary)]">
-                              {item.shortLabel}
-                            </span>
-                            <span className="mt-0.5 block truncate text-[0.55rem] text-[var(--portfolio-text-muted)]">
-                              {active ? "Active floor" : item.label}
-                            </span>
-                          </span>
-
-                          <AnimatePresence>
-                            {active ? (
-                              <motion.span
-                                aria-hidden="true"
-                                className="flex size-4 shrink-0 items-center justify-center rounded-full bg-[var(--portfolio-accent)] text-[var(--portfolio-bg)]"
-                                initial={{ opacity: 0, scale: reducedMotion ? 1 : 0.4 }}
-                                animate={
-                                  isPresent
-                                    ? { opacity: 1, scale: 1 }
-                                    : { opacity: 0, scale: reducedMotion ? 1 : 0.15 }
-                                }
-                                exit={{ opacity: 0, scale: reducedMotion ? 1 : 0.4 }}
-                                transition={{ duration: 0.2, ease: "easeOut" }}
-                              >
-                                <Check className="size-2.5" strokeWidth={3} />
-                              </motion.span>
-                            ) : null}
-                          </AnimatePresence>
-
-                          <span
-                            aria-hidden="true"
-                            className={`absolute -bottom-1.5 left-1/2 h-px -translate-x-1/2 bg-gradient-to-r from-transparent to-transparent transition-all duration-300 ${
-                              active
-                                ? "w-[118%] via-[rgba(253,230,138,0.72)] shadow-[0_0_10px_rgba(252,211,77,0.38)]"
-                                : "w-[104%] via-[rgba(255,255,255,0.18)]"
-                            }`}
-                          />
-                        </motion.button>
-                      </div>
-                    </motion.div>
-                  );
-                })}
+                {connectionItems.map((item, index) => (
+                  <TowerSocialPlatform
+                    key={item.id}
+                    item={item}
+                    index={index}
+                    towerPosition={towerPosition}
+                    active={activeIndex === index}
+                    reducedMotion={reducedMotion}
+                    isPresent={isPresent}
+                    onActivate={navigateToIndex}
+                    onFocus={handleTowerItemFocus}
+                    onBlur={handleTowerItemBlur}
+                  />
+                ))}
               </motion.div>
-
-              <button
-                type="button"
-                aria-label="Next connection"
-                data-cursor-label="Next"
-                onClick={() => moveTower(1)}
-                className="portfolio-focus absolute bottom-3 right-3 z-50 flex size-10 items-center justify-center rounded-full border border-[var(--portfolio-border-subtle)] bg-[rgba(23,19,15,0.78)] text-[var(--portfolio-text-secondary)] shadow-[0_8px_24px_rgba(0,0,0,0.24)] backdrop-blur-md transition duration-200 hover:translate-y-0.5 hover:border-[var(--portfolio-border)] hover:text-[var(--portfolio-accent-bright)] focus-visible:translate-y-0.5"
-              >
-                <ChevronDown aria-hidden="true" className="size-5" />
-              </button>
             </div>
           </div>
 
@@ -582,6 +783,7 @@ export default function SceneFive() {
           </div>
 
           <motion.div
+            ref={tabletRef}
             id="connection-tablet"
             className="relative z-10 mx-auto h-[25rem] w-full max-w-[52rem] sm:h-auto sm:aspect-[16/10] md:h-[24rem] md:aspect-auto lg:h-auto lg:aspect-[16/10]"
             initial={
@@ -597,22 +799,25 @@ export default function SceneFive() {
                   : { opacity: 0, y: 30, scale: 0.975, filter: "blur(5px)" }
             }
             transition={{ duration: reducedMotion ? 0.18 : isPresent ? 0.72 : 0.32, ease: cinematicEase }}
-            onPointerDownCapture={() => setTabletPressed(true)}
-            onPointerUpCapture={() => setTabletPressed(false)}
-            onPointerCancel={() => setTabletPressed(false)}
+            onPointerEnter={handleTabletPointerEnter}
+            onPointerLeave={handleTabletPointerLeave}
+            onPointerDownCapture={handleTabletPointerDown}
+            onPointerUpCapture={handleTabletPointerEnd}
+            onPointerCancel={handleTabletPointerEnd}
+            onFocusCapture={handleTabletFocus}
+            onBlurCapture={handleTabletBlur}
             onKeyDownCapture={handleTabletKeyDown}
-            onKeyUpCapture={() => setTabletPressed(false)}
-            onBlurCapture={() => setTabletPressed(false)}
+            onKeyUpCapture={handleTabletKeyUp}
           >
             <motion.div
               className="h-full w-full"
               animate={
-                reducedMotion || tabletPressed || !isPresent
+                !ambientMotionEnabled || tabletPressed
                   ? { y: 0 }
                   : { y: [0, -3, 0] }
               }
               transition={
-                reducedMotion || tabletPressed || !isPresent
+                !ambientMotionEnabled || tabletPressed
                   ? { duration: 0.16, ease: "easeOut" }
                   : { duration: 6.5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }
               }
@@ -633,11 +838,11 @@ export default function SceneFive() {
                     aria-hidden="true"
                     className="pointer-events-none absolute inset-y-0 z-20 w-1/3 -skew-x-12 bg-gradient-to-r from-transparent via-white/[0.035] to-transparent"
                     animate={
-                      reducedMotion || !isPresent
+                      !ambientMotionEnabled
                         ? { opacity: 0, x: "-150%" }
                         : { opacity: [0, 0.65, 0], x: ["-150%", "320%", "320%"] }
                     }
-                    transition={{ duration: 7.5, repeat: Number.POSITIVE_INFINITY, repeatDelay: 4, ease: "easeInOut" }}
+                    transition={{ duration: 7.5, repeat: ambientMotionEnabled ? Number.POSITIVE_INFINITY : 0, repeatDelay: 4, ease: "easeInOut" }}
                   />
 
                   <AnimatePresence mode="wait" initial={false} custom={direction}>
@@ -653,8 +858,8 @@ export default function SceneFive() {
                         <motion.span
                           aria-hidden="true"
                           className="size-2 rounded-full bg-[var(--portfolio-accent)] shadow-[0_0_16px_rgba(252,211,77,0.55)]"
-                          animate={reducedMotion ? undefined : { opacity: [0.35, 1, 0.35], scale: [0.85, 1, 0.85] }}
-                          transition={{ duration: 0.9, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+                          animate={!ambientMotionEnabled ? undefined : { opacity: [0.35, 1, 0.35], scale: [0.85, 1, 0.85] }}
+                          transition={{ duration: 0.9, repeat: ambientMotionEnabled ? Number.POSITIVE_INFINITY : 0, ease: "easeInOut" }}
                         />
                         <motion.span
                           aria-hidden="true"
@@ -676,6 +881,12 @@ export default function SceneFive() {
                     )}
                   </AnimatePresence>
 
+                  <TabletDock
+                    activeIndex={activeIndex}
+                    reducedMotion={reducedMotion}
+                    onSelect={navigateToIndex}
+                  />
+
                   <motion.div
                     aria-hidden="true"
                     className="pointer-events-none absolute inset-0 z-30 bg-black"
@@ -687,8 +898,284 @@ export default function SceneFive() {
             </motion.div>
           </motion.div>
         </div>
+
+        <ConnectionProgress
+          activeIndex={activeIndex}
+          direction={direction}
+          reducedMotion={reducedMotion}
+        />
       </div>
     </section>
+  );
+}
+
+type ConnectionProgressProps = {
+  activeIndex: number;
+  direction: 1 | -1;
+  reducedMotion: boolean;
+};
+
+function ConnectionProgress({
+  activeIndex,
+  direction,
+  reducedMotion,
+}: ConnectionProgressProps) {
+  const activeItem = connectionItems[activeIndex];
+  const current = String(activeIndex + 1).padStart(2, "0");
+  const total = String(connectionItems.length).padStart(2, "0");
+
+  return (
+    <div className="pointer-events-none mt-8 flex min-h-4 w-full items-center justify-start gap-3 whitespace-nowrap md:absolute md:bottom-6 md:left-8 md:mt-0 md:w-auto lg:left-12 xl:left-16">
+      <span className="portfolio-muted text-[0.6rem] font-semibold uppercase tracking-[0.2em] tabular-nums">
+        {current} / {total}
+      </span>
+
+      <div className="flex items-center gap-1.5" aria-hidden="true">
+        {connectionItems.map((item, index) => {
+          const active = index === activeIndex;
+
+          return (
+            <motion.span
+              key={item.id}
+              className={`h-1 rounded-full ${
+                active ? "portfolio-progress-active" : "portfolio-progress-idle"
+              }`}
+              animate={{ width: active ? 24 : 6, opacity: active ? 1 : 0.78 }}
+              transition={{
+                duration: reducedMotion ? 0.16 : 0.3,
+                ease: cinematicEase,
+              }}
+            />
+          );
+        })}
+      </div>
+
+      <div className="relative hidden h-3.5 min-w-20 overflow-hidden sm:block">
+        <AnimatePresence initial={false} custom={direction}>
+          <motion.span
+            key={activeItem.id}
+            custom={direction}
+            className="portfolio-eyebrow absolute inset-0 text-[0.58rem] font-semibold uppercase tracking-[0.18em]"
+            initial={
+              reducedMotion
+                ? { opacity: 0 }
+                : { opacity: 0, y: direction * 5 }
+            }
+            animate={{ opacity: 1, y: 0 }}
+            exit={
+              reducedMotion
+                ? { opacity: 0 }
+                : { opacity: 0, y: direction * -5 }
+            }
+            transition={{
+              duration: reducedMotion ? 0.16 : 0.3,
+              ease: cinematicEase,
+            }}
+          >
+            {activeItem.shortLabel}
+          </motion.span>
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
+type TowerSocialPlatformProps = {
+  item: ConnectionItem;
+  index: number;
+  towerPosition: MotionValue<number>;
+  active: boolean;
+  reducedMotion: boolean;
+  isPresent: boolean;
+  onActivate: (index: number) => void;
+  onFocus: () => void;
+  onBlur: () => void;
+};
+
+function TowerSocialPlatform({
+  item,
+  index,
+  towerPosition,
+  active,
+  reducedMotion,
+  isPresent,
+  onActivate,
+  onFocus,
+  onBlur,
+}: TowerSocialPlatformProps) {
+  const Icon = item.icon;
+  const relativePosition = useTransform(towerPosition, (position) =>
+    getContinuousRelativeIndex(index, position),
+  );
+  const depth = useTransform(relativePosition, (relative) => Math.abs(relative));
+  const x = useTransform(relativePosition, (relative) => {
+    if (reducedMotion) return 0;
+    const amplitude = 68 + Math.max(relative, 0) * 4;
+    return Math.sin(relative * Math.PI * 0.75) * amplitude;
+  });
+  const y = useTransform(relativePosition, (relative) => relative * 94);
+  const z = useTransform(depth, (value) => (reducedMotion ? 0 : value * -92));
+  const scale = useTransform(depth, (value) => Math.max(0.62, 1 - value * 0.15));
+  const opacity = useTransform(depth, (value) => {
+    if (value <= 2) return 1 - value * 0.3;
+    return Math.max(0, 0.4 - (value - 2) * 0.9);
+  });
+  const rotateY = useTransform(x, (value) =>
+    reducedMotion ? 0 : value * -0.23,
+  );
+  const rotateZ = useTransform(relativePosition, (relative) =>
+    reducedMotion ? 0 : relative * 1.1,
+  );
+  const filter = useTransform(depth, (value) =>
+    reducedMotion ? "blur(0px)" : `blur(${(value * 1.6).toFixed(2)}px)`,
+  );
+  const zIndex = useTransform(depth, (value) => Math.round(50 - value * 10));
+  const borderColor = useTransform(depth, (value) => {
+    const frontness = Math.max(0, 1 - value);
+    return `rgba(253,230,138,${(0.14 + frontness * 0.54).toFixed(3)})`;
+  });
+  const boxShadow = useTransform(depth, (value) => {
+    const frontness = Math.max(0, 1 - value);
+    return `0 14px 38px rgba(0,0,0,${(0.24 + frontness * 0.14).toFixed(3)}), 0 0 ${(
+      10 + frontness * 22
+    ).toFixed(1)}px rgba(252,211,77,${(frontness * 0.24).toFixed(3)})`;
+  });
+
+  return (
+    <motion.div
+      variants={reducedMotion ? undefined : towerItemRevealVariants}
+      className="pointer-events-none absolute inset-0"
+      style={{ zIndex }}
+    >
+      <div className="absolute left-1/2 top-1/2 h-[4.25rem] w-[9.5rem] -translate-x-1/2 -translate-y-1/2">
+        <motion.button
+          type="button"
+          aria-label={`${item.shortLabel}: ${item.label}${active ? ", currently active" : ""}`}
+          aria-pressed={active}
+          aria-controls="connection-tablet"
+          data-cursor-label={active ? undefined : "Select"}
+          onClick={() => onActivate(index)}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          className={`portfolio-focus pointer-events-auto group relative flex h-full w-full items-center gap-2.5 rounded-md border px-3 text-left backdrop-blur-md transition-colors duration-300 ${
+            active
+              ? "bg-[linear-gradient(100deg,rgba(47,37,24,0.94),rgba(20,17,13,0.9))]"
+              : "bg-[rgba(16,15,12,0.76)] hover:bg-[rgba(31,26,19,0.86)]"
+          }`}
+          style={{
+            x,
+            y,
+            z,
+            scale,
+            opacity,
+            rotateY,
+            rotateZ,
+            filter,
+            borderColor,
+            boxShadow,
+            transformStyle: "preserve-3d",
+            willChange: "transform, opacity, filter",
+          }}
+        >
+          <span
+            className="flex size-9 shrink-0 items-center justify-center rounded-md border border-white/10 bg-black/25"
+            style={{ color: item.brandColor }}
+          >
+            <Icon aria-hidden="true" className="size-4.5" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-xs font-semibold text-[var(--portfolio-text-primary)]">
+              {item.shortLabel}
+            </span>
+            <span className="mt-0.5 block truncate text-[0.55rem] text-[var(--portfolio-text-muted)]">
+              {active ? "Active floor" : item.label}
+            </span>
+          </span>
+
+          <AnimatePresence>
+            {active ? (
+              <motion.span
+                aria-hidden="true"
+                className="flex size-4 shrink-0 items-center justify-center rounded-full bg-[var(--portfolio-accent)] text-[var(--portfolio-bg)]"
+                initial={{ opacity: 0, scale: reducedMotion ? 1 : 0.4 }}
+                animate={
+                  isPresent
+                    ? { opacity: 1, scale: 1 }
+                    : { opacity: 0, scale: reducedMotion ? 1 : 0.15 }
+                }
+                exit={{ opacity: 0, scale: reducedMotion ? 1 : 0.4 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+              >
+                <Check className="size-2.5" strokeWidth={3} />
+              </motion.span>
+            ) : null}
+          </AnimatePresence>
+
+          <span
+            aria-hidden="true"
+            className={`absolute -bottom-1.5 left-1/2 h-px -translate-x-1/2 bg-gradient-to-r from-transparent to-transparent transition-all duration-300 ${
+              active
+                ? "w-[118%] via-[rgba(253,230,138,0.72)] shadow-[0_0_10px_rgba(252,211,77,0.38)]"
+                : "w-[104%] via-[rgba(255,255,255,0.18)]"
+            }`}
+          />
+        </motion.button>
+      </div>
+    </motion.div>
+  );
+}
+
+type TabletDockProps = {
+  activeIndex: number;
+  reducedMotion: boolean;
+  onSelect: (index: number) => void;
+};
+
+function TabletDock({ activeIndex, reducedMotion, onSelect }: TabletDockProps) {
+  return (
+    <div
+      role="group"
+      aria-label="Connection destinations"
+      className="absolute bottom-2 left-1/2 z-30 flex -translate-x-1/2 items-center gap-1 rounded-xl border border-[rgba(253,230,138,0.2)] bg-[rgba(20,17,13,0.82)] p-1.5 shadow-[0_12px_34px_rgba(0,0,0,0.38),0_0_20px_rgba(252,211,77,0.1)] backdrop-blur-xl sm:bottom-3 sm:gap-1.5 sm:p-2"
+    >
+      {connectionItems.map((item, index) => {
+        const Icon = item.icon;
+        const active = activeIndex === index;
+
+        return (
+          <motion.button
+            key={item.id}
+            type="button"
+            aria-label={`Show ${item.shortLabel}`}
+            aria-pressed={active}
+            data-cursor-label="Select"
+            onClick={() => onSelect(index)}
+            whileHover={reducedMotion ? undefined : { y: -2 }}
+            whileTap={reducedMotion ? undefined : { scale: 0.94 }}
+            className={`portfolio-focus group relative flex size-11 items-center justify-center rounded-lg border transition-colors duration-200 ${
+              active
+                ? "border-[rgba(253,230,138,0.58)] bg-[rgba(252,211,77,0.14)] shadow-[0_0_18px_rgba(252,211,77,0.18)]"
+                : "border-transparent bg-black/20 hover:border-[rgba(253,230,138,0.3)] hover:bg-[rgba(252,211,77,0.08)]"
+            }`}
+            style={{ color: item.brandColor }}
+          >
+            <Icon aria-hidden="true" className="size-4.5 sm:size-5" />
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute -top-8 left-1/2 hidden w-max -translate-x-1/2 rounded-md border border-[var(--portfolio-border-subtle)] bg-[rgba(23,19,15,0.94)] px-2 py-1 text-[0.55rem] text-[var(--portfolio-text-secondary)] opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100 sm:block"
+            >
+              {item.shortLabel}
+            </span>
+            {active ? (
+              <span
+                aria-hidden="true"
+                className="absolute bottom-1 h-0.5 w-3 rounded-full bg-[var(--portfolio-accent)] shadow-[0_0_8px_var(--portfolio-glow)]"
+              />
+            ) : null}
+          </motion.button>
+        );
+      })}
+    </div>
   );
 }
 
@@ -736,7 +1223,7 @@ function TabletScreen({
         </span>
       </div>
 
-      <div className="mx-auto flex min-h-0 w-full max-w-2xl flex-1 flex-col items-center justify-center px-5 py-4 text-center sm:px-10 sm:py-6">
+      <div className="mx-auto flex min-h-0 w-full max-w-2xl flex-1 flex-col items-center justify-center px-5 pb-20 pt-4 text-center sm:px-10 sm:pb-24 sm:pt-6">
         <div
           className="flex size-11 shrink-0 items-center justify-center rounded-lg border border-[rgba(253,230,138,0.22)] bg-[rgba(30,25,19,0.72)] shadow-[0_10px_24px_rgba(0,0,0,0.3)] sm:size-14"
           style={{ color: item.brandColor }}
