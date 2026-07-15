@@ -33,6 +33,34 @@ body,
   color: var(--portfolio-text-soft);
 }
 
+@media (hover: hover) and (pointer: fine) {
+  html.portfolio-cursor-enabled,
+  html.portfolio-cursor-enabled body,
+  html.portfolio-cursor-enabled #root,
+  html.portfolio-cursor-enabled #root * {
+    cursor: none !important;
+  }
+
+  html.portfolio-cursor-enabled #root input,
+  html.portfolio-cursor-enabled #root select,
+  html.portfolio-cursor-enabled #root [data-native-cursor],
+  html.portfolio-cursor-enabled #root [data-native-cursor] * {
+    cursor: auto !important;
+  }
+
+  html.portfolio-cursor-enabled #root input:not([type]),
+  html.portfolio-cursor-enabled #root input[type="text"],
+  html.portfolio-cursor-enabled #root input[type="email"],
+  html.portfolio-cursor-enabled #root input[type="password"],
+  html.portfolio-cursor-enabled #root input[type="search"],
+  html.portfolio-cursor-enabled #root input[type="tel"],
+  html.portfolio-cursor-enabled #root input[type="url"],
+  html.portfolio-cursor-enabled #root textarea,
+  html.portfolio-cursor-enabled #root [contenteditable="true"] {
+    cursor: text !important;
+  }
+}
+
 @layer components {
   .portfolio-scene {
     color: var(--portfolio-text-soft);

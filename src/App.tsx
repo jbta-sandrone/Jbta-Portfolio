@@ -14,6 +14,7 @@ import {
   type Variants,
 } from "motion/react";
 import CinematicBackground from "./components/CinematicBackground";
+import PortfolioCursor from "./components/PortfolioCursor";
 import { SceneNavigationContext } from "./components/SceneNavigationContext";
 import SceneOne from "./scenes/SceneOne";
 import SceneTwo from "./scenes/SceneTwo";
@@ -317,6 +318,7 @@ function App() {
         }}
       >
         <CinematicBackground activeScene={activeScene} />
+        <PortfolioCursor />
 
         <main id="portfolio-world" className="relative z-10 h-full overflow-hidden">
           <AnimatePresence mode="wait" custom={direction}>
@@ -345,6 +347,7 @@ function App() {
           <button
             type="button"
             aria-label="Previous scene"
+            data-cursor-label="Previous"
             onClick={() => moveBy(-1)}
             disabled={activeScene === 0 || isTransitioning}
             className="portfolio-navigation-button portfolio-focus flex size-11 items-center justify-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-25"
@@ -364,6 +367,7 @@ function App() {
           <button
             type="button"
             aria-label="Next scene"
+            data-cursor-label="Next"
             onClick={() => moveBy(1)}
             disabled={activeScene === SCENES.length - 1 || isTransitioning}
             className="portfolio-navigation-button portfolio-focus flex size-11 items-center justify-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-25"

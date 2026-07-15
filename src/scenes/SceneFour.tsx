@@ -8,7 +8,7 @@ import {
   type Variants,
 } from "motion/react";
 import type { IconType } from "react-icons";
-import { FaBrain, FaCss3Alt } from "react-icons/fa";
+import { FaBrain, FaCss3Alt, FaNetworkWired } from "react-icons/fa";
 import {
   SiExpress,
   SiFastapi,
@@ -30,15 +30,22 @@ import {
   SiVercel,
 } from "react-icons/si";
 
+type TechnologyOrbitSettings = {
+  radius: number;
+  angleOffset: number;
+  duration: number;
+};
+
 type Technology = {
   id: string;
-  label: string;
-  Icon: IconType;
+  name: string;
+  icon: IconType;
   brandColor: string;
   brandColorSecondary?: string;
   lightTile?: boolean;
-  detail: string;
-  usedIn: readonly string[];
+  description: string;
+  projects: readonly string[];
+  orbit: TechnologyOrbitSettings;
 };
 
 type TechGroup = {
@@ -56,59 +63,66 @@ const techGroups: readonly TechGroup[] = [
     technologies: [
       {
         id: "html",
-        label: "HTML5",
-        Icon: SiHtml5,
+        name: "HTML5",
+        icon: SiHtml5,
         brandColor: "#e34f26",
-        detail: "Semantic foundations that keep interfaces structured and accessible.",
-        usedIn: ["CLIQ", "this portfolio"],
+        orbit: { radius: 24, angleOffset: -11, duration: 25 },
+        description: "Semantic foundations that keep interfaces structured and accessible.",
+        projects: ["CLIQ"],
       },
       {
         id: "css",
-        label: "CSS3",
-        Icon: FaCss3Alt,
+        name: "CSS3",
+        icon: FaCss3Alt,
         brandColor: "#1572b6",
-        detail: "Responsive presentation, layout, and visual polish across screen sizes.",
-        usedIn: ["CLIQ", "this portfolio"],
+        orbit: { radius: 32, angleOffset: 5, duration: 28 },
+        description: "Responsive presentation, layout, and visual polish across screen sizes.",
+        projects: ["CLIQ", "this portfolio"],
       },
       {
         id: "javascript",
-        label: "JavaScript",
-        Icon: SiJavascript,
+        name: "JavaScript",
+        icon: SiJavascript,
         brandColor: "#f7df1e",
-        detail: "Interactive browser behavior and application logic for the modern web.",
-        usedIn: ["CLIQ", "this portfolio"],
+        orbit: { radius: 46, angleOffset: -3, duration: 19 },
+        description: "Interactive browser behavior and application logic for the modern web.",
+        projects: ["CLIQ", "this portfolio"],
       },
       {
         id: "react",
-        label: "React",
-        Icon: SiReact,
+        name: "React",
+        icon: SiReact,
         brandColor: "#61dafb",
-        detail: "Component-driven interfaces that stay responsive, reusable, and clear.",
-        usedIn: ["I-Nelory", "Nelume", "this portfolio"],
+        orbit: { radius: 28, angleOffset: 10, duration: 22 },
+        description: "Component-driven interfaces that stay responsive, reusable, and clear.",
+        projects: ["I-Nelory", "Nelume", "this portfolio"],
       },
       {
         id: "typescript",
-        label: "TypeScript",
-        Icon: SiTypescript,
+        name: "TypeScript",
+        icon: SiTypescript,
         brandColor: "#3178c6",
-        detail: "Typed application foundations that make complex features safer to evolve.",
-        usedIn: ["I-Nelory", "Nelume", "this portfolio"],
+        orbit: { radius: 39, angleOffset: -7, duration: 25 },
+        description: "Typed application foundations that make complex features safer to evolve.",
+        projects: ["I-Nelory", "Nelume", "this portfolio"],
       },
       {
         id: "tailwind",
-        label: "Tailwind CSS",
-        Icon: SiTailwindcss,
+        name: "Tailwind CSS",
+        icon: SiTailwindcss,
         brandColor: "#06b6d4",
-        detail: "A scalable styling system for precise, responsive visual interfaces.",
-        usedIn: ["Nelume", "this portfolio"],
+        orbit: { radius: 35, angleOffset: 7, duration: 28 },
+        description: "A scalable styling system for precise, responsive visual interfaces.",
+        projects: ["Nelume", "this portfolio"],
       },
       {
         id: "motion",
-        label: "Motion",
-        Icon: SiFramer,
+        name: "Motion",
+        icon: SiFramer,
         brandColor: "#0055ff",
-        detail: "Purposeful transitions that guide attention without distracting from content.",
-        usedIn: ["this portfolio"],
+        orbit: { radius: 43, angleOffset: 14, duration: 19 },
+        description: "Purposeful transitions that guide attention without distracting from content.",
+        projects: ["this portfolio"],
       },
     ],
   },
@@ -119,44 +133,49 @@ const techGroups: readonly TechGroup[] = [
     technologies: [
       {
         id: "node",
-        label: "Node.js",
-        Icon: SiNodedotjs,
+        name: "Node.js",
+        icon: SiNodedotjs,
         brandColor: "#5fa04e",
-        detail: "JavaScript services for application logic, integrations, and real-time data.",
-        usedIn: ["I-Nelory", "CLIQ"],
+        orbit: { radius: 25, angleOffset: -10, duration: 23 },
+        description: "JavaScript services for application logic, integrations, and real-time data.",
+        projects: ["I-Nelory", "CLIQ"],
       },
       {
         id: "express",
-        label: "Express",
-        Icon: SiExpress,
+        name: "Express",
+        icon: SiExpress,
         brandColor: "#ffffff",
-        detail: "Focused API layers that connect interfaces to secure application services.",
-        usedIn: ["I-Nelory", "CLIQ"],
+        orbit: { radius: 34, angleOffset: 6, duration: 26 },
+        description: "Focused API layers that connect interfaces to secure application services.",
+        projects: ["I-Nelory", "CLIQ"],
       },
       {
         id: "python",
-        label: "Python",
-        Icon: SiPython,
+        name: "Python",
+        icon: SiPython,
         brandColor: "#3776ab",
         brandColorSecondary: "#ffd43b",
-        detail: "Readable service logic for document extraction and intelligent analysis.",
-        usedIn: ["Nelume"],
+        orbit: { radius: 46, angleOffset: -4, duration: 29 },
+        description: "Readable service logic for document extraction and intelligent analysis.",
+        projects: ["Nelume"],
       },
       {
         id: "fastapi",
-        label: "FastAPI",
-        Icon: SiFastapi,
+        name: "FastAPI",
+        icon: SiFastapi,
         brandColor: "#009688",
-        detail: "Typed Python APIs designed for fast analysis and dependable responses.",
-        usedIn: ["Nelume"],
+        orbit: { radius: 29, angleOffset: 12, duration: 20 },
+        description: "Typed Python APIs designed for fast analysis and dependable responses.",
+        projects: ["Nelume"],
       },
       {
         id: "rest",
-        label: "REST APIs",
-        Icon: SiOpenapiinitiative,
+        name: "REST APIs",
+        icon: SiOpenapiinitiative,
         brandColor: "#6ba539",
-        detail: "Clear service contracts that keep frontend, backend, and AI systems connected.",
-        usedIn: ["I-Nelory", "CLIQ", "Nelume"],
+        orbit: { radius: 40, angleOffset: 1, duration: 23 },
+        description: "Clear service contracts that keep frontend, backend, and AI systems connected.",
+        projects: ["I-Nelory", "CLIQ", "Nelume"],
       },
     ],
   },
@@ -167,53 +186,68 @@ const techGroups: readonly TechGroup[] = [
     technologies: [
       {
         id: "postgresql",
-        label: "PostgreSQL",
-        Icon: SiPostgresql,
+        name: "PostgreSQL",
+        icon: SiPostgresql,
         brandColor: "#4169e1",
-        detail: "Relational data storage for structured, dependable application records.",
-        usedIn: ["I-Nelory"],
+        orbit: { radius: 25, angleOffset: -8, duration: 21 },
+        description: "Relational data storage for structured, dependable application records.",
+        projects: ["I-Nelory"],
       },
       {
         id: "prisma",
-        label: "Prisma",
-        Icon: SiPrisma,
+        name: "Prisma",
+        icon: SiPrisma,
         brandColor: "#2d3748",
         lightTile: true,
-        detail: "A type-safe data layer for expressive queries and maintainable schemas.",
-        usedIn: ["I-Nelory"],
+        orbit: { radius: 35, angleOffset: 7, duration: 24 },
+        description: "A type-safe data layer for expressive queries and maintainable schemas.",
+        projects: ["I-Nelory"],
       },
       {
         id: "firebase",
-        label: "Firebase",
-        Icon: SiFirebase,
+        name: "Firebase",
+        icon: SiFirebase,
         brandColor: "#ffca28",
         brandColorSecondary: "#f57c00",
-        detail: "Cloud-backed data and authentication for responsive application workflows.",
-        usedIn: ["CLIQ"],
+        orbit: { radius: 46, angleOffset: 15, duration: 27 },
+        description: "Cloud-backed data and authentication for responsive application workflows.",
+        projects: ["CLIQ"],
       },
     ],
   },
   {
     id: "ai",
-    label: "AI",
+    label: "AI Systems",
     eyebrow: "Intelligent systems",
     technologies: [
       {
         id: "gemini",
-        label: "Google Gemini",
-        Icon: SiGooglegemini,
+        name: "Google Gemini",
+        icon: SiGooglegemini,
         brandColor: "#4285f4",
         brandColorSecondary: "#a142f4",
-        detail: "Generative intelligence for search, recommendations, and resume evaluation.",
-        usedIn: ["I-Nelory", "CLIQ", "Nelume"],
+        orbit: { radius: 34, angleOffset: -10, duration: 20 },
+        description: "The multimodal language model powering AI features across my applications.",
+        projects: ["I-Nelory", "CLIQ", "Nelume"],
+      },
+      {
+        id: "llm-integration",
+        name: "LLM Integration",
+        icon: FaNetworkWired,
+        brandColor: "#fde68a",
+        orbit: { radius: 40, angleOffset: 2, duration: 26 },
+        description:
+          "Integrating large language models into real-world applications through APIs, structured prompts, and intelligent workflows.",
+        projects: ["I-Nelory", "CLIQ", "Nelume"],
       },
       {
         id: "prompt-engineering",
-        label: "Prompt Engineering",
-        Icon: FaBrain,
+        name: "Prompt Engineering",
+        icon: FaBrain,
         brandColor: "#fcd34d",
-        detail: "Structured instructions that turn model capability into useful product behavior.",
-        usedIn: ["I-Nelory", "CLIQ", "Nelume"],
+        orbit: { radius: 46, angleOffset: 13, duration: 23 },
+        description: "Designing prompts that produce reliable, context-aware, and useful AI responses.",
+        projects: ["I-Nelory", "CLIQ", "Nelume"],
       },
     ],
   },
@@ -224,27 +258,30 @@ const techGroups: readonly TechGroup[] = [
     technologies: [
       {
         id: "github",
-        label: "GitHub",
-        Icon: SiGithub,
+        name: "GitHub",
+        icon: SiGithub,
         brandColor: "#f0f6fc",
-        detail: "Versioned collaboration and a reliable path from source to deployment.",
-        usedIn: ["all projects"],
+        orbit: { radius: 25, angleOffset: -8, duration: 21 },
+        description: "Versioned collaboration and a reliable path from source to deployment.",
+        projects: ["all projects"],
       },
       {
         id: "vercel",
-        label: "Vercel",
-        Icon: SiVercel,
+        name: "Vercel",
+        icon: SiVercel,
         brandColor: "#ffffff",
-        detail: "Fast frontend delivery with preview deployments and production-ready hosting.",
-        usedIn: ["Nelume", "this portfolio"],
+        orbit: { radius: 35, angleOffset: 7, duration: 24 },
+        description: "Fast frontend delivery with preview deployments and production-ready hosting.",
+        projects: ["Nelume", "this portfolio"],
       },
       {
         id: "render",
-        label: "Render",
-        Icon: SiRender,
+        name: "Render",
+        icon: SiRender,
         brandColor: "#46e3b7",
-        detail: "Managed backend hosting for APIs, services, and dependable releases.",
-        usedIn: ["Nelume"],
+        orbit: { radius: 46, angleOffset: 15, duration: 27 },
+        description: "Managed backend hosting for APIs, services, and dependable releases.",
+        projects: ["Nelume"],
       },
     ],
   },
@@ -278,7 +315,7 @@ export default function SceneFour() {
   });
 
   const group = techGroups[activeGroup];
-  const inspectedId = pinnedTechnology ?? hoveredTechnology ?? group.technologies[0].id;
+  const inspectedId = hoveredTechnology ?? pinnedTechnology ?? group.technologies[0].id;
   const inspectedTechnology =
     group.technologies.find((technology) => technology.id === inspectedId) ??
     group.technologies[0];
@@ -325,9 +362,9 @@ export default function SceneFour() {
               <div className="mt-1.5 flex flex-wrap items-end justify-between gap-x-8 gap-y-2">
                 <h1
                   id="craft-title"
-                  className="portfolio-heading text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl"
+                  className="portfolio-heading text-3xl font-semibold tracking-tight sm:text-2xl lg:text-4xl"
                 >
-                  Craft
+                  How I build experiences, from interface to infrastructure.
                 </h1>
                 <p className="portfolio-copy max-w-md text-sm sm:text-base">
                   The tools behind every experience I build.
@@ -477,7 +514,7 @@ function DesktopConstellation({
       className="hidden h-full min-h-0 gap-5 md:grid md:grid-cols-1 md:grid-rows-[minmax(20rem,1fr)_auto] lg:grid-cols-[minmax(0,1fr)_17rem] lg:grid-rows-1"
     >
       <div className="relative min-h-[20rem] overflow-hidden rounded-[2rem]">
-        <div className="absolute left-1/2 top-1/2 aspect-square size-[min(92%,29rem)] -translate-x-1/2 -translate-y-1/2">
+        <div className="absolute left-1/2 top-1/2 aspect-square size-[min(96%,34rem)] -translate-x-1/2 -translate-y-1/2 lg:size-[min(96%,34.5rem)] xl:size-[min(98%,38rem)]">
           <OrbitalField reducedMotion={reducedMotion} />
 
           <div className="absolute left-1/2 top-1/2 z-10 size-32 -translate-x-1/2 -translate-y-1/2 lg:size-36">
@@ -510,7 +547,13 @@ function DesktopConstellation({
             <motion.div
               key={technology.id}
               variants={technologyVariants}
-              className="absolute inset-0"
+              style={{
+                zIndex:
+                  inspectedId === technology.id || pausedId === technology.id
+                    ? 30
+                    : index + 1,
+              }}
+              className="pointer-events-none absolute inset-0"
             >
               <OrbitingTechnology
                 technology={technology}
@@ -538,7 +581,7 @@ function DesktopConstellation({
 }
 
 function OrbitalField({ reducedMotion }: { reducedMotion: boolean }) {
-  const rings = [8, 18, 28] as const;
+  const rings = [4, 15, 26] as const;
 
   return (
     <div aria-hidden="true" className="pointer-events-none absolute inset-0">
@@ -589,17 +632,17 @@ function OrbitalField({ reducedMotion }: { reducedMotion: boolean }) {
 
 type TechnologyInteractionProps = {
   technology: Technology;
-  index: number;
   selected: boolean;
   pinned: boolean;
+  paused: boolean;
   reducedMotion: boolean;
   onInspect: (technologyId: string | null) => void;
   onPin: (technologyId: string) => void;
 };
 
 type OrbitingTechnologyProps = TechnologyInteractionProps & {
+  index: number;
   total: number;
-  paused: boolean;
 };
 
 function OrbitingTechnology({
@@ -613,7 +656,11 @@ function OrbitingTechnology({
   onInspect,
   onPin,
 }: OrbitingTechnologyProps) {
-  const orbit = getOrbitConfig(total, index);
+  const orbit = {
+    angle: -90 + (360 / total) * index + technology.orbit.angleOffset,
+    radius: technology.orbit.radius,
+    duration: technology.orbit.duration,
+  };
   const emphasized = selected || paused;
   const orbitStyle = {
     "--orbit-start": `${orbit.angle}deg`,
@@ -623,7 +670,10 @@ function OrbitingTechnology({
   } as CSSProperties;
 
   return (
-    <div className="portfolio-tech-orbit absolute inset-0" style={orbitStyle}>
+    <div
+      className="portfolio-tech-orbit pointer-events-none absolute inset-0"
+      style={orbitStyle}
+    >
       <span
         aria-hidden="true"
         className="absolute left-1/2 top-1/2 h-px origin-left bg-[var(--portfolio-accent-strong)] transition-[opacity,filter] duration-300"
@@ -640,79 +690,18 @@ function OrbitingTechnology({
         <div className="portfolio-tech-counter-orbit" style={orbitStyle}>
           <TechnologyButton
             technology={technology}
-            selected={emphasized}
+            selected={selected}
             pinned={pinned}
+            paused={paused}
             reducedMotion={reducedMotion}
+            detailId="craft-technology-detail"
+            variant="orbit"
             onInspect={onInspect}
             onPin={onPin}
           />
         </div>
       </div>
     </div>
-  );
-}
-
-type OrbitConfig = {
-  angle: number;
-  radius: number;
-  duration: number;
-};
-
-function getOrbitConfig(total: number, index: number): OrbitConfig {
-  const radiusPatterns: Record<number, readonly number[]> = {
-    2: [35, 42],
-    3: [34, 42, 38],
-    5: [32, 39, 43, 35, 41],
-    7: [31, 38, 43, 34, 41, 36, 42],
-  };
-  const radii = radiusPatterns[total] ?? radiusPatterns[3];
-
-  return {
-    angle: -90 + (360 / total) * index + (index % 2 === 0 ? -2.5 : 3.5),
-    radius: radii[index % radii.length],
-    duration: 18 + ((index * 3 + total) % 12),
-  };
-}
-
-function TechnologyButton({
-  technology,
-  selected,
-  pinned,
-  reducedMotion,
-  onInspect,
-  onPin,
-}: Omit<TechnologyInteractionProps, "index">) {
-  return (
-    <motion.button
-      type="button"
-      aria-label={`${technology.label}. ${technology.detail} Used in ${formatUsedIn(technology.usedIn)}.`}
-      aria-pressed={pinned}
-      aria-describedby="craft-technology-detail"
-      onMouseEnter={() => onInspect(technology.id)}
-      onMouseLeave={() => onInspect(null)}
-      onFocus={() => onInspect(technology.id)}
-      onBlur={() => onInspect(null)}
-      onClick={() => onPin(technology.id)}
-      animate={{
-        scale: selected && !reducedMotion ? 1.045 : 1,
-        filter: selected
-          ? "drop-shadow(0 0 14px var(--portfolio-glow)) brightness(1.08)"
-          : "drop-shadow(0 0 0 transparent) brightness(1)",
-      }}
-      transition={{ duration: reducedMotion ? 0.1 : 0.3, ease: "easeInOut" }}
-      className="portfolio-focus group flex min-w-24 flex-col items-center gap-1.5 rounded-2xl text-center"
-    >
-      <span
-        className={`portfolio-surface flex size-14 items-center justify-center rounded-2xl border transition-colors group-hover:border-[var(--portfolio-border)] lg:size-16 ${
-          technology.lightTile ? "bg-stone-100" : "bg-black/55"
-        }`}
-      >
-        <BrandIcon technology={technology} className="size-7 lg:size-8" />
-      </span>
-      <span className="portfolio-heading max-w-28 rounded-full bg-black/50 px-2.5 py-1 text-[0.62rem] font-medium backdrop-blur-md lg:text-[0.68rem]">
-        {technology.label}
-      </span>
-    </motion.button>
   );
 }
 
@@ -723,7 +712,7 @@ function BrandIcon({
   technology: Technology;
   className: string;
 }) {
-  const Icon = technology.Icon;
+  const Icon = technology.icon;
 
   if (technology.brandColorSecondary) {
     return (
@@ -746,6 +735,121 @@ function BrandIcon({
       className={className}
       style={{ color: technology.brandColor }}
     />
+  );
+}
+
+type TechnologyButtonProps = TechnologyInteractionProps & {
+  detailId: string;
+  variant: "orbit" | "mobile";
+  driftDirection?: number;
+  driftDuration?: number;
+};
+
+function TechnologyButton({
+  technology,
+  selected,
+  pinned,
+  paused,
+  reducedMotion,
+  detailId,
+  variant,
+  driftDirection = 0,
+  driftDuration = 18,
+  onInspect,
+  onPin,
+}: TechnologyButtonProps) {
+  const emphasized = selected || paused || pinned;
+  const glow = variant === "orbit" ? 14 : 10;
+  const activeFilter = `drop-shadow(0 0 ${glow}px var(--portfolio-glow)) brightness(1.08)`;
+  const restingFilter = "drop-shadow(0 0 0 transparent) brightness(1)";
+  const animate =
+    variant === "orbit"
+      ? {
+          scale: emphasized && !reducedMotion ? 1.045 : 1,
+          filter: emphasized ? activeFilter : restingFilter,
+        }
+      : reducedMotion
+        ? {
+            scale: 1,
+            filter: emphasized ? activeFilter : restingFilter,
+          }
+        : {
+            scale: emphasized ? 1.025 : 1,
+            filter: emphasized ? activeFilter : restingFilter,
+            x: paused ? 0 : [0, driftDirection, 0],
+          };
+  const transition =
+    variant === "orbit"
+      ? { duration: reducedMotion ? 0.1 : 0.3, ease: "easeInOut" as const }
+      : {
+          scale: { duration: 0.25, ease: "easeInOut" as const },
+          filter: { duration: 0.25, ease: "easeInOut" as const },
+          x: {
+            duration: driftDuration,
+            repeat: reducedMotion || paused ? 0 : Infinity,
+            ease: "easeInOut" as const,
+          },
+        };
+
+  return (
+    <motion.button
+      type="button"
+      aria-label={`${technology.name}. ${technology.description} Used in ${formatUsedIn(technology.projects)}.`}
+      aria-pressed={pinned}
+      aria-describedby={detailId}
+      onPointerEnter={(event) => {
+        if (event.pointerType !== "touch") onInspect(technology.id);
+      }}
+      onPointerLeave={(event) => {
+        if (
+          event.pointerType !== "touch" &&
+          document.activeElement !== event.currentTarget
+        ) {
+          onInspect(null);
+        }
+      }}
+      onFocus={() => onInspect(technology.id)}
+      onBlur={(event) => {
+        onInspect(event.currentTarget.matches(":hover") ? technology.id : null);
+      }}
+      onClick={() => onPin(technology.id)}
+      animate={animate}
+      transition={transition}
+      style={{ zIndex: emphasized ? 30 : 1 }}
+      className={
+        variant === "orbit"
+          ? "portfolio-focus pointer-events-auto relative group flex min-w-24 flex-col items-center gap-1.5 rounded-2xl text-center"
+          : "portfolio-surface portfolio-focus pointer-events-auto relative flex min-h-10 w-full items-center gap-2 rounded-xl border bg-black/55 px-2 py-1.5 text-left"
+      }
+    >
+      {variant === "orbit" ? (
+        <>
+          <span
+            className={`portfolio-surface flex size-14 items-center justify-center rounded-2xl border transition-colors group-hover:border-[var(--portfolio-border)] lg:size-16 ${
+              technology.lightTile ? "bg-stone-100" : "bg-black/55"
+            }`}
+          >
+            <BrandIcon technology={technology} className="size-7 lg:size-8" />
+          </span>
+          <span className="portfolio-heading max-w-28 rounded-full bg-black/50 px-2.5 py-1 text-[0.62rem] font-medium backdrop-blur-md lg:text-[0.68rem]">
+            {technology.name}
+          </span>
+        </>
+      ) : (
+        <>
+          <span
+            className={`flex size-7 shrink-0 items-center justify-center rounded-lg ${
+              technology.lightTile ? "bg-stone-100" : "bg-black/35"
+            }`}
+          >
+            <BrandIcon technology={technology} className="size-4" />
+          </span>
+          <span className="portfolio-heading text-[0.58rem] font-medium leading-tight">
+            {technology.name}
+          </span>
+        </>
+      )}
+    </motion.button>
   );
 }
 
@@ -791,7 +895,6 @@ function MobileConstellation({
           const selected = inspectedId === technology.id;
           const pinned = pinnedId === technology.id;
           const paused = pausedId === technology.id;
-          const emphasized = selected || paused;
 
           return (
             <motion.div
@@ -803,54 +906,19 @@ function MobileConstellation({
                 aria-hidden="true"
                 className={`absolute top-1/2 h-px w-5 bg-[rgba(253,230,138,0.28)] ${isLeft ? "right-0" : "left-0"}`}
               />
-              <motion.button
-                type="button"
-                aria-label={`${technology.label}. ${technology.detail} Used in ${formatUsedIn(technology.usedIn)}.`}
-                aria-pressed={pinned}
-                aria-describedby="craft-technology-detail-mobile"
-                onMouseEnter={() => onInspect(technology.id)}
-                onMouseLeave={() => onInspect(null)}
-                onFocus={() => onInspect(technology.id)}
-                onBlur={() => onInspect(null)}
-                onClick={() => onPin(technology.id)}
-                animate={
-                  reducedMotion
-                    ? {
-                        scale: 1,
-                        filter: emphasized
-                          ? "drop-shadow(0 0 10px var(--portfolio-glow)) brightness(1.08)"
-                          : "drop-shadow(0 0 0 transparent) brightness(1)",
-                      }
-                    : {
-                        scale: emphasized ? 1.025 : 1,
-                        filter: emphasized
-                          ? "drop-shadow(0 0 10px var(--portfolio-glow)) brightness(1.08)"
-                          : "drop-shadow(0 0 0 transparent) brightness(1)",
-                        x: paused ? 0 : [0, isLeft ? -1.5 : 1.5, 0],
-                      }
-                }
-                transition={{
-                  scale: { duration: 0.25, ease: "easeInOut" },
-                  filter: { duration: 0.25, ease: "easeInOut" },
-                  x: {
-                    duration: 18 + index * 1.7,
-                    repeat: reducedMotion || paused ? 0 : Infinity,
-                    ease: "easeInOut",
-                  },
-                }}
-                className="portfolio-surface portfolio-focus flex min-h-10 w-full items-center gap-2 rounded-xl border bg-black/55 px-2 py-1.5 text-left"
-              >
-                <span
-                  className={`flex size-7 shrink-0 items-center justify-center rounded-lg ${
-                    technology.lightTile ? "bg-stone-100" : "bg-black/35"
-                  }`}
-                >
-                  <BrandIcon technology={technology} className="size-4" />
-                </span>
-                <span className="portfolio-heading text-[0.58rem] font-medium leading-tight">
-                  {technology.label}
-                </span>
-              </motion.button>
+              <TechnologyButton
+                technology={technology}
+                selected={selected}
+                pinned={pinned}
+                paused={paused}
+                reducedMotion={reducedMotion}
+                detailId="craft-technology-detail-mobile"
+                variant="mobile"
+                driftDirection={isLeft ? -1.5 : 1.5}
+                driftDuration={18 + index * 1.7}
+                onInspect={onInspect}
+                onPin={onPin}
+              />
             </motion.div>
           );
         })}
@@ -908,7 +976,7 @@ function TechnologyDetail({
             <div className="min-w-0">
               <div className="flex items-center gap-2">
                 <h3 className={`portfolio-heading truncate font-semibold ${mobile ? "text-xs" : "text-sm"}`}>
-                  {technology.label}
+                  {technology.name}
                 </h3>
                 {pinned && (
                   <span className="portfolio-eyebrow text-[0.48rem] font-semibold uppercase tracking-[0.16em]">
@@ -925,13 +993,13 @@ function TechnologyDetail({
           </div>
 
           <p className={`portfolio-copy ${mobile ? "mt-1.5 line-clamp-2 text-[0.62rem] leading-4" : "mt-3 text-xs leading-5"}`}>
-            {technology.detail}
+            {technology.description}
           </p>
           <p className={`mt-2 ${compact || mobile ? "text-[0.58rem]" : "text-[0.65rem]"}`}>
             <span className="portfolio-eyebrow font-semibold uppercase tracking-[0.14em]">
               Used in
             </span>{" "}
-            <span className="portfolio-muted">{formatUsedIn(technology.usedIn)}</span>
+            <span className="portfolio-muted">{formatUsedIn(technology.projects)}</span>
           </p>
         </motion.div>
       </AnimatePresence>

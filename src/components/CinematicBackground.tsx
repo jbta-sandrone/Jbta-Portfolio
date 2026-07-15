@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { useReducedMotion } from "motion/react";
-import eclipseBackground from "../assets/images/metropolisbg.webp";
+import eclipseBackground from "../assets/images/animebg.webp";
 
 type CinematicBackgroundProps = {
   activeScene: number;

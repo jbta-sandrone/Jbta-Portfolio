@@ -184,7 +184,7 @@ export default function SceneThree() {
                 Selected projects, built with purpose.
               </h1>
               <p className="portfolio-muted mx-auto mt-2 max-w-xl text-xs leading-5 sm:text-sm">
-                Each project represents a challenge, a story, and something I’m proud of.
+                Most projects that are outstanding and something I’m proud of.
               </p>
             </header>
 

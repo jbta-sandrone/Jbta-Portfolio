@@ -155,7 +155,7 @@ export default function SceneTwo() {
             className="portfolio-copy mt-5 max-w-xl space-y-4 text-sm leading-6 sm:text-base sm:leading-7"
           >
             <p>
-              Hi, my name is Jonel. I’m a web developer from the Philippines who enjoys
+              Hi, my name is Jonel Bryan Ablog. I’m a web developer from the Philippines who enjoys
               creating modern web applications with thoughtful user experiences. I love
               turning ideas into polished projects that feel intuitive, useful, and
               enjoyable to use.
