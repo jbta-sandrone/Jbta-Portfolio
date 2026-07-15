@@ -6,7 +6,6 @@ import {
   useState,
   type TouchEvent as ReactTouchEvent,
 } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
 import {
   AnimatePresence,
   motion,
@@ -14,7 +13,10 @@ import {
   type Variants,
 } from "motion/react";
 import CinematicBackground from "./components/CinematicBackground";
+import FloatingAIButton from "./components/FloatingAIButton";
+import PortfolioIntro from "./components/PortfolioIntro";
 import PortfolioCursor from "./components/PortfolioCursor";
+import SceneNavigationControl from "./components/SceneNavigationControl";
 import { SceneNavigationContext } from "./components/SceneNavigationContext";
 import SceneOne from "./scenes/SceneOne";
 import SceneTwo from "./scenes/SceneTwo";
@@ -25,10 +27,10 @@ import SceneSix from "./scenes/SceneSix";
 
 const SCENES = [
   { id: "arrival", label: "Arrival", Component: SceneOne },
-  { id: "behind-the-work", label: "Behind the Work", Component: SceneTwo },
-  { id: "featured-work", label: "Featured Work", Component: SceneThree },
+  { id: "behind-the-work", label: "Depth", Component: SceneTwo },
+  { id: "featured-work", label: "Work", Component: SceneThree },
   { id: "craft", label: "Craft", Component: SceneFour },
-  { id: "connect", label: "Let's Connect", Component: SceneFive },
+  { id: "connect", label: "Connections", Component: SceneFive },
   { id: "ending", label: "Ending", Component: SceneSix },
 ] as const;
 
@@ -63,6 +65,8 @@ function canScrollInDirection(element: HTMLElement | null, direction: 1 | -1) {
 
 function App() {
   const prefersReducedMotion = useReducedMotion();
+  const [introActive, setIntroActive] = useState(true);
+  const [sceneExperienceReady, setSceneExperienceReady] = useState(false);
   const [activeScene, setActiveScene] = useState(getSceneIndexFromHash);
   const [direction, setDirection] = useState<1 | -1>(1);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -153,6 +157,11 @@ function App() {
 
   useEffect(() => {
     const handleWheel = (event: WheelEvent) => {
+      if (introActive) {
+        event.preventDefault();
+        return;
+      }
+
       if (event.ctrlKey || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
 
       const wheelDirection: 1 | -1 = event.deltaY > 0 ? 1 : -1;
@@ -181,6 +190,7 @@ function App() {
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (introActive) return;
       if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
 
       const target = event.target as HTMLElement | null;
@@ -230,9 +240,14 @@ function App() {
         window.clearTimeout(wheelResetTimerRef.current);
       }
     };
-  }, [moveBy, prefersReducedMotion]);
+  }, [introActive, moveBy, prefersReducedMotion]);
 
   const handleTouchStart = (event: ReactTouchEvent<HTMLDivElement>) => {
+    if (introActive) {
+      touchStartRef.current = null;
+      return;
+    }
+
     if (event.touches.length !== 1) return;
 
     const touch = event.touches[0];
@@ -246,6 +261,11 @@ function App() {
   };
 
   const handleTouchEnd = (event: ReactTouchEvent<HTMLDivElement>) => {
+    if (introActive) {
+      touchStartRef.current = null;
+      return;
+    }
+
     const start = touchStartRef.current;
     const touch = event.changedTouches[0];
     touchStartRef.current = null;
@@ -307,6 +327,15 @@ function App() {
           },
   };
 
+  const revealSceneExperience = useCallback(() => {
+    setSceneExperienceReady(true);
+  }, []);
+
+  const completeIntro = useCallback(() => {
+    setSceneExperienceReady(true);
+    setIntroActive(false);
+  }, []);
+
   return (
     <SceneNavigationContext.Provider value={sceneNavigationValue}>
       <div
@@ -320,61 +349,54 @@ function App() {
         <CinematicBackground activeScene={activeScene} />
         <PortfolioCursor />
 
-        <main id="portfolio-world" className="relative z-10 h-full overflow-hidden">
-          <AnimatePresence mode="wait" custom={direction}>
-            <motion.div
-              key={SCENES[activeScene].id}
-              id={SCENES[activeScene].id}
-              data-active-scene
-              custom={direction}
-              variants={sceneVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              onAnimationComplete={() => finishTransition(activeScene)}
-              className="absolute inset-0 h-full overflow-hidden"
+        {sceneExperienceReady && (
+          <>
+            <div aria-hidden={introActive || undefined} inert={introActive}>
+              <FloatingAIButton />
+            </div>
+
+            <main
+              id="portfolio-world"
+              aria-hidden={introActive || undefined}
+              inert={introActive}
+              className="relative z-10 h-full overflow-hidden"
             >
-              <CurrentScene />
-            </motion.div>
-          </AnimatePresence>
-        </main>
+              <AnimatePresence mode="wait" custom={direction}>
+                <motion.div
+                  key={SCENES[activeScene].id}
+                  id={SCENES[activeScene].id}
+                  data-active-scene
+                  custom={direction}
+                  variants={sceneVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  onAnimationComplete={() => finishTransition(activeScene)}
+                  className="absolute inset-0 h-full overflow-hidden"
+                >
+                  <CurrentScene />
+                </motion.div>
+              </AnimatePresence>
+            </main>
 
-        <nav
-          aria-label="Scene navigation"
-          className="portfolio-navigation fixed right-4 z-30 flex items-center gap-1 rounded-full border p-1.5 sm:right-8"
-          style={{ bottom: "max(1rem, env(safe-area-inset-bottom))" }}
-        >
-          <button
-            type="button"
-            aria-label="Previous scene"
-            data-cursor-label="Previous"
-            onClick={() => moveBy(-1)}
-            disabled={activeScene === 0 || isTransitioning}
-            className="portfolio-navigation-button portfolio-focus flex size-11 items-center justify-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-25"
-          >
-            <ChevronUp aria-hidden="true" className="size-5" />
-          </button>
+            <div aria-hidden={introActive || undefined} inert={introActive}>
+              <SceneNavigationControl
+                scenes={SCENES}
+                activeScene={activeScene}
+                isTransitioning={isTransitioning}
+                onMove={moveBy}
+                onSelectScene={requestScene}
+              />
+            </div>
+          </>
+        )}
 
-          <div
-            aria-live="polite"
-            aria-atomic="true"
-            className="portfolio-copy min-w-16 px-2 text-center text-xs font-medium tracking-[0.18em] tabular-nums"
-          >
-            <span className="sr-only">{SCENES[activeScene].label}, scene </span>
-            {activeScene + 1} / {SCENES.length}
-          </div>
-
-          <button
-            type="button"
-            aria-label="Next scene"
-            data-cursor-label="Next"
-            onClick={() => moveBy(1)}
-            disabled={activeScene === SCENES.length - 1 || isTransitioning}
-            className="portfolio-navigation-button portfolio-focus flex size-11 items-center justify-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-25"
-          >
-            <ChevronDown aria-hidden="true" className="size-5" />
-          </button>
-        </nav>
+        {introActive && (
+          <PortfolioIntro
+            onRevealStart={revealSceneExperience}
+            onComplete={completeIntro}
+          />
+        )}
       </div>
     </SceneNavigationContext.Provider>
   );

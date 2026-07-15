@@ -54,12 +54,12 @@ const connectionItems: readonly ConnectionItem[] = [
     id: "email",
     label: "Start a Conversation",
     shortLabel: "Email",
-    value: "hello@example.com",
-    href: "mailto:hello@example.com",
+    value: "ablogjonelbryan@gmail.com",
+    href: "mailto:ablogjonelbryan@gmail.com",
     icon: Mail,
     type: "email",
     external: false,
-    copyValue: "hello@example.com",
+    copyValue: "ablogjonelbryan@gmail.com",
     description: "Share what you are building, exploring, or imagining, and let us begin there.",
     actionLabel: "Send Email",
     brandColor: "#fcd34d",
@@ -68,12 +68,12 @@ const connectionItems: readonly ConnectionItem[] = [
     id: "github",
     label: "Explore My Code",
     shortLabel: "GitHub",
-    value: "https://github.com/your-username",
-    href: "https://github.com/your-username",
+    value: "https://github.com/jbta-sandrone",
+    href: "https://github.com/jbta-sandrone",
     icon: FaGithub,
     type: "profile",
     external: true,
-    copyValue: "https://github.com/your-username",
+    copyValue: "https://github.com/jbta-sandrone",
     description: "Browse the systems, experiments, and product work behind this portfolio.",
     actionLabel: "Open GitHub",
     brandColor: "#f5f5f5",
@@ -82,12 +82,12 @@ const connectionItems: readonly ConnectionItem[] = [
     id: "linkedin",
     label: "Let's Connect",
     shortLabel: "LinkedIn",
-    value: "https://www.linkedin.com/in/your-profile",
-    href: "https://www.linkedin.com/in/your-profile",
+    value: "https://www.linkedin.com/in/jbtablog",
+    href: "https://www.linkedin.com/in/jbtablog",
     icon: FaLinkedinIn,
     type: "profile",
     external: true,
-    copyValue: "https://www.linkedin.com/in/your-profile",
+    copyValue: "https://www.linkedin.com/in/jbtablog",
     description: "Connect professionally and follow the next chapter of my work and growth.",
     actionLabel: "Open LinkedIn",
     brandColor: "#0a66c2",
@@ -96,12 +96,12 @@ const connectionItems: readonly ConnectionItem[] = [
     id: "facebook",
     label: "Find Me on Facebook",
     shortLabel: "Facebook",
-    value: "https://www.facebook.com/your-profile",
-    href: "https://www.facebook.com/your-profile",
+    value: "https://www.facebook.com/ablogjonel.21/",
+    href: "https://www.facebook.com/ablogjonel.21/",
     icon: FaFacebookF,
     type: "profile",
     external: true,
-    copyValue: "https://www.facebook.com/your-profile",
+    copyValue: "https://www.facebook.com/ablogjonel.21/",
     description: "A more personal place to stay connected beyond projects and professional updates.",
     actionLabel: "Open Facebook",
     brandColor: "#1877f2",
@@ -785,7 +785,7 @@ export default function SceneFive() {
           <motion.div
             ref={tabletRef}
             id="connection-tablet"
-            className="relative z-10 mx-auto h-[25rem] w-full max-w-[52rem] sm:h-auto sm:aspect-[16/10] md:h-[24rem] md:aspect-auto lg:h-auto lg:aspect-[16/10]"
+            className="relative z-10 mx-auto h-[25rem] w-full max-w-[52rem] sm:h-auto sm:aspect-[16/10] md:h-[26rem] md:aspect-auto lg:h-auto lg:aspect-[16/10]"
             initial={
               reducedMotion
                 ? { opacity: 0 }
@@ -1136,7 +1136,7 @@ function TabletDock({ activeIndex, reducedMotion, onSelect }: TabletDockProps) {
     <div
       role="group"
       aria-label="Connection destinations"
-      className="absolute bottom-2 left-1/2 z-30 flex -translate-x-1/2 items-center gap-1 rounded-xl border border-[rgba(253,230,138,0.2)] bg-[rgba(20,17,13,0.82)] p-1.5 shadow-[0_12px_34px_rgba(0,0,0,0.38),0_0_20px_rgba(252,211,77,0.1)] backdrop-blur-xl sm:bottom-3 sm:gap-1.5 sm:p-2"
+      className="absolute bottom-2 left-1/2 z-30 flex -translate-x-1/2 items-center gap-1 rounded-xl border border-[rgba(253,230,138,0.2)] bg-[rgba(20,17,13,0.82)] p-1.5 shadow-[0_12px_34px_rgba(0,0,0,0.38),0_0_20px_rgba(252,211,77,0.1)] backdrop-blur-xl sm:bottom-3 sm:gap-1.5 sm:p-2 md:bottom-2.5 md:gap-1 md:p-1.5 lg:bottom-3 lg:gap-1.5 lg:p-2"
     >
       {connectionItems.map((item, index) => {
         const Icon = item.icon;
@@ -1152,17 +1152,17 @@ function TabletDock({ activeIndex, reducedMotion, onSelect }: TabletDockProps) {
             onClick={() => onSelect(index)}
             whileHover={reducedMotion ? undefined : { y: -2 }}
             whileTap={reducedMotion ? undefined : { scale: 0.94 }}
-            className={`portfolio-focus group relative flex size-11 items-center justify-center rounded-lg border transition-colors duration-200 ${
+            className={`portfolio-focus group relative flex size-11 items-center justify-center rounded-lg border transition-colors duration-200 md:size-10 lg:size-11 ${
               active
                 ? "border-[rgba(253,230,138,0.58)] bg-[rgba(252,211,77,0.14)] shadow-[0_0_18px_rgba(252,211,77,0.18)]"
                 : "border-transparent bg-black/20 hover:border-[rgba(253,230,138,0.3)] hover:bg-[rgba(252,211,77,0.08)]"
             }`}
             style={{ color: item.brandColor }}
           >
-            <Icon aria-hidden="true" className="size-4.5 sm:size-5" />
+            <Icon aria-hidden="true" className="size-4.5 sm:size-5 md:size-4.5 lg:size-5" />
             <span
               aria-hidden="true"
-              className="pointer-events-none absolute -top-8 left-1/2 hidden w-max -translate-x-1/2 rounded-md border border-[var(--portfolio-border-subtle)] bg-[rgba(23,19,15,0.94)] px-2 py-1 text-[0.55rem] text-[var(--portfolio-text-secondary)] opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100 sm:block"
+              className="pointer-events-none absolute -top-8 left-1/2 hidden w-max -translate-x-1/2 rounded-md border border-[var(--portfolio-border-subtle)] bg-[rgba(23,19,15,0.94)] px-2 py-1 text-[0.55rem] text-[var(--portfolio-text-secondary)] opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100 sm:block md:-top-7 lg:-top-8"
             >
               {item.shortLabel}
             </span>
@@ -1223,33 +1223,33 @@ function TabletScreen({
         </span>
       </div>
 
-      <div className="mx-auto flex min-h-0 w-full max-w-2xl flex-1 flex-col items-center justify-center px-5 pb-20 pt-4 text-center sm:px-10 sm:pb-24 sm:pt-6">
+      <div className="mx-auto flex min-h-0 w-full max-w-2xl flex-1 flex-col items-center justify-center px-5 pb-20 pt-4 text-center sm:px-10 sm:pb-24 sm:pt-6 md:pb-2 md:pt-5 lg:pb-24 lg:pt-6">
         <div
-          className="flex size-11 shrink-0 items-center justify-center rounded-lg border border-[rgba(253,230,138,0.22)] bg-[rgba(30,25,19,0.72)] shadow-[0_10px_24px_rgba(0,0,0,0.3)] sm:size-14"
+          className="flex size-11 shrink-0 items-center justify-center rounded-lg border border-[rgba(253,230,138,0.22)] bg-[rgba(30,25,19,0.72)] shadow-[0_10px_24px_rgba(0,0,0,0.3)] sm:size-14 md:size-12 lg:size-14"
           style={{ color: item.brandColor }}
         >
-          <Icon aria-hidden="true" className="size-5 sm:size-6" />
+          <Icon aria-hidden="true" className="size-5 sm:size-6 md:size-5 lg:size-6" />
         </div>
 
-        <p className="portfolio-eyebrow mt-3 text-[0.52rem] uppercase tracking-[0.18em] sm:mt-4 sm:text-[0.6rem]">
+        <p className="portfolio-eyebrow mt-3 text-[0.52rem] uppercase tracking-[0.18em] sm:mt-4 sm:text-[0.6rem] md:mt-3 lg:mt-4">
           {item.type === "resume" ? "Document" : item.type === "email" ? "Direct message" : "External profile"}
         </p>
-        <h2 className="portfolio-heading mt-1.5 text-xl font-semibold sm:text-2xl">{item.label}</h2>
-        <p className="portfolio-copy mt-2 max-w-xl text-xs leading-5 sm:mt-3 sm:text-sm sm:leading-6">
+        <h2 className="portfolio-heading mt-1.5 text-xl font-semibold sm:text-2xl md:text-xl lg:text-2xl">{item.label}</h2>
+        <p className="portfolio-copy mt-2 max-w-xl text-xs leading-5 sm:mt-3 sm:text-sm sm:leading-6 md:mt-2 md:text-xs md:leading-5 lg:mt-3 lg:text-sm lg:leading-6">
           {item.description}
         </p>
-        <p className="portfolio-muted mt-3 max-w-full break-words text-[0.65rem] [overflow-wrap:anywhere] sm:mt-4 sm:text-xs">
+        <p className="portfolio-muted mt-3 max-w-full break-words text-[0.65rem] [overflow-wrap:anywhere] sm:mt-4 sm:text-xs md:mt-2.5 md:text-[0.68rem] lg:mt-4 lg:text-xs">
           {item.value}
         </p>
 
-        <div className="mt-4 flex w-full max-w-md flex-col justify-center gap-2 min-[420px]:flex-row sm:mt-5 sm:gap-3">
+        <div className="mt-4 flex w-full max-w-md flex-col justify-center gap-2 min-[420px]:flex-row sm:mt-5 sm:gap-3 md:mt-3 md:gap-2 lg:mt-5 lg:gap-3">
           {item.copyValue ? (
             <button
               type="button"
               onClick={() => onCopy(item)}
               aria-live="polite"
               data-cursor-label="Copy"
-              className="portfolio-button-secondary portfolio-focus inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg border px-4 py-2 text-xs font-semibold transition duration-200 hover:-translate-y-0.5 hover:border-[rgba(253,230,138,0.45)] focus-visible:-translate-y-0.5 sm:text-sm"
+              className="portfolio-button-secondary portfolio-focus inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg border px-4 py-2 text-xs font-semibold transition duration-200 hover:-translate-y-0.5 hover:border-[rgba(253,230,138,0.45)] focus-visible:-translate-y-0.5 sm:text-sm md:min-h-10 md:py-1.5 md:text-xs lg:min-h-11 lg:py-2 lg:text-sm"
             >
               {itemCopyResult === "copied" ? (
                 <Check aria-hidden="true" className="size-4" />
@@ -1265,13 +1265,18 @@ function TabletScreen({
             target={item.external ? "_blank" : undefined}
             rel={item.external ? "noreferrer" : undefined}
             data-cursor-label={item.type === "resume" ? "View" : item.type === "email" ? "Send" : "Open"}
-            className="portfolio-button-primary portfolio-focus inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg border px-4 py-2 text-xs font-semibold transition duration-200 hover:-translate-y-0.5 focus-visible:-translate-y-0.5 sm:text-sm"
+            className="portfolio-button-primary portfolio-focus inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg border px-4 py-2 text-xs font-semibold transition duration-200 hover:-translate-y-0.5 focus-visible:-translate-y-0.5 sm:text-sm md:min-h-10 md:py-1.5 md:text-xs lg:min-h-11 lg:py-2 lg:text-sm"
           >
             {item.actionLabel}
             <ArrowUpRight aria-hidden="true" className="size-4" />
           </a>
         </div>
       </div>
+
+      <div
+        aria-hidden="true"
+        className="hidden h-[4.75rem] shrink-0 md:block lg:hidden"
+      />
     </motion.div>
   );
 }

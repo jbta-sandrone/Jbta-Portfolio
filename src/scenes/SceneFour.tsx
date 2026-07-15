@@ -1,4 +1,4 @@
-import { useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import {
   AnimatePresence,
   motion,
@@ -66,7 +66,7 @@ const techGroups: readonly TechGroup[] = [
         name: "HTML5",
         icon: SiHtml5,
         brandColor: "#e34f26",
-        orbit: { radius: 24, angleOffset: -11, duration: 25 },
+        orbit: { radius: 30, angleOffset: -11, duration: 25 },
         description: "Semantic foundations that keep interfaces structured and accessible.",
         projects: ["CLIQ"],
       },
@@ -75,7 +75,7 @@ const techGroups: readonly TechGroup[] = [
         name: "CSS3",
         icon: FaCss3Alt,
         brandColor: "#1572b6",
-        orbit: { radius: 32, angleOffset: 5, duration: 28 },
+        orbit: { radius: 34, angleOffset: 5, duration: 28 },
         description: "Responsive presentation, layout, and visual polish across screen sizes.",
         projects: ["CLIQ", "this portfolio"],
       },
@@ -84,7 +84,7 @@ const techGroups: readonly TechGroup[] = [
         name: "JavaScript",
         icon: SiJavascript,
         brandColor: "#f7df1e",
-        orbit: { radius: 46, angleOffset: -3, duration: 19 },
+        orbit: { radius: 50, angleOffset: -3, duration: 19 },
         description: "Interactive browser behavior and application logic for the modern web.",
         projects: ["CLIQ", "this portfolio"],
       },
@@ -93,7 +93,7 @@ const techGroups: readonly TechGroup[] = [
         name: "React",
         icon: SiReact,
         brandColor: "#61dafb",
-        orbit: { radius: 28, angleOffset: 10, duration: 22 },
+        orbit: { radius: 29, angleOffset: 10, duration: 22 },
         description: "Component-driven interfaces that stay responsive, reusable, and clear.",
         projects: ["I-Nelory", "Nelume", "this portfolio"],
       },
@@ -102,7 +102,7 @@ const techGroups: readonly TechGroup[] = [
         name: "TypeScript",
         icon: SiTypescript,
         brandColor: "#3178c6",
-        orbit: { radius: 39, angleOffset: -7, duration: 25 },
+        orbit: { radius: 41, angleOffset: -7, duration: 25 },
         description: "Typed application foundations that make complex features safer to evolve.",
         projects: ["I-Nelory", "Nelume", "this portfolio"],
       },
@@ -111,7 +111,7 @@ const techGroups: readonly TechGroup[] = [
         name: "Tailwind CSS",
         icon: SiTailwindcss,
         brandColor: "#06b6d4",
-        orbit: { radius: 35, angleOffset: 7, duration: 28 },
+        orbit: { radius: 37, angleOffset: 7, duration: 28 },
         description: "A scalable styling system for precise, responsive visual interfaces.",
         projects: ["Nelume", "this portfolio"],
       },
@@ -120,7 +120,7 @@ const techGroups: readonly TechGroup[] = [
         name: "Motion",
         icon: SiFramer,
         brandColor: "#0055ff",
-        orbit: { radius: 43, angleOffset: 14, duration: 19 },
+        orbit: { radius: 46, angleOffset: 14, duration: 19 },
         description: "Purposeful transitions that guide attention without distracting from content.",
         projects: ["this portfolio"],
       },
@@ -136,7 +136,7 @@ const techGroups: readonly TechGroup[] = [
         name: "Node.js",
         icon: SiNodedotjs,
         brandColor: "#5fa04e",
-        orbit: { radius: 25, angleOffset: -10, duration: 23 },
+        orbit: { radius: 30, angleOffset: -10, duration: 23 },
         description: "JavaScript services for application logic, integrations, and real-time data.",
         projects: ["I-Nelory", "CLIQ"],
       },
@@ -189,7 +189,7 @@ const techGroups: readonly TechGroup[] = [
         name: "PostgreSQL",
         icon: SiPostgresql,
         brandColor: "#4169e1",
-        orbit: { radius: 25, angleOffset: -8, duration: 21 },
+        orbit: { radius: 30, angleOffset: -8, duration: 21 },
         description: "Relational data storage for structured, dependable application records.",
         projects: ["I-Nelory"],
       },
@@ -261,7 +261,7 @@ const techGroups: readonly TechGroup[] = [
         name: "GitHub",
         icon: SiGithub,
         brandColor: "#f0f6fc",
-        orbit: { radius: 25, angleOffset: -8, duration: 21 },
+        orbit: { radius: 30, angleOffset: -8, duration: 21 },
         description: "Versioned collaboration and a reliable path from source to deployment.",
         projects: ["all projects"],
       },
@@ -291,6 +291,7 @@ const constellationEase = [0.65, 0, 0.35, 1] as const;
 
 export default function SceneFour() {
   const scrollContainerRef = useRef<HTMLElement>(null);
+  const mobileLayoutRef = useRef<HTMLDivElement>(null);
   const activeGroupRef = useRef(0);
   const [activeGroup, setActiveGroup] = useState(0);
   const [direction, setDirection] = useState<1 | -1>(1);
@@ -328,6 +329,10 @@ export default function SceneFour() {
     setPinnedTechnology((current) => (current === technologyId ? null : technologyId));
   };
 
+  useEffect(() => {
+    mobileLayoutRef.current?.scrollTo({ top: 0, behavior: "auto" });
+  }, [activeGroup]);
+
   return (
     <section
       ref={scrollContainerRef}
@@ -349,7 +354,10 @@ export default function SceneFour() {
             className="portfolio-scene-glow pointer-events-none absolute inset-x-[12%] top-[12%] h-[68%] rounded-full opacity-70 blur-3xl"
           />
 
-          <div className="relative mx-auto flex h-full w-full max-w-7xl flex-col px-5 pb-20 pt-7 sm:px-8 sm:pt-8 lg:px-12 lg:pb-16 xl:px-16">
+          <div
+            ref={mobileLayoutRef}
+            className="relative mx-auto flex h-full w-full max-w-7xl flex-col overflow-y-auto overflow-x-hidden px-5 pb-20 pt-7 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:px-8 sm:pt-8 md:overflow-visible lg:px-12 lg:pb-16 xl:px-16"
+          >
             <motion.header
               initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 14, filter: "blur(5px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -372,7 +380,7 @@ export default function SceneFour() {
               </div>
             </motion.header>
 
-            <div className="relative min-h-0 flex-1 py-2 sm:py-3">
+            <div className="relative min-h-0 flex-none py-2 sm:py-3 md:flex-1">
               <AnimatePresence mode="wait" custom={direction}>
                 <motion.div
                   key={group.id}
@@ -381,7 +389,7 @@ export default function SceneFour() {
                   initial="initial"
                   animate="animate"
                   exit="exit"
-                  className="absolute inset-0"
+                  className="relative md:absolute md:inset-0"
                 >
                   <DesktopConstellation
                     group={group}
@@ -465,6 +473,11 @@ const coreVariants: Variants = {
   },
 };
 
+const reducedCoreVariants: Variants = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1, transition: { duration: 0.14 } },
+};
+
 const technologyVariants: Variants = {
   initial: { opacity: 0, scale: 0.86, y: 8 },
   animate: {
@@ -473,6 +486,11 @@ const technologyVariants: Variants = {
     y: 0,
     transition: { duration: 0.56, ease: constellationEase },
   },
+};
+
+const reducedTechnologyVariants: Variants = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1, transition: { duration: 0.14 } },
 };
 
 function staggerContainerVariants(reducedMotion: boolean): Variants {
@@ -512,13 +530,13 @@ function DesktopConstellation({
   return (
     <motion.div
       variants={staggerContainerVariants(reducedMotion)}
-      className="hidden h-full min-h-0 gap-5 md:grid md:grid-cols-1 md:grid-rows-[minmax(20rem,1fr)_auto] lg:grid-cols-[minmax(0,1fr)_17rem] lg:grid-rows-1"
+      className="hidden h-full min-h-0 gap-5 md:grid md:grid-cols-1 md:grid-rows-[minmax(0,1fr)_auto] lg:grid-cols-[minmax(0,1fr)_17rem] lg:grid-rows-1"
     >
-      <div className="relative min-h-[20rem] overflow-hidden rounded-[2rem]">
-        <div className="absolute left-1/2 top-1/2 aspect-square size-[min(96%,34rem)] -translate-x-1/2 -translate-y-1/2 lg:size-[min(96%,34.5rem)] xl:size-[min(98%,38rem)]">
+      <div className="craft-constellation-viewport relative min-h-0 overflow-hidden rounded-[2rem]">
+        <div className="craft-constellation-plane absolute left-1/2 top-1/2 aspect-square h-auto -translate-x-1/2 -translate-y-1/2">
           <OrbitalField reducedMotion={reducedMotion} />
 
-          <div className="absolute left-1/2 top-1/2 z-10 size-32 -translate-x-1/2 -translate-y-1/2 lg:size-36">
+          <div className="absolute left-1/2 top-1/2 z-10 size-24 -translate-x-1/2 -translate-y-1/2 lg:size-32 xl:size-36">
             <motion.div variants={coreVariants} className="h-full w-full">
               <motion.div
                 animate={
@@ -582,14 +600,14 @@ function DesktopConstellation({
 }
 
 function OrbitalField({ reducedMotion }: { reducedMotion: boolean }) {
-  const rings = [4, 15, 26] as const;
+  const rings = [1, 14, 21] as const;
 
   return (
     <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-      <div className="absolute left-1/2 top-1/2 h-px w-[82%] -translate-x-1/2 bg-gradient-to-r from-transparent via-[rgba(253,230,138,0.13)] to-transparent" />
-      <div className="absolute left-1/2 top-1/2 h-[82%] w-px -translate-y-1/2 bg-gradient-to-b from-transparent via-[rgba(253,230,138,0.1)] to-transparent" />
+      <div className="absolute left-1/2 top-1/2 h-px w-[96%] -translate-x-1/2 bg-gradient-to-r from-transparent via-[rgba(253,230,138,0.13)] to-transparent" />
+      <div className="craft-orbit-vertical-axis absolute left-1/2 top-1/2 h-[82%] w-px -translate-y-1/2 bg-gradient-to-b from-transparent via-[rgba(253,230,138,0.1)] to-transparent" />
       {rings.map((inset, index) => (
-        <div key={inset} className="absolute inset-0">
+        <div key={inset} className="craft-orbit-ring-plane absolute inset-0">
           <motion.div
             animate={
               reducedMotion
@@ -626,7 +644,7 @@ function OrbitalField({ reducedMotion }: { reducedMotion: boolean }) {
           </motion.div>
         </div>
       ))}
-      <div className="absolute inset-[8%] rounded-[50%] bg-[radial-gradient(circle,transparent_42%,rgba(245,158,11,0.025)_58%,transparent_72%)]" />
+      <div className="craft-orbit-wash absolute inset-[8%] rounded-[50%] bg-[radial-gradient(circle,transparent_42%,rgba(245,158,11,0.025)_58%,transparent_72%)]" />
     </div>
   );
 }
@@ -742,8 +760,6 @@ function BrandIcon({
 type TechnologyButtonProps = TechnologyInteractionProps & {
   detailId: string;
   variant: "orbit" | "mobile";
-  driftDirection?: number;
-  driftDuration?: number;
 };
 
 function TechnologyButton({
@@ -754,8 +770,6 @@ function TechnologyButton({
   reducedMotion,
   detailId,
   variant,
-  driftDirection = 0,
-  driftDuration = 18,
   onInspect,
   onPin,
 }: TechnologyButtonProps) {
@@ -777,7 +791,6 @@ function TechnologyButton({
         : {
             scale: emphasized ? 1.025 : 1,
             filter: emphasized ? activeFilter : restingFilter,
-            x: paused ? 0 : [0, driftDirection, 0],
           };
   const transition =
     variant === "orbit"
@@ -785,11 +798,6 @@ function TechnologyButton({
       : {
           scale: { duration: 0.25, ease: "easeInOut" as const },
           filter: { duration: 0.25, ease: "easeInOut" as const },
-          x: {
-            duration: driftDuration,
-            repeat: reducedMotion || paused ? 0 : Infinity,
-            ease: "easeInOut" as const,
-          },
         };
 
   return (
@@ -820,17 +828,21 @@ function TechnologyButton({
       className={
         variant === "orbit"
           ? "portfolio-focus pointer-events-auto relative group flex min-w-24 flex-col items-center gap-1.5 rounded-2xl text-center"
-          : "portfolio-surface portfolio-focus pointer-events-auto relative flex min-h-10 w-full items-center gap-2 rounded-xl border bg-black/55 px-2 py-1.5 text-left"
+          : `portfolio-surface portfolio-focus pointer-events-auto relative flex min-h-11 w-full items-center gap-2 rounded-xl border bg-black/60 px-2 py-1.5 text-left transition-colors duration-300 ${
+              emphasized
+                ? "border-[rgba(253,230,138,0.48)] bg-[rgba(35,28,19,0.82)]"
+                : "border-[var(--portfolio-border-subtle)]"
+            }`
       }
     >
       {variant === "orbit" ? (
         <>
           <span
-            className={`portfolio-surface flex size-14 items-center justify-center rounded-2xl border transition-colors group-hover:border-[var(--portfolio-border)] lg:size-16 ${
+            className={`portfolio-surface flex size-12 items-center justify-center rounded-2xl border transition-colors group-hover:border-[var(--portfolio-border)] lg:size-14 xl:size-16 ${
               technology.lightTile ? "bg-stone-100" : "bg-black/55"
             }`}
           >
-            <BrandIcon technology={technology} className="size-7 lg:size-8" />
+            <BrandIcon technology={technology} className="size-6 lg:size-7 xl:size-8" />
           </span>
           <span className="portfolio-heading max-w-28 rounded-full bg-black/50 px-2.5 py-1 text-[0.62rem] font-medium backdrop-blur-md lg:text-[0.68rem]">
             {technology.name}
@@ -845,7 +857,7 @@ function TechnologyButton({
           >
             <BrandIcon technology={technology} className="size-4" />
           </span>
-          <span className="portfolio-heading text-[0.58rem] font-medium leading-tight">
+          <span className="portfolio-heading text-[0.62rem] font-medium leading-tight">
             {technology.name}
           </span>
         </>
@@ -866,13 +878,19 @@ function MobileConstellation({
   const inspectedTechnology =
     group.technologies.find((technology) => technology.id === inspectedId) ??
     group.technologies[0];
+  const treeTravelDuration = 6.6 + group.technologies.length * 0.45;
+  const treeLoopPause = 1.35;
+  const treeLoopDuration = treeTravelDuration + treeLoopPause;
 
   return (
     <motion.div
       variants={staggerContainerVariants(reducedMotion)}
-      className="flex h-full flex-col md:hidden"
+      className="flex h-auto flex-col md:hidden"
     >
-      <motion.div variants={coreVariants} className="relative mx-auto mt-1 shrink-0 text-center">
+      <motion.div
+        variants={reducedMotion ? reducedCoreVariants : coreVariants}
+        className="relative mx-auto mt-6 flex size-24 shrink-0 items-center justify-center text-center"
+      >
         <motion.div
           animate={
             reducedMotion
@@ -880,33 +898,89 @@ function MobileConstellation({
               : { scale: [1, 1.015, 1], opacity: [0.95, 1, 0.95] }
           }
           transition={{ duration: 5.8, repeat: reducedMotion ? 0 : Infinity, ease: "easeInOut" }}
+          className="relative flex h-full w-full flex-col items-center justify-center rounded-full border border-[rgba(253,230,138,0.18)] bg-black/45 shadow-[inset_0_0_22px_var(--portfolio-accent-soft),0_0_28px_var(--portfolio-glow)] backdrop-blur-lg"
         >
-          <div className="absolute left-1/2 top-1/2 size-24 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[rgba(253,230,138,0.14)] shadow-[0_0_28px_var(--portfolio-glow)]" />
           <p className="portfolio-eyebrow text-[0.5rem] font-semibold uppercase tracking-[0.2em]">
             {group.eyebrow}
           </p>
           <h2 className="portfolio-heading mt-1 text-xl font-semibold">{group.label}</h2>
+          <span className="mt-2 size-1.5 rounded-full bg-[var(--portfolio-accent)] shadow-[0_0_12px_var(--portfolio-glow)]" />
+          <span
+            aria-hidden="true"
+            className="absolute -bottom-4 left-1/2 h-4 w-px -translate-x-1/2 bg-gradient-to-b from-[rgba(253,230,138,0.5)] to-[rgba(253,230,138,0.18)]"
+          />
         </motion.div>
       </motion.div>
 
-      <div className="relative mx-auto mt-4 flex w-full max-w-sm flex-1 flex-col justify-center gap-1.5">
-        <div aria-hidden="true" className="absolute bottom-1 left-1/2 top-1 w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-[rgba(253,230,138,0.25)] to-transparent" />
+      <div className="relative mx-auto mt-4 w-full max-w-sm shrink-0 py-1">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute bottom-7 left-1/2 top-0 z-0 w-px -translate-x-1/2 bg-[rgba(253,230,138,0.24)] shadow-[0_0_7px_var(--portfolio-glow)]"
+        />
+        <motion.div
+          aria-hidden="true"
+          className="pointer-events-none absolute bottom-7 left-1/2 top-0 z-[1] w-px origin-top -translate-x-1/2 bg-gradient-to-b from-[rgba(253,230,138,0.42)] via-[rgba(253,230,138,0.26)] to-[rgba(253,230,138,0.08)]"
+          initial={reducedMotion ? false : { scaleY: 0, opacity: 0 }}
+          animate={{ scaleY: 1, opacity: 1 }}
+          transition={{ duration: reducedMotion ? 0.12 : 0.72, ease: constellationEase }}
+        />
+        {!reducedMotion && (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute bottom-7 left-1/2 top-0 z-[2] w-px -translate-x-1/2"
+          >
+            <motion.span
+              className="absolute left-1/2 top-0 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--portfolio-accent-bright)] shadow-[0_0_12px_rgba(252,211,77,0.65)]"
+              animate={{ top: ["0%", "100%"], opacity: [0, 0.95, 0.95, 0] }}
+              transition={{
+                duration: treeTravelDuration,
+                repeat: Infinity,
+                repeatDelay: treeLoopPause,
+                ease: "linear",
+                times: [0, 0.06, 0.92, 1],
+              }}
+            />
+          </div>
+        )}
+
         {group.technologies.map((technology, index) => {
           const isLeft = index % 2 === 0;
           const selected = inspectedId === technology.id;
           const pinned = pinnedId === technology.id;
           const paused = pausedId === technology.id;
+          const nodeDelay =
+            ((index + 0.5) / (group.technologies.length - 0.5)) *
+            treeTravelDuration;
+          const branchDelay = nodeDelay + 0.12;
+          const itemPulseDelay = nodeDelay + 0.45;
+          const itemSelected = selected || pinned;
 
-          return (
+          const technologyControl = (
             <motion.div
-              key={technology.id}
-              variants={technologyVariants}
-              className={`relative flex w-[48%] ${isLeft ? "mr-auto justify-end pr-5" : "ml-auto justify-start pl-5"}`}
+              className="relative z-10 min-w-0"
+              animate={
+                reducedMotion || itemSelected
+                  ? {
+                      filter: itemSelected
+                        ? "drop-shadow(0 0 9px rgba(252,211,77,0.28))"
+                        : "drop-shadow(0 0 0 rgba(252,211,77,0))",
+                    }
+                  : {
+                      filter: [
+                        "drop-shadow(0 0 0 rgba(252,211,77,0))",
+                        "drop-shadow(0 0 7px rgba(252,211,77,0.2))",
+                        "drop-shadow(0 0 0 rgba(252,211,77,0))",
+                      ],
+                    }
+              }
+              transition={{
+                duration: reducedMotion || itemSelected ? 0.18 : 0.9,
+                delay: reducedMotion || itemSelected ? 0 : itemPulseDelay,
+                repeat: reducedMotion || itemSelected ? 0 : Infinity,
+                repeatDelay: reducedMotion || itemSelected ? 0 : treeLoopDuration - 0.9,
+                ease: "easeInOut",
+              }}
             >
-              <span
-                aria-hidden="true"
-                className={`absolute top-1/2 h-px w-5 bg-[rgba(253,230,138,0.28)] ${isLeft ? "right-0" : "left-0"}`}
-              />
               <TechnologyButton
                 technology={technology}
                 selected={selected}
@@ -915,11 +989,82 @@ function MobileConstellation({
                 reducedMotion={reducedMotion}
                 detailId="craft-technology-detail-mobile"
                 variant="mobile"
-                driftDirection={isLeft ? -1.5 : 1.5}
-                driftDuration={18 + index * 1.7}
                 onInspect={onInspect}
                 onPin={onPin}
               />
+            </motion.div>
+          );
+
+          return (
+            <motion.div
+              key={technology.id}
+              variants={reducedMotion ? reducedTechnologyVariants : technologyVariants}
+              className="relative grid min-h-14 grid-cols-[minmax(0,1fr)_2.75rem_minmax(0,1fr)] items-center"
+            >
+              <div className="min-w-0">{isLeft ? technologyControl : null}</div>
+
+              <div className="pointer-events-none relative flex h-full items-center justify-center">
+                <motion.span
+                  aria-hidden="true"
+                  className={`absolute top-1/2 h-px -translate-y-1/2 transition-[background-color,box-shadow] duration-300 ${
+                    isLeft
+                      ? "left-0 right-1/2 origin-right"
+                      : "left-1/2 right-0 origin-left"
+                  } ${
+                    itemSelected
+                      ? "bg-[rgba(253,230,138,0.62)] shadow-[0_0_7px_var(--portfolio-glow)]"
+                      : "bg-[rgba(253,230,138,0.22)]"
+                  }`}
+                  initial={reducedMotion ? false : { scaleX: 0, opacity: 0 }}
+                  animate={{ scaleX: 1, opacity: 1 }}
+                  transition={{
+                    duration: reducedMotion ? 0.1 : 0.42,
+                    delay: reducedMotion ? 0 : 0.18 + index * 0.07,
+                    ease: constellationEase,
+                  }}
+                />
+
+                <motion.span
+                  aria-hidden="true"
+                  className={`relative z-[3] size-2 rounded-full border transition-colors duration-300 ${
+                    itemSelected
+                      ? "border-[var(--portfolio-accent-bright)] bg-[var(--portfolio-accent)] shadow-[0_0_11px_rgba(252,211,77,0.52)]"
+                      : "border-[rgba(253,230,138,0.4)] bg-[rgba(24,20,15,0.96)]"
+                  }`}
+                  animate={
+                    reducedMotion || itemSelected
+                      ? { scale: itemSelected ? 1.16 : 1, opacity: itemSelected ? 1 : 0.72 }
+                      : { scale: [1, 1.55, 1], opacity: [0.65, 1, 0.65] }
+                  }
+                  transition={{
+                    duration: reducedMotion || itemSelected ? 0.18 : 0.68,
+                    delay: reducedMotion || itemSelected ? 0 : nodeDelay,
+                    repeat: reducedMotion || itemSelected ? 0 : Infinity,
+                    repeatDelay: reducedMotion || itemSelected ? 0 : treeLoopDuration - 0.68,
+                    ease: "easeInOut",
+                  }}
+                />
+
+                {!reducedMotion && !itemSelected && (
+                  <motion.span
+                    aria-hidden="true"
+                    className="absolute left-1/2 top-1/2 z-[2] size-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--portfolio-accent-bright)] shadow-[0_0_7px_rgba(252,211,77,0.55)]"
+                    animate={{
+                      x: isLeft ? [0, -20] : [0, 20],
+                      opacity: [0, 0.9, 0],
+                    }}
+                    transition={{
+                      duration: 0.58,
+                      delay: branchDelay,
+                      repeat: Infinity,
+                      repeatDelay: treeLoopDuration - 0.58,
+                      ease: "easeInOut",
+                    }}
+                  />
+                )}
+              </div>
+
+              <div className="min-w-0">{isLeft ? null : technologyControl}</div>
             </motion.div>
           );
         })}
@@ -929,6 +1074,7 @@ function MobileConstellation({
         technology={inspectedTechnology}
         pinned={pinnedId === inspectedTechnology.id}
         mobile
+        reducedMotion={reducedMotion}
       />
     </motion.div>
   );
@@ -939,6 +1085,7 @@ type TechnologyDetailProps = {
   pinned: boolean;
   compact?: boolean;
   mobile?: boolean;
+  reducedMotion?: boolean;
 };
 
 function TechnologyDetail({
@@ -946,6 +1093,7 @@ function TechnologyDetail({
   pinned,
   compact = false,
   mobile = false,
+  reducedMotion = false,
 }: TechnologyDetailProps) {
   const detailId = mobile ? "craft-technology-detail-mobile" : "craft-technology-detail";
 
@@ -954,17 +1102,19 @@ function TechnologyDetail({
       id={detailId}
       aria-live="polite"
       className={`portfolio-surface relative overflow-hidden rounded-2xl border bg-black/45 ${
-        mobile ? "mx-auto mt-2 w-full max-w-sm px-3.5 py-2.5" : "p-4 lg:self-center lg:p-5"
+        mobile
+          ? "mx-auto mt-5 w-full max-w-sm shrink-0 px-4 py-4 pb-5"
+          : "p-5 pb-6 lg:self-center"
       }`}
     >
       <div aria-hidden="true" className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--portfolio-accent-strong)] to-transparent opacity-60" />
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={technology.id}
-          initial={{ opacity: 0, y: 5 }}
+          initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -4 }}
-          transition={{ duration: 0.3, ease: constellationEase }}
+          exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -4 }}
+          transition={{ duration: reducedMotion ? 0.14 : 0.3, ease: constellationEase }}
         >
           <div className="flex items-center gap-3">
             <span
@@ -993,10 +1143,10 @@ function TechnologyDetail({
             </div>
           </div>
 
-          <p className={`portfolio-copy ${mobile ? "mt-1.5 line-clamp-2 text-[0.62rem] leading-4" : "mt-3 text-xs leading-5"}`}>
+          <p className={`portfolio-copy ${mobile ? "mt-2.5 text-[0.68rem] leading-[1.1rem]" : "mt-3 text-xs leading-5"}`}>
             {technology.description}
           </p>
-          <p className={`mt-2 ${compact || mobile ? "text-[0.58rem]" : "text-[0.65rem]"}`}>
+          <p className={`mt-2.5 ${compact || mobile ? "text-[0.62rem]" : "text-[0.65rem]"}`}>
             <span className="portfolio-eyebrow font-semibold uppercase tracking-[0.14em]">
               Used in
             </span>{" "}
@@ -1010,7 +1160,7 @@ function TechnologyDetail({
 
 function CategoryProgress({ activeGroup }: { activeGroup: number }) {
   return (
-    <div className="pointer-events-none absolute bottom-6 left-5 z-20 flex items-center gap-3 sm:left-8 lg:left-12 xl:left-16">
+    <div className="pointer-events-none relative z-20 mt-6 flex shrink-0 items-center gap-3 pb-2 md:absolute md:bottom-6 md:left-8 md:mt-0 md:pb-0 lg:left-12 xl:left-16">
       <span className="portfolio-muted text-[0.6rem] font-semibold uppercase tracking-[0.2em] tabular-nums">
         {String(activeGroup + 1).padStart(2, "0")} / {String(techGroups.length).padStart(2, "0")}
       </span>

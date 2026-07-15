@@ -180,6 +180,25 @@ body,
     color: var(--portfolio-accent-bright);
   }
 
+  .floating-ai-control {
+    top: max(1rem, calc(env(safe-area-inset-top) + 0.75rem));
+    right: max(1rem, calc(env(safe-area-inset-right) + 0.75rem));
+  }
+
+  @media (min-width: 640px) {
+    .floating-ai-control {
+      top: max(1.5rem, calc(env(safe-area-inset-top) + 1rem));
+      right: max(1.5rem, calc(env(safe-area-inset-right) + 1rem));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .floating-ai-control {
+      top: max(1.75rem, calc(env(safe-area-inset-top) + 1rem));
+      right: max(1.75rem, calc(env(safe-area-inset-right) + 1rem));
+    }
+  }
+
   .portfolio-divider {
     background: linear-gradient(to right, rgba(253, 230, 138, 0.72), transparent);
   }
@@ -241,21 +260,24 @@ body,
 
 @keyframes portfolio-tech-orbit {
   from {
-    transform: rotate(var(--orbit-start));
+    transform: scaleY(var(--orbit-y-scale, 1)) rotate(var(--orbit-start));
   }
 
   to {
-    transform: rotate(calc(var(--orbit-start) + 360deg));
+    transform: scaleY(var(--orbit-y-scale, 1))
+      rotate(calc(var(--orbit-start) + 360deg));
   }
 }
 
 @keyframes portfolio-tech-counter-orbit {
   from {
-    transform: rotate(var(--orbit-start-negative));
+    transform: rotate(var(--orbit-start-negative))
+      scaleY(var(--orbit-y-inverse, 1));
   }
 
   to {
-    transform: rotate(calc(var(--orbit-start-negative) - 360deg));
+    transform: rotate(calc(var(--orbit-start-negative) - 360deg))
+      scaleY(var(--orbit-y-inverse, 1));
   }
 }
 
@@ -269,6 +291,89 @@ body,
   animation: portfolio-tech-counter-orbit var(--orbit-duration) linear infinite;
   transform-origin: center;
   will-change: transform;
+}
+
+.craft-constellation-plane {
+  --orbit-y-scale: 0.68;
+  --orbit-y-inverse: 1.4705882353;
+  top: 51%;
+  width: min(92%, clamp(24rem, 48vw, 32rem));
+  height: auto;
+  aspect-ratio: 1;
+  transform-origin: center;
+}
+
+.craft-orbit-ring-plane,
+.craft-orbit-wash {
+  transform: scaleY(var(--orbit-y-scale));
+  transform-origin: center;
+}
+
+.craft-orbit-vertical-axis {
+  height: 100%;
+  transform: translateY(-50%) scaleY(var(--orbit-y-scale));
+  transform-origin: center;
+}
+
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .craft-constellation-plane {
+    --orbit-y-scale: 0.56;
+    --orbit-y-inverse: 1.7857142857;
+    top: 51%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .craft-constellation-plane {
+    width: min(74%, 31rem);
+  }
+}
+
+@media (min-width: 1280px) {
+  .craft-constellation-plane {
+    width: min(88%, 36rem);
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023.98px) and (max-height: 800px) {
+  .craft-constellation-plane {
+    --orbit-y-scale: 0.52;
+    --orbit-y-inverse: 1.9230769231;
+    top: 50.5%;
+    width: min(88%, clamp(23rem, 44vw, 29rem));
+  }
+}
+
+@media (min-width: 1024px) and (max-height: 800px) {
+  .craft-constellation-plane {
+    --orbit-y-scale: 0.6;
+    --orbit-y-inverse: 1.6666666667;
+    top: 51%;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023.98px) and (max-height: 700px) {
+  .craft-constellation-plane {
+    --orbit-y-scale: 0.48;
+    --orbit-y-inverse: 2.0833333333;
+    top: 50%;
+    width: min(86%, clamp(22rem, 42vw, 27rem));
+  }
+}
+
+@media (min-width: 1024px) and (max-height: 700px) {
+  .craft-constellation-plane {
+    --orbit-y-scale: 0.54;
+    --orbit-y-inverse: 1.8518518519;
+    top: 50.5%;
+    width: min(74%, 30rem);
+  }
+}
+
+@media (min-width: 1280px) and (max-height: 700px) {
+  .craft-constellation-plane {
+    width: min(84%, 32rem);
+  }
 }
 
 .cinematic-background__stage {
@@ -301,6 +406,42 @@ body,
   }
 }
 
+@media (min-width: 768px) and (max-height: 860px) {
+  .scene-three-layout {
+    padding-top: 1.25rem;
+    padding-bottom: 3rem;
+  }
+
+  .scene-three-showcase {
+    margin-top: 1rem;
+  }
+
+  .scene-three-laptop {
+    width: min(56vw, 34rem);
+  }
+}
+
+@media (min-width: 768px) and (max-height: 700px) {
+  .scene-three-layout {
+    padding-top: 1rem;
+    padding-bottom: 2rem;
+  }
+
+  .scene-three-showcase {
+    margin-top: 0.75rem;
+  }
+
+  .scene-three-laptop {
+    width: min(48vw, 28rem);
+  }
+}
+
+@media (min-width: 768px) and (max-height: 640px) {
+  .scene-three-laptop {
+    width: min(40vw, 21rem);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cinematic-background__camera {
     will-change: auto;
@@ -308,13 +449,14 @@ body,
 
   .portfolio-tech-orbit {
     animation: none;
-    transform: rotate(var(--orbit-start));
+    transform: scaleY(var(--orbit-y-scale, 1)) rotate(var(--orbit-start));
     will-change: auto;
   }
 
   .portfolio-tech-counter-orbit {
     animation: none;
-    transform: rotate(var(--orbit-start-negative));
+    transform: rotate(var(--orbit-start-negative))
+      scaleY(var(--orbit-y-inverse, 1));
     will-change: auto;
   }
 }

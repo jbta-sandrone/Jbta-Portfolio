@@ -172,7 +172,7 @@ export default function SceneThree() {
             className="portfolio-scene-glow pointer-events-none absolute inset-x-[12%] top-[8%] h-[72%] rounded-full blur-2xl"
           />
 
-          <div className="relative mx-auto flex h-full w-full max-w-7xl flex-col px-5 pb-24 pt-7 sm:px-8 sm:pt-8 lg:px-12 lg:pb-20 xl:px-16">
+          <div className="scene-three-layout relative mx-auto flex h-full w-full max-w-7xl flex-col px-5 pb-24 pt-7 sm:px-8 sm:pt-8 lg:px-12 lg:pb-20 xl:px-16">
             <header className="mx-auto shrink-0 text-center">
               <p className="portfolio-eyebrow text-[0.68rem] font-semibold uppercase tracking-[0.3em] sm:text-xs">
                 Scene 03 — Featured Work
@@ -188,7 +188,7 @@ export default function SceneThree() {
               </p>
             </header>
 
-            <div className="relative flex min-h-0 flex-1 items-center justify-center">
+            <div className="scene-three-showcase relative mt-5 flex min-h-0 flex-1 justify-center sm:mt-6 lg:mt-7">
               <AnimatePresence mode="wait" custom={direction}>
                 <ProjectShowcase
                   key={project.id}
@@ -282,36 +282,37 @@ function ProjectShowcase({
       animate="animate"
       exit="exit"
       aria-label={`${project.title}, project ${projectNumber} of ${projectCount}`}
-      className="absolute inset-0 flex flex-col items-center justify-center pt-3 sm:pt-4"
+      className="absolute inset-0 flex flex-col items-center justify-start"
     >
       <span className="sr-only" aria-live="polite">
         Showing {project.title}, project {projectNumber} of {projectCount}
       </span>
-      <motion.div
-        animate={
-          reducedMotion
-            ? undefined
-            : { y: [0, -5, 0], rotate: [-0.35, 0.45, -0.35] }
-        }
-        transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut" }}
-        className="hidden md:block"
-      >
-        <LaptopMockup project={project} reducedMotion={reducedMotion} />
-      </motion.div>
+      <div className="my-auto flex w-full flex-col items-center">
+        <motion.div
+          animate={
+            reducedMotion
+              ? undefined
+              : { y: [0, -5, 0], rotate: [-0.35, 0.45, -0.35] }
+          }
+          transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut" }}
+          className="hidden md:block"
+        >
+          <LaptopMockup project={project} reducedMotion={reducedMotion} />
+        </motion.div>
 
-      <motion.div
-        animate={
-          reducedMotion
-            ? undefined
-            : { y: [0, -4, 0], rotate: [-0.4, 0.5, -0.4] }
-        }
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        className="md:hidden"
-      >
-        <PhoneMockup project={project} reducedMotion={reducedMotion} />
-      </motion.div>
+        <motion.div
+          animate={
+            reducedMotion
+              ? undefined
+              : { y: [0, -4, 0], rotate: [-0.3, 0.35, -0.3] }
+          }
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+          className="w-full md:hidden"
+        >
+          <MobileTabletMockup project={project} reducedMotion={reducedMotion} />
+        </motion.div>
 
-      <div className="mt-3 w-full max-w-3xl text-center sm:mt-4">
+        <div className="mt-3 w-full max-w-3xl text-center sm:mt-4">
         <div className="flex items-baseline justify-center gap-3">
           <p className="portfolio-eyebrow text-[0.62rem] font-semibold tracking-[0.2em] tabular-nums">
             {String(projectNumber).padStart(2, "0")} / {String(projectCount).padStart(2, "0")}
@@ -344,6 +345,7 @@ function ProjectShowcase({
           <ProjectAction href={project.githubUrl} label="GitHub" icon={<FaGithub />} />
           <ProjectAction href={project.demoVideoUrl} label="Demo Video" icon={<Play />} />
         </div>
+        </div>
       </div>
     </motion.article>
   );
@@ -361,7 +363,7 @@ function LaptopMockup({ project, reducedMotion }: DevicePreviewProps) {
             }
       }
       transition={{ duration: 0.35, ease: "easeInOut" }}
-      className="w-[min(66vw,43rem)] [filter:drop-shadow(0_24px_32px_rgba(0,0,0,0.42))]"
+      className="scene-three-laptop w-[min(66vw,43rem)] [filter:drop-shadow(0_24px_32px_rgba(0,0,0,0.42))]"
     >
       <div className="portfolio-device-frame relative rounded-[1.15rem] border p-2">
         <span className="absolute left-1/2 top-1.5 z-20 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-black ring-1 ring-white/10" />
@@ -375,15 +377,15 @@ function LaptopMockup({ project, reducedMotion }: DevicePreviewProps) {
   );
 }
 
-function PhoneMockup({ project, reducedMotion }: DevicePreviewProps) {
+function MobileTabletMockup({ project, reducedMotion }: DevicePreviewProps) {
   return (
     <motion.div
       whileHover={reducedMotion ? undefined : { y: -3 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="portfolio-device-frame portfolio-device-frame--phone h-[min(29dvh,15rem)] aspect-[9/18.5] rounded-[1.8rem] border p-1.5"
+      className="portfolio-device-frame mx-auto w-[min(86vw,24rem)] rounded-[1rem] border p-1.5 [filter:drop-shadow(0_18px_26px_rgba(0,0,0,0.38))]"
     >
-      <div className="portfolio-device-screen relative h-full overflow-hidden rounded-[1.45rem] border">
-        <span className="absolute left-1/2 top-1.5 z-20 h-1.5 w-10 -translate-x-1/2 rounded-full bg-black/90" />
+      <div className="portfolio-device-screen relative aspect-video overflow-hidden rounded-[0.68rem] border">
+        <span className="absolute left-1/2 top-1 z-20 size-1 -translate-x-1/2 rounded-full bg-black ring-1 ring-white/10" />
         <ProjectPreview project={project} reducedMotion={reducedMotion} />
       </div>
     </motion.div>
