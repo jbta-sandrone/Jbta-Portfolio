@@ -10,6 +10,7 @@ import {
   type Variants,
 } from "motion/react";
 import projectVideo from "../assets/videos/Project video.mp4";
+import NelumeVideo from "../assets/videos/Nelume video.mp4";
 
 type PreviewFrame = {
   eyebrow: string;
@@ -22,6 +23,7 @@ type Project = {
   title: string;
   subtitle: string;
   description: string;
+  previewvideo: string;
   technologies: readonly string[];
   presentation: {
     category: string;
@@ -42,6 +44,10 @@ const projects: readonly Project[] = [
     id: "i-nelory",
     title: "I-Nelory",
     subtitle: "Your Personal Memory Journal",
+    liveUrl: "https://i-neloryapp.vercel.app/",
+    githubUrl: "https://github.com/jbta-sandrone/I-Nelory",
+    demoVideoUrl: "https://www.youtube.com/watch?v=5g0X1k3J6xM",
+    previewvideo: projectVideo,
     description:
       "A private full-stack memory journal for saving, organizing, and rediscovering meaningful moments through albums, timelines, cloud media storage, and AI-powered memory search.",
     technologies: [
@@ -62,8 +68,12 @@ const projects: readonly Project[] = [
   },
   {
     id: "cliq",
-    title: "CLIQ",
-    subtitle: "Café Mobile Ordering System",
+    title: "IntelliCLIQ",
+    subtitle: "B-Hive Café Mobile Ordering Application",
+    liveUrl: "https://jbta-sandrone.github.io/IntelliCLIQ/",
+    githubUrl: "https://github.com/jbta-sandrone/IntelliCLIQ",
+    demoVideoUrl: "https://www.youtube.com/watch?v=5g0X1k3J6xM",
+    previewvideo: projectVideo,
     description:
       "A responsive café ordering platform with customer and administrator experiences, real-time data, order tracking, analytics, and AI-powered product recommendations.",
     technologies: [
@@ -85,6 +95,10 @@ const projects: readonly Project[] = [
     id: "nelume",
     title: "Nelume",
     subtitle: "AI Resume Viewer",
+    liveUrl: "https://nelume.vercel.app/",
+    githubUrl: "https://github.com/jbta-sandrone/Nelume",
+    demoVideoUrl: "https://www.youtube.com/watch?v=5g0X1k3J6xM",
+    previewvideo: NelumeVideo,
     description:
       "An AI-powered resume analysis platform that extracts resume content, presents it in a structured viewer, and uses Google Gemini to provide intelligent evaluation and insights.",
     technologies: [
@@ -440,7 +454,7 @@ function ProjectPreview({ project, reducedMotion }: DevicePreviewProps) {
   return (
     <div className="relative h-full w-full overflow-hidden">
       <video
-        src={projectVideo}
+        src={project.previewvideo}
         autoPlay
         muted
         loop
