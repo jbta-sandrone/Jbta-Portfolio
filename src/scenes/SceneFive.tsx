@@ -111,7 +111,7 @@ const connectionItems: readonly ConnectionItem[] = [
     label: "Professional Resume",
     shortLabel: "Resume",
     value: "jonel-bryan-ablog-resume.pdf",
-    href: "/jonel-bryan-ablog-resume.pdf",
+    href: "/Jonel_Ablog_Resume.pdf",
     icon: FileText,
     type: "resume",
     external: true,

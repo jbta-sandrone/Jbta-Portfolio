@@ -14,7 +14,9 @@ import {
 } from "motion/react";
 import CinematicBackground from "./components/CinematicBackground";
 import FloatingAIButton from "./components/FloatingAIButton";
-import PortfolioIntro from "./components/PortfolioIntro";
+import PortfolioIntro, {
+  shouldShowPortfolioIntro,
+} from "./components/PortfolioIntro";
 import PortfolioCursor from "./components/PortfolioCursor";
 import SceneNavigationControl from "./components/SceneNavigationControl";
 import { SceneNavigationContext } from "./components/SceneNavigationContext";
@@ -65,8 +67,10 @@ function canScrollInDirection(element: HTMLElement | null, direction: 1 | -1) {
 
 function App() {
   const prefersReducedMotion = useReducedMotion();
-  const [introActive, setIntroActive] = useState(true);
-  const [sceneExperienceReady, setSceneExperienceReady] = useState(false);
+  const [introActive, setIntroActive] = useState(shouldShowPortfolioIntro);
+  const [sceneExperienceReady, setSceneExperienceReady] = useState(
+    () => !introActive,
+  );
   const [activeScene, setActiveScene] = useState(getSceneIndexFromHash);
   const [direction, setDirection] = useState<1 | -1>(1);
   const [isTransitioning, setIsTransitioning] = useState(false);

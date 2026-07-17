@@ -11,6 +11,7 @@ import {
 } from "motion/react";
 import projectVideo from "../assets/videos/Project video.mp4";
 import NelumeVideo from "../assets/videos/Nelume video.mp4";
+import IntelliCLIQVideo from "../assets/videos/IntelliCLIQ video.mp4";
 
 type PreviewFrame = {
   eyebrow: string;
@@ -46,7 +47,7 @@ const projects: readonly Project[] = [
     subtitle: "Your Personal Memory Journal",
     liveUrl: "https://i-neloryapp.vercel.app/",
     githubUrl: "https://github.com/jbta-sandrone/I-Nelory",
-    demoVideoUrl: "https://www.youtube.com/watch?v=5g0X1k3J6xM",
+    demoVideoUrl: "https://youtu.be/R5YBwPRsHJ8?si=zf9HcZkcvdPo52rT",
     previewvideo: projectVideo,
     description:
       "A private full-stack memory journal for saving, organizing, and rediscovering meaningful moments through albums, timelines, cloud media storage, and AI-powered memory search.",
@@ -73,7 +74,7 @@ const projects: readonly Project[] = [
     liveUrl: "https://jbta-sandrone.github.io/IntelliCLIQ/",
     githubUrl: "https://github.com/jbta-sandrone/IntelliCLIQ",
     demoVideoUrl: "https://www.youtube.com/watch?v=5g0X1k3J6xM",
-    previewvideo: projectVideo,
+    previewvideo: IntelliCLIQVideo,
     description:
       "A responsive café ordering platform with customer and administrator experiences, real-time data, order tracking, analytics, and AI-powered product recommendations.",
     technologies: [
@@ -412,7 +413,7 @@ type DevicePreviewProps = {
 };
 
 function ProjectPreview({ project, reducedMotion }: DevicePreviewProps) {
-  const [activePreviewFrame, setActivePreviewFrame] = useState(0);
+const [activePreviewFrame, setActivePreviewFrame] = useState(0);
   const previewFrames = project.preview?.frames;
 
   useEffect(() => {

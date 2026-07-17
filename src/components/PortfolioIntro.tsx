@@ -4,6 +4,8 @@ import chatbotAvatar from "../assets/images/aichatbot.webp";
 import eclipseBackground from "../assets/images/animebg.webp";
 import firstProjectPreview from "../assets/images/ineloryss.webp";
 
+export const PORTFOLIO_INTRO_SESSION_KEY = "jbta-portfolio-intro-seen";
+
 const introMessages = [
   "Initializing flight systems...",
   "Charting the creative route...",
@@ -70,6 +72,22 @@ const introStars: readonly IntroStar[] = Array.from(
   },
 );
 
+export function shouldShowPortfolioIntro() {
+  try {
+    return window.sessionStorage.getItem(PORTFOLIO_INTRO_SESSION_KEY) !== "true";
+  } catch {
+    return true;
+  }
+}
+
+function markPortfolioIntroSeen() {
+  try {
+    window.sessionStorage.setItem(PORTFOLIO_INTRO_SESSION_KEY, "true");
+  } catch {
+    // If storage is unavailable, the intro still exits normally.
+  }
+}
+
 function preloadImage(source: string) {
   return new Promise<void>((resolve) => {
     const image = new Image();
@@ -130,6 +148,7 @@ export default function PortfolioIntro({
     phaseRef.current = "exiting";
     setMessageIndex(introMessages.length - 1);
     setPhase("exiting");
+    markPortfolioIntroSeen();
     onRevealStart();
   }, [clearTimers, onRevealStart]);
 
