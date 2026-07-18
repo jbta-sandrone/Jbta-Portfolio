@@ -47,7 +47,7 @@ const projects: readonly Project[] = [
     subtitle: "Your Personal Memory Journal",
     liveUrl: "https://i-neloryapp.vercel.app/",
     githubUrl: "https://github.com/jbta-sandrone/I-Nelory",
-    demoVideoUrl: "https://youtu.be/R5YBwPRsHJ8?si=zf9HcZkcvdPo52rT",
+    demoVideoUrl: "https://youtu.be/MQJLQmzU1lI",
     previewvideo: projectVideo,
     description:
       "A private full-stack memory journal for saving, organizing, and rediscovering meaningful moments through albums, timelines, cloud media storage, and AI-powered memory search.",
@@ -73,7 +73,7 @@ const projects: readonly Project[] = [
     subtitle: "B-Hive Café Mobile Ordering Application",
     liveUrl: "https://jbta-sandrone.github.io/IntelliCLIQ/",
     githubUrl: "https://github.com/jbta-sandrone/IntelliCLIQ",
-    demoVideoUrl: "https://www.youtube.com/watch?v=5g0X1k3J6xM",
+    demoVideoUrl: "https://youtu.be/Wq6UXoMbZos",
     previewvideo: IntelliCLIQVideo,
     description:
       "A responsive café ordering platform with customer and administrator experiences, real-time data, order tracking, analytics, and AI-powered product recommendations.",
