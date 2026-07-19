@@ -27,6 +27,7 @@ import {
   SiRender,
   SiTailwindcss,
   SiTypescript,
+  SiUpstash,
   SiVercel,
 } from "react-icons/si";
 
@@ -212,6 +213,16 @@ const techGroups: readonly TechGroup[] = [
         orbit: { radius: 46, angleOffset: 15, duration: 27 },
         description: "Cloud-backed data and authentication for responsive application workflows.",
         projects: ["CLIQ"],
+      },
+      {
+        id: "upstash",
+        name: "Upstash",
+        icon: SiUpstash,
+        brandColor: "#00e9a3",
+        orbit: { radius: 40, angleOffset: -4, duration: 25 },
+        description:
+          "Upstash serves as the cloud database, securely storing memories, folders, user information, and AI Search quota usage while providing fast, scalable data access.",
+        projects: ["Nelume"],
       },
     ],
   },
