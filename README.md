@@ -16,7 +16,7 @@
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express)
 ![Upstash](https://img.shields.io/badge/Upstash-00E9A3?style=for-the-badge)
-![Gemini_AI-4285F4?style=for-the-badge&logo=google-gemini&logoColor=white)
+![Google AI](https://img.shields.io/badge/Google_Gemini_AI-4285F4?style=for-the-badge&logo=google&logoColor=white)
 
 </div>
 
@@ -45,71 +45,66 @@ This website showcases my journey as a Full-Stack Web Developer, featuring proje
 
 # 🚀 Featured Projects
 
-## 🧠 Nelume
+## 🌌 I-Nelory
 
-An AI-powered memory management platform where users can securely organize memories into folders, perform intelligent AI Search, and manage personal content in a beautiful interface.
+A full-stack personal memory platform designed for preserving, organizing, and rediscovering meaningful moments. Users can create memories, upload media, organize content into folders, and use AI-powered search to find memories naturally.
 
-### Highlights
+### ✨ Highlights
 
-- AI Search using Google Gemini
-- JWT Authentication
-- Daily AI usage quota
-- Cloudinary image uploads
-- Folder organization
-- Responsive UI
-- Protected routes
+- 🤖 AI-powered memory search using Google Gemini
+- 🧠 Natural-language search across saved memories
+- 🔐 JWT authentication and protected routes
+- 🗂️ Memory and folder organization
+- 🖼️ Image and media uploads through Cloudinary
+- 📊 Server-enforced daily AI Search quota
+- 📱 Fully responsive user interface
+- ☁️ Cloud database and production deployment
+
+### 🛠️ Tech Stack
+
+`React` `TypeScript` `Tailwind CSS` `Node.js` `Express.js`  
+`Prisma` `PostgreSQL` `Google Gemini` `Cloudinary` `JWT`  
+`Vercel` `Render`
+
+---
+
+## 🌙 Nelume
+
+A modern web application focused on delivering a polished and engaging digital experience, supported by scalable cloud infrastructure.
+
+### ✨ Highlights
+
+- Modern responsive interface
+- Secure backend integration
+- Fast cloud-based data storage
+- Smooth and interactive user experience
+- Production-ready deployment
+
+### 🛠️ Tech Stack
+
+`React` `TypeScript` `Tailwind CSS` `Node.js` `Express.js`  
+`Upstash` `Vercel` `Render`
 
 ---
 
 ## ☕ IntelliCLIQ
 
-An intelligent café ordering system enhanced with AI Smart Search to recommend drinks based on customer preferences.
+An intelligent café ordering platform that improves the ordering experience through AI-powered recommendations based on customer preferences.
 
-### Highlights
+### ✨ Highlights
 
-- AI Smart Search
-- Firebase Authentication
-- Admin Dashboard
-- Order Management
-- Analytics
-- Responsive Design
+- 🤖 AI Smart Search using Google Gemini
+- 🛒 Ordering and cart management
+- 🔐 Firebase Authentication
+- 📋 Order tracking and history
+- 🧑‍💼 Administrative dashboard
+- 📈 Sales analytics and reports
+- 📱 Responsive design
 
----
+### 🛠️ Tech Stack
 
-# 🛠 Tech Stack
-
-### Frontend
-
-- React
-- TypeScript
-- Tailwind CSS
-- Vite
-
-### Backend
-
-- Node.js
-- Express.js
-
-### Database
-
-- Upstash
-
-### AI
-
-- Google Gemini
-
-### Authentication
-
-- JWT
-
-### Cloud
-
-- Cloudinary
-
-### Deployment
-
-- Vercel
-- Render
+`HTML` `CSS` `JavaScript` `Node.js` `Express.js`  
+`Firebase` `Google Gemini` `GitHub Pages` `Render`
 
 ---
 
@@ -142,22 +137,6 @@ npm install
 
 npm run dev
 ```
-
----
-
-# 🌐 Live Demo
-
-👉 **Portfolio:** YOUR_PORTFOLIO_URL
-
----
-
-# 📬 Contact
-
-Feel free to connect!
-
-- GitHub
-- LinkedIn
-- Email
 
 ---
 
