@@ -32,14 +32,14 @@ This website showcases my journey as a Full-Stack Web Developer, featuring proje
 
 # ✨ Features
 
-- 🎨 Modern responsive design
-- ⚡ Smooth animations
-- 🌙 Clean user experience
-- 📱 Mobile friendly
-- 🤖 AI-powered projects
-- 🗂️ Featured portfolio projects
-- 💼 Skills & technologies
-- 📬 Contact section
+- Modern responsive design
+- Smooth animations
+- Clean user experience
+- Mobile friendly
+- AI-powered projects
+- Featured portfolio projects
+- Skills & technologies
+- Contact section
 
 ---
 
@@ -51,14 +51,14 @@ A full-stack personal memory platform designed for preserving, organizing, and r
 
 ### ✨ Highlights
 
-- 🤖 AI-powered memory search using Google Gemini
-- 🧠 Natural-language search across saved memories
-- 🔐 JWT authentication and protected routes
-- 🗂️ Memory and folder organization
-- 🖼️ Image and media uploads through Cloudinary
-- 📊 Server-enforced daily AI Search quota
-- 📱 Fully responsive user interface
-- ☁️ Cloud database and production deployment
+- AI-powered memory search using Google Gemini
+- Natural-language search across saved memories
+- JWT authentication and protected routes
+- Memory and folder organization
+- Image and media uploads through Cloudinary
+- Server-enforced daily AI Search quota
+- Fully responsive user interface
+- Cloud database and production deployment
 
 ### 🛠️ Tech Stack
 
@@ -70,20 +70,25 @@ A full-stack personal memory platform designed for preserving, organizing, and r
 
 ## 🌙 Nelume
 
-A modern web application focused on delivering a polished and engaging digital experience, supported by scalable cloud infrastructure.
+A full-stack AI-powered career assistant designed to help students, fresh graduates, and job seekers improve their career readiness.
 
 ### ✨ Highlights
 
-- Modern responsive interface
-- Secure backend integration
-- Fast cloud-based data storage
-- Smooth and interactive user experience
-- Production-ready deployment
+- AI-Powered Resume Analysis with ATS scoring and personalized feedback
+- AI Resume Rewrite to enhance clarity, professionalism, and impact
+- Interactive AI Resume Chat for tailored resume guidance
+- AI Cover Letter Generator that creates personalized, ATS-friendly cover letters
+- AI Mock Interview with customized interview questions and AI feedback
+- Skill Matching & Resume Insights to identify strengths and improvement areas
+- Resume Learning Hub featuring practical resume-writing guides and best practices
+- Interactive Resume Quiz to reinforce career and resume knowledge
+- Secure Server-Side AI Rate Limiting with live daily usage tracking using Upstash Redis
+- Cloud Deployment with Vercel (Frontend) and Render (Backend)
 
 ### 🛠️ Tech Stack
 
-`React` `TypeScript` `Tailwind CSS` `Node.js` `Express.js`  
-`Upstash` `Vercel` `Render`
+`React` `TypeScript` `CSS3` `Python` `FastAPI`  
+`REST API` `Upstash Redis` `Vercel` `Render` `Google Gemini` 
 
 ---
 
@@ -93,13 +98,13 @@ An intelligent café ordering platform that improves the ordering experience thr
 
 ### ✨ Highlights
 
-- 🤖 AI Smart Search using Google Gemini
-- 🛒 Ordering and cart management
-- 🔐 Firebase Authentication
-- 📋 Order tracking and history
-- 🧑‍💼 Administrative dashboard
-- 📈 Sales analytics and reports
-- 📱 Responsive design
+- AI Smart Search using Google Gemini
+- Ordering and cart management
+- Firebase Authentication
+- Order tracking and history
+- Administrative dashboard
+- Sales analytics and reports
+- Responsive design
 
 ### 🛠️ Tech Stack
 
@@ -129,9 +134,9 @@ portfolio/
 # ⚙️ Installation
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git
+git clone https://github.com/jbta-sandrone/Jbta-Portfolio.git
 
-cd YOUR_REPO
+cd Jbta-Portfolio
 
 npm install
 
