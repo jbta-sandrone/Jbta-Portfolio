@@ -98,7 +98,7 @@ const projects: readonly Project[] = [
     subtitle: "AI Resume Viewer",
     liveUrl: "https://nelume.vercel.app/",
     githubUrl: "https://github.com/jbta-sandrone/Nelume",
-    demoVideoUrl: "https://www.youtube.com/watch?v=5g0X1k3J6xM",
+    demoVideoUrl: "https://youtu.be/NWfV9LpZQpg",
     previewvideo: NelumeVideo,
     description:
       "An AI-powered resume analysis platform that extracts resume content, presents it in a structured viewer, and uses Google Gemini to provide intelligent evaluation and insights.",
