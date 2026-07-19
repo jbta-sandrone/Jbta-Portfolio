@@ -1,75 +1,170 @@
-# React + TypeScript + Vite
+<div align="center">
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# ✨ My Portfolio
 
-Currently, two official plugins are available:
+### Full-Stack Developer • Building Modern Web Applications with AI
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+<p align="center">
+  A modern developer portfolio showcasing my projects, skills, and passion for creating interactive and AI-powered web experiences.
+</p>
 
-## React Compiler
+<br>
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express)
+![Upstash](https://img.shields.io/badge/Upstash-00E9A3?style=for-the-badge)
+![Gemini_AI-4285F4?style=for-the-badge&logo=google-gemini&logoColor=white)
 
-## Expanding the ESLint configuration
+</div>
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+# 📖 About
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Welcome to my personal portfolio!
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+This website showcases my journey as a Full-Stack Web Developer, featuring projects focused on modern UI/UX, scalable backend development, cloud technologies, and AI-powered experiences.
 
+---
+
+# ✨ Features
+
+- 🎨 Modern responsive design
+- ⚡ Smooth animations
+- 🌙 Clean user experience
+- 📱 Mobile friendly
+- 🤖 AI-powered projects
+- 🗂️ Featured portfolio projects
+- 💼 Skills & technologies
+- 📬 Contact section
+
+---
+
+# 🚀 Featured Projects
+
+## 🧠 Nelume
+
+An AI-powered memory management platform where users can securely organize memories into folders, perform intelligent AI Search, and manage personal content in a beautiful interface.
+
+### Highlights
+
+- AI Search using Google Gemini
+- JWT Authentication
+- Daily AI usage quota
+- Cloudinary image uploads
+- Folder organization
+- Responsive UI
+- Protected routes
+
+---
+
+## ☕ IntelliCLIQ
+
+An intelligent café ordering system enhanced with AI Smart Search to recommend drinks based on customer preferences.
+
+### Highlights
+
+- AI Smart Search
+- Firebase Authentication
+- Admin Dashboard
+- Order Management
+- Analytics
+- Responsive Design
+
+---
+
+# 🛠 Tech Stack
+
+### Frontend
+
+- React
+- TypeScript
+- Tailwind CSS
+- Vite
+
+### Backend
+
+- Node.js
+- Express.js
+
+### Database
+
+- Upstash
+
+### AI
+
+- Google Gemini
+
+### Authentication
+
+- JWT
+
+### Cloud
+
+- Cloudinary
+
+### Deployment
+
+- Vercel
+- Render
+
+---
+
+# 📂 Folder Structure
+
+```bash
+portfolio/
+├── public/
+├── src/
+│   ├── assets/
+│   ├── components/
+│   ├── pages/
+│   ├── hooks/
+│   ├── layouts/
+│   └── lib/
+├── package.json
+└── README.md
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+# ⚙️ Installation
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git
 
+cd YOUR_REPO
+
+npm install
+
+npm run dev
 ```
+
+---
+
+# 🌐 Live Demo
+
+👉 **Portfolio:** YOUR_PORTFOLIO_URL
+
+---
+
+# 📬 Contact
+
+Feel free to connect!
+
+- GitHub
+- LinkedIn
+- Email
+
+---
+
+<div align="center">
+
+### ⭐ Thank you for visiting my portfolio!
+
+If you like my work, consider giving the repository a ⭐.
+
+</div>
