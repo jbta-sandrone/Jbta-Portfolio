@@ -2,6 +2,7 @@ import {
   useEffect,
   useRef,
   useState,
+  type CSSProperties,
   type PointerEvent as ReactPointerEvent,
   type RefObject,
 } from "react";
@@ -14,12 +15,157 @@ import {
   type MotionValue,
   type Variants,
 } from "motion/react";
-import profilePlaceholder from "../assets/images/my-portrait.jpg";
 import { useSceneNavigation } from "../components/SceneNavigationContext";
+import profilePortrait from "../assets/images/my-portrait.jpg";
+import "../styles/scene-two.css";
 
 const easing = [0.22, 1, 0.36, 1] as const;
+const pageTurnEase = [0.65, 0, 0.35, 1] as const;
+
+const dustMotes = Array.from({ length: 12 }, (_, index) => ({
+  left: `${8 + ((index * 23) % 84)}%`,
+  top: `${14 + ((index * 31) % 70)}%`,
+  delay: `${(index % 6) * -1.4}s`,
+  duration: `${7.5 + (index % 5) * 1.1}s`,
+}));
+
+function WorkshopGlyph({ type }: { type: "profile" | "academy" | "compass" | "journal" }) {
+  if (type === "profile") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" shapeRendering="crispEdges">
+        <path fill="currentColor" d="M8 3h8v2h2v7h-2v3h3v2h2v4H3v-4h2v-2h3v-3H6V5h2Zm2 3v6h4V6Z" />
+      </svg>
+    );
+  }
+
+  if (type === "academy") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" shapeRendering="crispEdges">
+        <path fill="currentColor" d="m12 2 10 5v2h-2v9h2v3H2v-3h2V9H2V7Zm-5 8v8h2v-8Zm4 0v8h2v-8Zm4 0v8h2v-8Z" />
+      </svg>
+    );
+  }
+
+  if (type === "compass") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" shapeRendering="crispEdges">
+        <path fill="currentColor" d="M9 2h6v2h3v2h2v3h2v6h-2v3h-2v2h-3v2H9v-2H6v-2H4v-3H2V9h2V6h2V4h3Zm1 6-3 9 7-3 3-7Zm2 3 2-1-1 2-2 1Z" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" shapeRendering="crispEdges">
+      <path fill="currentColor" d="M3 3h8v2h2V3h8v17h-7v2h-4v-2H3Zm3 4v2h4V7Zm0 4v2h4v-2Zm8-4v2h4V7Zm0 4v2h4v-2Z" />
+    </svg>
+  );
+}
+
+function WorkshopEnvironment() {
+  return (
+    <div aria-hidden="true" className="scene-two-environment pointer-events-none absolute inset-0">
+      <div className="scene-two-wall absolute inset-0" />
+      <div className="scene-two-wall-texture absolute inset-0" />
+
+      <div className="scene-two-outdoor scene-two-window">
+        <div className="scene-two-window__sky" />
+        <div className="scene-two-window__sun" />
+        <div className="scene-two-window__cloud scene-two-window__cloud--one" />
+        <div className="scene-two-window__cloud scene-two-window__cloud--two" />
+        <div className="scene-two-window__mountain scene-two-window__mountain--far" />
+        <div className="scene-two-window__mountain scene-two-window__mountain--near" />
+        <div className="scene-two-window__frame scene-two-window__frame--vertical" />
+        <div className="scene-two-window__frame scene-two-window__frame--horizontal" />
+      </div>
+
+      <div className="scene-two-room-mid">
+        <div className="scene-two-ceiling-beam scene-two-ceiling-beam--top" />
+        <div className="scene-two-ceiling-beam scene-two-ceiling-beam--left" />
+        <div className="scene-two-ceiling-beam scene-two-ceiling-beam--right" />
+        <div className="scene-two-sunbeam" />
+
+        <div className="scene-two-shelf scene-two-shelf--left">
+          <span className="scene-two-book scene-two-book--burgundy" />
+          <span className="scene-two-book scene-two-book--green" />
+          <span className="scene-two-book scene-two-book--gold" />
+          <span className="scene-two-book scene-two-book--blue" />
+          <span className="scene-two-scroll" />
+          <span className="scene-two-potion"><i /></span>
+        </div>
+
+        <div className="scene-two-shelf scene-two-shelf--right">
+          <span className="scene-two-book scene-two-book--gold" />
+          <span className="scene-two-book scene-two-book--green" />
+          <span className="scene-two-book scene-two-book--burgundy" />
+          <span className="scene-two-gear scene-two-gear--small" />
+          <span className="scene-two-gear scene-two-gear--large" />
+        </div>
+
+        <div className="scene-two-quest-board">
+          <span className="scene-two-quest-paper scene-two-quest-paper--one" />
+          <span className="scene-two-quest-paper scene-two-quest-paper--two" />
+          <span className="scene-two-quest-pin scene-two-quest-pin--one" />
+          <span className="scene-two-quest-pin scene-two-quest-pin--two" />
+        </div>
+
+        <div className="scene-two-wall-scroll">
+          <span />
+        </div>
+      </div>
+
+      <div className="scene-two-room-foreground">
+        <div className="scene-two-desk">
+          <div className="scene-two-terminal">
+            <span className="scene-two-terminal__line scene-two-terminal__line--one" />
+            <span className="scene-two-terminal__line scene-two-terminal__line--two" />
+            <span className="scene-two-terminal__cursor" />
+          </div>
+          <div className="scene-two-keyboard" />
+          <div className="scene-two-lantern"><span /></div>
+          <div className="scene-two-crystal"><span /></div>
+          <div className="scene-two-map-roll" />
+        </div>
+
+        <div className="scene-two-plant">
+          <span className="scene-two-plant__leaf scene-two-plant__leaf--one" />
+          <span className="scene-two-plant__leaf scene-two-plant__leaf--two" />
+          <span className="scene-two-plant__leaf scene-two-plant__leaf--three" />
+          <span className="scene-two-plant__pot" />
+        </div>
+
+        <div className="scene-two-backpack">
+          <span />
+        </div>
+      </div>
+
+      {dustMotes.map((mote, index) => (
+        <span
+          key={index}
+          className={`scene-two-ambient scene-two-dust ${index > 7 ? "scene-two-dust--desktop" : ""}`}
+          style={
+            {
+              left: mote.left,
+              top: mote.top,
+              animationDelay: mote.delay,
+              animationDuration: mote.duration,
+            } as CSSProperties
+          }
+        />
+      ))}
+
+      <div className="scene-two-hanging-leaves">
+        <span />
+        <span />
+        <span />
+      </div>
+      <div className="scene-two-room-shadow absolute inset-0" />
+      <div className="scene-two-threshold absolute inset-0" />
+    </div>
+  );
+}
 
 export default function SceneTwo() {
+  const sceneRef = useRef<HTMLElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const reducedMotion = prefersReducedMotion !== false;
   const { navigateToScene, isTransitioning } = useSceneNavigation();
@@ -28,13 +174,26 @@ export default function SceneTwo() {
   const smoothPortraitX = useSpring(portraitX, { stiffness: 115, damping: 24 });
   const smoothPortraitY = useSpring(portraitY, { stiffness: 115, damping: 24 });
 
+  useEffect(() => {
+    const scene = sceneRef.current;
+    if (!scene) return;
+
+    const syncVisibility = () => {
+      scene.classList.toggle("scene-two-paused", document.hidden);
+    };
+
+    syncVisibility();
+    document.addEventListener("visibilitychange", syncVisibility);
+    return () => document.removeEventListener("visibilitychange", syncVisibility);
+  }, []);
+
   const revealVariants: Variants = {
     hidden: reducedMotion
       ? { opacity: 0 }
-      : { opacity: 0, y: 18, filter: "blur(4px)" },
+      : { opacity: 0, y: 18, filter: "blur(3px)" },
     visible: (delay = 0) =>
       reducedMotion
-        ? { opacity: 1, transition: { duration: 0.16, delay: delay * 0.25 } }
+        ? { opacity: 1, transition: { duration: 0.14, delay: delay * 0.2 } }
         : {
             opacity: 1,
             y: 0,
@@ -46,159 +205,185 @@ export default function SceneTwo() {
   const portraitVariants: Variants = {
     hidden: reducedMotion
       ? { opacity: 0 }
-      : { opacity: 0, scale: 0.97 },
+      : { opacity: 0, x: -18, scale: 0.98 },
     visible: reducedMotion
-      ? { opacity: 1, transition: { duration: 0.16 } }
+      ? { opacity: 1, transition: { duration: 0.15 } }
       : {
           opacity: 1,
+          x: 0,
           scale: 1,
-          transition: { duration: 0.7, delay: 0.08, ease: easing },
+          transition: { duration: 0.72, delay: 0.14, ease: easing },
         },
+  };
+
+  const handleScenePointerMove = (event: ReactPointerEvent<HTMLElement>) => {
+    if (reducedMotion || event.pointerType !== "mouse") return;
+
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const x = (event.clientX - bounds.left) / bounds.width - 0.5;
+    const y = (event.clientY - bounds.top) / bounds.height - 0.5;
+    event.currentTarget.style.setProperty("--workshop-x", `${x * 7}px`);
+    event.currentTarget.style.setProperty("--workshop-y", `${y * 5}px`);
+  };
+
+  const resetSceneDepth = () => {
+    sceneRef.current?.style.setProperty("--workshop-x", "0px");
+    sceneRef.current?.style.setProperty("--workshop-y", "0px");
+    portraitX.set(0);
+    portraitY.set(0);
   };
 
   const handlePortraitMove = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (reducedMotion || event.pointerType !== "mouse") return;
 
     const bounds = event.currentTarget.getBoundingClientRect();
-    portraitX.set(((event.clientX - bounds.left) / bounds.width - 0.5) * 6);
-    portraitY.set(((event.clientY - bounds.top) / bounds.height - 0.5) * 6);
-  };
-
-  const resetPortraitDepth = () => {
-    portraitX.set(0);
-    portraitY.set(0);
+    portraitX.set(((event.clientX - bounds.left) / bounds.width - 0.5) * 5);
+    portraitY.set(((event.clientY - bounds.top) / bounds.height - 0.5) * 5);
   };
 
   return (
     <section
+      ref={sceneRef}
       data-cinematic-scene={2}
       data-scene-scroll
       aria-labelledby="behind-the-work-title"
-      className="portfolio-scene relative h-full overflow-y-auto overscroll-contain"
+      onPointerMove={handleScenePointerMove}
+      onPointerLeave={resetSceneDepth}
+      className="scene-two-workshop portfolio-scene relative h-full overflow-y-auto overflow-x-hidden overscroll-contain bg-[#21150f]"
     >
-      <div
-        aria-hidden="true"
-        className="portfolio-text-scrim pointer-events-none absolute inset-y-0 left-0 w-full lg:w-4/5"
-      />
+      <WorkshopEnvironment />
 
-      <div className="relative mx-auto grid min-h-full w-full max-w-6xl items-center gap-9 px-5 py-12 pb-32 sm:px-8 md:gap-10 lg:grid-cols-[minmax(290px,0.44fr)_minmax(0,0.56fr)] lg:px-12 lg:py-8 xl:gap-16">
-        <motion.div
-          variants={portraitVariants}
+      <div className="scene-two-layout relative z-10 mx-auto flex min-h-full w-full max-w-7xl flex-col px-5 pb-32 pt-20 sm:px-8 sm:pt-20 lg:px-12 lg:pb-28 lg:pt-8 xl:px-16">
+        <motion.header
+          custom={0.02}
+          variants={revealVariants}
           initial="hidden"
           animate="visible"
-          className="mx-auto w-full max-w-[20rem] sm:max-w-[22rem] lg:max-w-[23rem]"
+          className="scene-two-chapter mx-auto w-full max-w-4xl text-center lg:mx-0 lg:text-left"
         >
-          <NotebookPortrait
-            reducedMotion={reducedMotion}
-            smoothPortraitX={smoothPortraitX}
-            smoothPortraitY={smoothPortraitY}
-            onPointerMove={handlePortraitMove}
-            onPointerLeave={resetPortraitDepth}
-          />
-        </motion.div>
-
-        <div className="mx-auto w-full max-w-2xl lg:mx-0">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <motion.header
-              custom={0.03}
-              variants={revealVariants}
-              initial="hidden"
-              animate="visible"
-            >
-              <p className="portfolio-eyebrow text-[0.68rem] font-semibold uppercase tracking-[0.28em]">
-                Scene 02 — Depth
-              </p>
-              <h1
-                id="behind-the-work-title"
-                className="mt-1.5 text-xl font-medium tracking-tight sm:text-2xl"
-              >
-                Behind the Work
-              </h1>
-            </motion.header>
-
-            <motion.div
-              custom={0.06}
-              variants={revealVariants}
-              initial="hidden"
-              animate="visible"
-              className="portfolio-status-pill inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium"
-            >
-              <span className="relative flex size-2" aria-hidden="true">
-                {!reducedMotion && (
-                  <motion.span
-                    className="portfolio-status-pulse absolute inset-0 rounded-full"
-                    animate={{ opacity: [0.55, 0, 0.55], scale: [1, 2.1, 1] }}
-                    transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
-                  />
-                )}
-                <span className="portfolio-status-dot relative size-2 rounded-full" />
-              </span>
-              Available for Work
-            </motion.div>
+          <div className="scene-two-chapter__eyebrow">
+            <span>Scene Two</span>
+            <i aria-hidden="true" />
+            <span>Workshop Interior</span>
           </div>
+          <h1 id="behind-the-work-title" className="scene-two-chapter__title mt-2">
+            Behind the Work
+          </h1>
+          <p className="scene-two-chapter__subtitle mt-1.5">The workshop of the creator</p>
+        </motion.header>
 
-          <motion.h2
+        <div className="scene-two-content-grid mt-5 grid flex-1 items-center gap-7 sm:mt-6 lg:mt-4 lg:grid-cols-[minmax(17rem,0.42fr)_minmax(0,0.58fr)] lg:gap-10 xl:gap-14">
+          <motion.div
+            variants={portraitVariants}
+            initial="hidden"
+            animate="visible"
+            className="mx-auto w-full max-w-[19rem] sm:max-w-[21rem] lg:max-w-[22rem]"
+          >
+            <div className="scene-two-object-label mb-3">
+              <WorkshopGlyph type="profile" />
+              <span>Character Folio</span>
+            </div>
+            <WorkshopProfileBook
+              reducedMotion={reducedMotion}
+              smoothPortraitX={smoothPortraitX}
+              smoothPortraitY={smoothPortraitY}
+              onPointerMove={handlePortraitMove}
+              onPointerLeave={resetSceneDepth}
+            />
+          </motion.div>
+
+          <motion.article
             custom={0.12}
             variants={revealVariants}
             initial="hidden"
             animate="visible"
-            className="portfolio-heading mt-5 max-w-2xl text-4xl font-semibold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.4rem]"
+            className="scene-two-journal mx-auto w-full max-w-2xl"
           >
-            Get to know me and my story.
-          </motion.h2>
+            <span aria-hidden="true" className="scene-two-panel-corner scene-two-panel-corner--tl" />
+            <span aria-hidden="true" className="scene-two-panel-corner scene-two-panel-corner--tr" />
+            <span aria-hidden="true" className="scene-two-panel-corner scene-two-panel-corner--bl" />
+            <span aria-hidden="true" className="scene-two-panel-corner scene-two-panel-corner--br" />
 
-          <motion.div
-            custom={0.2}
-            variants={revealVariants}
-            initial="hidden"
-            animate="visible"
-            className="portfolio-copy mt-5 max-w-xl space-y-4 text-sm leading-6 sm:text-base sm:leading-7"
-          >
-            <p>
-              Hi, my name is Jonel Bryan Ablog. I’m a web developer from the Philippines who enjoys
-              creating modern web applications with thoughtful user experiences. I love
-              turning ideas into polished projects that feel intuitive, useful, and
-              enjoyable to use.
-            </p>
-            <p>
-              I’m currently expanding my skills in full-stack development while working
-              toward a career in software engineering.
-            </p>
-          </motion.div>
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="scene-two-object-label">
+                <WorkshopGlyph type="journal" />
+                <span>Creator's Journal</span>
+              </div>
 
-          <motion.div
-            custom={0.3}
-            variants={revealVariants}
-            initial="hidden"
-            animate="visible"
-            className="mt-7 flex flex-col gap-3 min-[430px]:flex-row"
-          >
-            <button
-              type="button"
-              aria-label="Explore My Projects — go to Scene 03"
-              disabled={isTransitioning}
-              onClick={() => navigateToScene(2)}
-              className="portfolio-button-primary portfolio-focus inline-flex min-h-12 items-center justify-center rounded-full border px-6 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+              <div className="scene-two-availability inline-flex min-h-9 items-center gap-2 px-3 py-1.5 text-xs font-semibold">
+                <span className="relative flex size-2" aria-hidden="true">
+                  {!reducedMotion && <span className="scene-two-availability__pulse absolute inset-0" />}
+                  <span className="scene-two-availability__dot relative size-2" />
+                </span>
+                Available for Work
+              </div>
+            </div>
+
+            <motion.h2
+              custom={0.18}
+              variants={revealVariants}
+              initial="hidden"
+              animate="visible"
+              className="scene-two-journal__heading mt-5 max-w-xl"
             >
-              Explore My Projects
-            </button>
-            <button
-              type="button"
-              aria-label="Contact Me — go to Scene 05"
-              disabled={isTransitioning}
-              onClick={() => navigateToScene(4)}
-              className="portfolio-button-secondary portfolio-focus inline-flex min-h-12 items-center justify-center rounded-full border px-6 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+              Get to know me and my story.
+            </motion.h2>
+
+            <motion.div
+              custom={0.24}
+              variants={revealVariants}
+              initial="hidden"
+              animate="visible"
+              className="scene-two-journal__copy mt-5 max-w-xl space-y-4 text-sm leading-6 sm:text-base sm:leading-7"
             >
-              Contact Me
-            </button>
-          </motion.div>
+              <p>
+                Hi, my name is Jonel Bryan Ablog. I’m a web developer from the Philippines who enjoys
+                creating modern web applications with thoughtful user experiences. I love turning
+                ideas into polished projects that feel intuitive, useful, and enjoyable to use.
+              </p>
+              <p>
+                I’m currently expanding my skills in full-stack development while working toward a
+                career in software engineering.
+              </p>
+            </motion.div>
+
+            <motion.div
+              custom={0.31}
+              variants={revealVariants}
+              initial="hidden"
+              animate="visible"
+              className="mt-7 flex flex-col gap-3 min-[430px]:flex-row"
+            >
+              <button
+                type="button"
+                aria-label="Explore My Projects — go to Scene 03"
+                data-cursor-label="View Work"
+                disabled={isTransitioning}
+                onClick={() => navigateToScene(2)}
+                className="scene-two-pixel-button scene-two-pixel-button--primary portfolio-focus inline-flex min-h-12 items-center justify-center px-5 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <span>Explore My Projects</span>
+                <i aria-hidden="true">›</i>
+              </button>
+              <button
+                type="button"
+                aria-label="Contact Me — go to Scene 05"
+                data-cursor-label="Connect"
+                disabled={isTransitioning}
+                onClick={() => navigateToScene(4)}
+                className="scene-two-pixel-button scene-two-pixel-button--secondary portfolio-focus inline-flex min-h-12 items-center justify-center px-5 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Contact Me
+              </button>
+            </motion.div>
+          </motion.article>
         </div>
       </div>
     </section>
   );
 }
 
-type NotebookPortraitProps = {
+type WorkshopProfileBookProps = {
   reducedMotion: boolean;
   smoothPortraitX: MotionValue<number>;
   smoothPortraitY: MotionValue<number>;
@@ -206,17 +391,15 @@ type NotebookPortraitProps = {
   onPointerLeave: () => void;
 };
 
-function NotebookPortrait({
+function WorkshopProfileBook({
   reducedMotion,
   smoothPortraitX,
   smoothPortraitY,
   onPointerMove,
   onPointerLeave,
-}: NotebookPortraitProps) {
+}: WorkshopProfileBookProps) {
   const [currentPage, setCurrentPage] = useState<1 | 2>(1);
-  const [turnDirection, setTurnDirection] = useState<
-    "forward" | "backward" | null
-  >(null);
+  const [turnDirection, setTurnDirection] = useState<"forward" | "backward" | null>(null);
   const [isCrossfading, setIsCrossfading] = useState(false);
   const portraitButtonRef = useRef<HTMLButtonElement>(null);
   const storyButtonRef = useRef<HTMLButtonElement>(null);
@@ -228,9 +411,7 @@ function NotebookPortrait({
     if (!hasFlippedRef.current || isTurning) return;
 
     const focusTimer = window.setTimeout(() => {
-      const target = currentPage === 2
-        ? storyButtonRef.current
-        : portraitButtonRef.current;
+      const target = currentPage === 2 ? storyButtonRef.current : portraitButtonRef.current;
       target?.focus({ preventScroll: true });
     }, 20);
 
@@ -267,7 +448,6 @@ function NotebookPortrait({
 
   const finishTurn = () => {
     if (!turnDirection) return;
-
     setCurrentPage(turnDirection === "forward" ? 2 : 1);
     setTurnDirection(null);
   };
@@ -277,7 +457,7 @@ function NotebookPortrait({
     options: { active: boolean; buttonRef?: RefObject<HTMLButtonElement | null> },
   ) =>
     page === 1 ? (
-      <PortraitPage
+      <CharacterProfilePage
         smoothPortraitX={smoothPortraitX}
         smoothPortraitY={smoothPortraitY}
         buttonRef={options.buttonRef}
@@ -285,7 +465,7 @@ function NotebookPortrait({
         onOpen={() => beginTurn("forward")}
       />
     ) : (
-      <StoryPage
+      <WorkshopRecordPage
         buttonRef={options.buttonRef}
         isActive={options.active}
         onClose={() => beginTurn("backward")}
@@ -293,18 +473,21 @@ function NotebookPortrait({
     );
 
   const destinationPage: 1 | 2 = turnDirection === "forward" ? 2 : 1;
+  const turningForward = turnDirection === "forward";
 
   return (
     <div
-      className="relative aspect-[4/5] w-full [perspective:1400px]"
+      className="scene-two-profile-book relative aspect-[4/5] w-full"
       onPointerMove={currentPage === 1 && !isTurning ? onPointerMove : undefined}
       onPointerLeave={onPointerLeave}
     >
-      <div className="pointer-events-none absolute -inset-2 rounded-[1.8rem] bg-black/25 shadow-[0_28px_90px_rgba(0,0,0,0.48)] backdrop-blur-sm" />
-      <div className="portfolio-notebook-frame absolute inset-0 overflow-hidden rounded-[1.5rem] border p-2">
-        <div className="portfolio-divider-vertical pointer-events-none absolute inset-y-4 left-3 z-30 w-px" />
+      <div className="scene-two-profile-book__shadow pointer-events-none absolute inset-0" />
+      <div className="scene-two-profile-book__binding" aria-hidden="true">
+        {[0, 1, 2, 3, 4].map((ring) => <span key={ring} />)}
+      </div>
 
-        <div className="relative h-full overflow-hidden rounded-[1.15rem] [perspective:1400px]">
+      <div className="scene-two-profile-book__frame absolute inset-0 overflow-hidden">
+        <div className="relative h-full overflow-hidden">
           {reducedMotion ? (
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
@@ -317,8 +500,7 @@ function NotebookPortrait({
               >
                 {renderPage(currentPage, {
                   active: !isCrossfading,
-                  buttonRef:
-                    currentPage === 1 ? portraitButtonRef : storyButtonRef,
+                  buttonRef: currentPage === 1 ? portraitButtonRef : storyButtonRef,
                 })}
               </motion.div>
             </AnimatePresence>
@@ -327,53 +509,41 @@ function NotebookPortrait({
               <div className="absolute inset-0 z-0" aria-hidden="true">
                 {renderPage(destinationPage, {
                   active: false,
-                  buttonRef:
-                    destinationPage === 1
-                      ? portraitButtonRef
-                      : storyButtonRef,
+                  buttonRef: destinationPage === 1 ? portraitButtonRef : storyButtonRef,
                 })}
               </div>
 
               <motion.div
                 aria-hidden="true"
-                className="absolute inset-0 z-20 origin-left [backface-visibility:hidden] [transform-style:preserve-3d]"
-                initial={{ rotateY: 0 }}
+                className={`absolute inset-0 z-20 origin-left overflow-hidden ${
+                  turningForward ? "scene-two-page-turn--forward" : "scene-two-page-turn--backward"
+                }`}
+                initial={{ clipPath: "inset(0 0% 0 0%)", x: 0, scaleX: 1 }}
                 animate={{
-                  rotateY: turnDirection === "forward" ? -178 : 178,
+                  clipPath: turningForward ? "inset(0 100% 0 0%)" : "inset(0 0% 0 100%)",
+                  x: turningForward ? -9 : 9,
+                  scaleX: 0.95,
                 }}
-                transition={{ duration: 4.8, ease: easing }}
+                transition={{ duration: 0.86, ease: pageTurnEase }}
                 onAnimationComplete={finishTurn}
               >
                 {renderPage(currentPage, { active: false })}
-                <motion.div
-                  aria-hidden="true"
-                  className={`pointer-events-none absolute inset-0 ${
-                    turnDirection === "forward"
-                      ? "bg-gradient-to-l from-black/55 via-black/15 to-transparent"
-                      : "bg-gradient-to-r from-black/55 via-black/15 to-transparent"
-                  }`}
-                  animate={{ opacity: [0, 0.7, 0.15] }}
-                  transition={{ duration: 4.8, ease: "easeInOut" }}
-                />
+                <div className="scene-two-page-turn__shade absolute inset-0" />
               </motion.div>
 
               <motion.div
                 aria-hidden="true"
-                className={`pointer-events-none absolute inset-0 z-10 ${
-                  turnDirection === "forward"
-                    ? "bg-gradient-to-r from-black/45 via-black/10 to-transparent"
-                    : "bg-gradient-to-l from-black/45 via-black/10 to-transparent"
-                }`}
-                animate={{ opacity: [0, 0.45, 0] }}
-                transition={{ duration: 0.8, ease: "easeInOut" }}
+                className="scene-two-page-fold pointer-events-none absolute inset-y-0 z-30 w-8"
+                initial={{ left: turningForward ? "calc(100% - 2rem)" : "0%", opacity: 0 }}
+                animate={{ left: turningForward ? "0%" : "calc(100% - 2rem)", opacity: [0, 0.9, 0] }}
+                transition={{ duration: 0.86, ease: pageTurnEase }}
               />
             </>
           ) : (
             <div className="absolute inset-0">
               {renderPage(currentPage, {
                 active: true,
-                buttonRef:
-                  currentPage === 1 ? portraitButtonRef : storyButtonRef,
+                buttonRef: currentPage === 1 ? portraitButtonRef : storyButtonRef,
               })}
             </div>
           )}
@@ -383,7 +553,7 @@ function NotebookPortrait({
   );
 }
 
-type PortraitPageProps = {
+type CharacterProfilePageProps = {
   smoothPortraitX: MotionValue<number>;
   smoothPortraitY: MotionValue<number>;
   buttonRef?: RefObject<HTMLButtonElement | null>;
@@ -391,85 +561,92 @@ type PortraitPageProps = {
   onOpen: () => void;
 };
 
-function PortraitPage({
+function CharacterProfilePage({
   smoothPortraitX,
   smoothPortraitY,
   buttonRef,
   isActive,
   onOpen,
-}: PortraitPageProps) {
+}: CharacterProfilePageProps) {
   return (
-    <div className="relative h-full overflow-hidden bg-black">
+    <div className="scene-two-character-page relative h-full overflow-hidden">
       <motion.img
-        src={profilePlaceholder}
-        alt="Temporary portrait placeholder for Jonel Bryan Ablog; replace with his graduation portrait"
+        src={profilePortrait}
+        alt="Graduation portrait of Jonel Bryan Ablog"
         draggable={false}
         style={{ x: smoothPortraitX, y: smoothPortraitY }}
         className="h-full w-full scale-[1.025] select-none object-cover"
       />
-      <div className="portfolio-portrait-wash pointer-events-none absolute inset-0" />
+      <div className="scene-two-character-page__wash pointer-events-none absolute inset-0" />
+      <div className="scene-two-character-page__label absolute left-4 top-4">
+        <WorkshopGlyph type="profile" />
+        <span>Character Profile</span>
+      </div>
+      <div className="scene-two-character-page__identity absolute inset-x-4 bottom-16">
+        <p>Jonel Bryan Ablog</p>
+        <span>Web Developer · Philippines</span>
+      </div>
       <button
         ref={buttonRef}
         type="button"
-        aria-label="Turn to the next notebook page"
+        aria-label="Turn to the next character folio page"
         tabIndex={isActive ? 0 : -1}
         disabled={!isActive}
         onClick={onOpen}
-        className="portfolio-button-secondary portfolio-focus absolute bottom-4 right-4 z-20 rounded-full border bg-black/65 px-4 py-2 text-xs font-semibold shadow-lg transition-colors hover:bg-black/85 disabled:pointer-events-none"
+        className="scene-two-page-button portfolio-focus absolute bottom-4 right-4 z-20 min-h-10 px-3 text-xs font-semibold disabled:pointer-events-none"
       >
-        Next Page →
+        Next Page <span aria-hidden="true">→</span>
       </button>
     </div>
   );
 }
 
-type StoryPageProps = {
+type WorkshopRecordPageProps = {
   buttonRef?: RefObject<HTMLButtonElement | null>;
   isActive: boolean;
   onClose: () => void;
 };
 
-function StoryPage({ buttonRef, isActive, onClose }: StoryPageProps) {
+function WorkshopRecordPage({ buttonRef, isActive, onClose }: WorkshopRecordPageProps) {
   return (
-    <div className="portfolio-notebook-page relative flex h-full flex-col overflow-hidden p-7 sm:p-8">
-      <div
-        aria-hidden="true"
-        className="portfolio-notebook-lines pointer-events-none absolute inset-0 opacity-20"
-      />
-      <div className="portfolio-divider-vertical pointer-events-none absolute inset-y-5 left-4 w-px" />
-
-      <div className="relative flex flex-1 flex-col justify-center gap-8 pl-3">
-        <div>
-          <p className="portfolio-eyebrow text-xs font-semibold uppercase tracking-[0.25em]">
-            Education
-          </p>
-          <p className="portfolio-heading mt-3 text-lg font-medium leading-6">
+    <div className="scene-two-record-page relative flex h-full flex-col overflow-hidden p-6 sm:p-7">
+      <div aria-hidden="true" className="scene-two-record-page__grid absolute inset-0" />
+      <div className="relative flex flex-1 flex-col justify-center gap-6 pl-2 sm:gap-8">
+        <section className="scene-two-record-block" aria-labelledby="academy-record-title">
+          <div className="scene-two-record-block__label">
+            <WorkshopGlyph type="academy" />
+            <p id="academy-record-title">Academy Record</p>
+          </div>
+          <p className="scene-two-record-block__value mt-3">
             Bachelor of Science in Information Technology
           </p>
-          <p className="portfolio-copy mt-2 text-sm">2022–2026</p>
-        </div>
+          <p className="scene-two-record-block__detail mt-2">2022–2026</p>
+        </section>
 
-        <div>
-          <p className="portfolio-eyebrow text-xs font-semibold uppercase tracking-[0.25em]">
-            Career Goal
-          </p>
-          <p className="portfolio-heading mt-3 text-lg font-medium">Software Engineer</p>
-          <p className="portfolio-copy mt-2 text-sm leading-6">
+        <div aria-hidden="true" className="scene-two-record-divider" />
+
+        <section className="scene-two-record-block" aria-labelledby="career-destination-title">
+          <div className="scene-two-record-block__label">
+            <WorkshopGlyph type="compass" />
+            <p id="career-destination-title">Destination</p>
+          </div>
+          <p className="scene-two-record-block__value mt-3">Software Engineer</p>
+          <p className="scene-two-record-block__detail mt-2 leading-5">
             Building thoughtful digital experiences.
           </p>
-        </div>
+        </section>
       </div>
 
       <button
         ref={buttonRef}
         type="button"
-        aria-label="Turn to the previous notebook page"
+        aria-label="Turn to the previous character folio page"
         tabIndex={isActive ? 0 : -1}
         disabled={!isActive}
         onClick={onClose}
-        className="portfolio-button-secondary portfolio-focus relative mt-5 self-start rounded-full border px-4 py-2 text-xs font-semibold transition-colors hover:bg-black/45 disabled:pointer-events-none"
+        className="scene-two-page-button portfolio-focus relative mt-4 min-h-10 self-start px-3 text-xs font-semibold disabled:pointer-events-none"
       >
-        ← Previous Page
+        <span aria-hidden="true">←</span> Previous Page
       </button>
     </div>
   );
