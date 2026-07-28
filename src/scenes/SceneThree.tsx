@@ -1,23 +1,35 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+  type RefObject,
+} from "react";
 import { ExternalLink, Play } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 import {
   AnimatePresence,
   motion,
-  useMotionValueEvent,
   useReducedMotion,
   useScroll,
+  useTransform,
+  type MotionValue,
   type Variants,
 } from "motion/react";
+import { useSceneNavigation } from "../components/SceneNavigationContext";
 import projectVideo from "../assets/videos/Project video.mp4";
 import NelumeVideo from "../assets/videos/Nelume video.mp4";
 import IntelliCLIQVideo from "../assets/videos/IntelliCLIQ video.mp4";
+import "../styles/sceneThree.css";
 
 type PreviewFrame = {
   eyebrow: string;
   title: string;
   detail: string;
 };
+
+type ExhibitTheme = "archive" | "cafe" | "forge";
 
 type Project = {
   id: string;
@@ -26,6 +38,11 @@ type Project = {
   description: string;
   previewvideo: string;
   technologies: readonly string[];
+  exhibit: {
+    theme: ExhibitTheme;
+    label: string;
+    stationName: string;
+  };
   presentation: {
     category: string;
     status: string;
@@ -61,6 +78,11 @@ const projects: readonly Project[] = [
       "Cloudinary",
       "Gemini AI",
     ],
+    exhibit: {
+      theme: "archive",
+      label: "Master Creation",
+      stationName: "The Memory Archive",
+    },
     presentation: {
       category: "Memory platform",
       status: "Featured build",
@@ -86,6 +108,11 @@ const projects: readonly Project[] = [
       "Express",
       "Gemini AI",
     ],
+    exhibit: {
+      theme: "cafe",
+      label: "Smart Café System",
+      stationName: "Guild Café Station",
+    },
     presentation: {
       category: "Ordering experience",
       status: "Featured build",
@@ -116,6 +143,11 @@ const projects: readonly Project[] = [
       "Vercel",
       "Render",
     ],
+    exhibit: {
+      theme: "forge",
+      label: "Career Forge",
+      stationName: "Scholar's Forge",
+    },
     presentation: {
       category: "Resume viewer",
       status: "AI-powered analysis",
@@ -147,280 +179,455 @@ const projects: readonly Project[] = [
   },
 ] as const;
 
-const cinematicEase = [0.65, 0, 0.35, 1] as const;
+const hallEase = [0.22, 1, 0.36, 1] as const;
+
+const dustMotes = Array.from({ length: 12 }, (_, index) => ({
+  left: `${7 + ((index * 29) % 87)}%`,
+  top: `${12 + ((index * 37) % 70)}%`,
+  delay: `${-0.7 * (index % 7)}s`,
+  duration: `${7.5 + (index % 5) * 1.1}s`,
+}));
+
+const revealVariants: Variants = {
+  hidden: { opacity: 0, y: 28, filter: "blur(3px)" },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.72, ease: hallEase },
+  },
+};
 
 export default function SceneThree() {
+  const sceneRef = useRef<HTMLElement>(null);
   const scrollContainerRef = useRef<HTMLElement>(null);
-  const activeProjectRef = useRef(0);
   const [activeProject, setActiveProject] = useState(0);
-  const [direction, setDirection] = useState<1 | -1>(1);
   const prefersReducedMotion = useReducedMotion();
   const reducedMotion = prefersReducedMotion !== false;
+  const { navigateToScene, isTransitioning } = useSceneNavigation();
   const { scrollYProgress } = useScroll({ container: scrollContainerRef });
+  const farX = useTransform(scrollYProgress, [0, 1], [-14, 14]);
+  const middleX = useTransform(scrollYProgress, [0, 1], [18, -18]);
+  const nearX = useTransform(scrollYProgress, [0, 1], [-24, 24]);
 
-  useMotionValueEvent(scrollYProgress, "change", (progress) => {
-    const nextProject = Math.min(
-      projects.length - 1,
-      Math.round(progress * (projects.length - 1)),
-    );
+  useEffect(() => {
+    const scene = sceneRef.current;
+    if (!scene) return;
 
-    if (nextProject === activeProjectRef.current) return;
+    const syncVisibility = () => {
+      scene.classList.toggle("hall-animation-paused", document.hidden);
+    };
 
-    setDirection(nextProject > activeProjectRef.current ? 1 : -1);
-    activeProjectRef.current = nextProject;
-    setActiveProject(nextProject);
-  });
-
-  const project = projects[activeProject];
+    syncVisibility();
+    document.addEventListener("visibilitychange", syncVisibility);
+    return () => document.removeEventListener("visibilitychange", syncVisibility);
+  }, []);
 
   return (
     <section
-      ref={scrollContainerRef}
+      ref={(element) => {
+        sceneRef.current = element;
+        scrollContainerRef.current = element;
+      }}
       data-cinematic-scene={3}
       data-scene-scroll
       aria-labelledby="featured-work-title"
-      className={`portfolio-scene relative h-full snap-y snap-mandatory overflow-y-auto overflow-x-hidden overscroll-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
-        reducedMotion ? "" : "scroll-smooth"
+      className={`hall-of-creations portfolio-scene relative h-full overflow-y-auto overflow-x-hidden overscroll-contain ${
+        reducedMotion ? "hall-reduced-motion" : "scroll-smooth"
       }`}
     >
-      <div className="relative">
-        <div className="sticky top-0 z-10 h-dvh overflow-hidden">
-          <div
-            aria-hidden="true"
-            className="portfolio-scene-glow pointer-events-none absolute inset-x-[12%] top-[8%] h-[72%] rounded-full blur-2xl"
-          />
+      <HallEnvironment
+        reducedMotion={reducedMotion}
+        farX={farX}
+        middleX={middleX}
+        nearX={nearX}
+      />
 
-          <div className="scene-three-layout relative mx-auto flex h-full w-full max-w-7xl flex-col px-5 pb-24 pt-7 sm:px-8 sm:pt-8 lg:px-12 lg:pb-20 xl:px-16">
-            <header className="mx-auto shrink-0 text-center">
-              <p className="portfolio-eyebrow text-[0.68rem] font-semibold uppercase tracking-[0.3em] sm:text-xs">
-                Scene 03 — Featured Work
-              </p>
-              <h1
-                id="featured-work-title"
-                className="portfolio-heading mt-2 text-2xl font-semibold tracking-tight sm:text-3xl lg:text-4xl"
-              >
-                Selected projects, built with purpose.
-              </h1>
-              <p className="portfolio-muted mx-auto mt-2 max-w-xl text-xs leading-5 sm:text-sm">
-                Most projects that are outstanding and something I’m proud of.
-              </p>
-            </header>
+      <div className="hall-content relative z-10">
+        <HallEntrance reducedMotion={reducedMotion} />
 
-            <div className="scene-three-showcase relative mt-5 flex min-h-0 flex-1 justify-center sm:mt-6 lg:mt-7">
-              <AnimatePresence mode="wait" custom={direction}>
-                <ProjectShowcase
-                  key={project.id}
-                  project={project}
-                  projectNumber={activeProject + 1}
-                  projectCount={projects.length}
-                  direction={direction}
-                  reducedMotion={reducedMotion}
-                />
-              </AnimatePresence>
-            </div>
-
-            <div className="pointer-events-none absolute bottom-7 left-5 flex items-center gap-3 sm:left-8 lg:left-12 xl:left-16">
-              <span className="portfolio-subtle text-[0.62rem] font-semibold uppercase tracking-[0.24em]">
-                Scroll to reveal
-              </span>
-              <div className="flex gap-1.5" aria-hidden="true">
-                {projects.map((item, index) => (
-                  <span
-                    key={item.id}
-                    className={`h-1 rounded-full transition-[width,background-color] duration-500 ${
-                      index === activeProject
-                        ? "portfolio-progress-active w-6"
-                        : "portfolio-progress-idle w-1.5"
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div aria-hidden="true" style={{ marginTop: "-100dvh" }}>
-          {projects.map((item) => (
-            <div key={item.id} className="h-dvh snap-start" />
+        <div className="hall-exhibits">
+          {projects.map((project, index) => (
+            <CreationExhibit
+              key={project.id}
+              project={project}
+              index={index}
+              projectCount={projects.length}
+              reducedMotion={reducedMotion}
+              scrollRoot={scrollContainerRef}
+              onEnter={() => setActiveProject(index)}
+            />
           ))}
         </div>
+
+        <HallExit
+          disabled={isTransitioning}
+          onContinue={() => navigateToScene(3)}
+        />
       </div>
+
+      <ProjectProgress
+        activeProject={activeProject}
+        projectCount={projects.length}
+      />
     </section>
   );
 }
 
-type ProjectShowcaseProps = {
-  project: Project;
-  projectNumber: number;
-  projectCount: number;
-  direction: 1 | -1;
+type HallEnvironmentProps = {
   reducedMotion: boolean;
+  farX: MotionValue<number>;
+  middleX: MotionValue<number>;
+  nearX: MotionValue<number>;
 };
 
-function ProjectShowcase({
-  project,
-  projectNumber,
-  projectCount,
-  direction,
+function HallEnvironment({
   reducedMotion,
-}: ProjectShowcaseProps) {
-  const showcaseVariants: Variants = {
-    initial: reducedMotion
-      ? { opacity: 0 }
-      : {
-          opacity: 0,
-          y: direction * 54,
-          scale: 0.95,
-          filter: "blur(8px)",
-        },
-    animate: reducedMotion
-      ? { opacity: 1, transition: { duration: 0.18 } }
-      : {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          filter: "blur(0px)",
-          transition: { duration: 0.82, ease: cinematicEase },
-        },
-    exit: reducedMotion
-      ? { opacity: 0, transition: { duration: 0.14 } }
-      : {
-          opacity: 0,
-          y: direction * -28,
-          scale: 0.92,
-          filter: "blur(7px)",
-          transition: { duration: 0.48, ease: cinematicEase },
-        },
-  };
+  farX,
+  middleX,
+  nearX,
+}: HallEnvironmentProps) {
+  const depthStyle = (x: MotionValue<number>) =>
+    reducedMotion ? undefined : { x };
+
+  return (
+    <div aria-hidden="true" className="hall-environment pointer-events-none">
+      <motion.div
+        className="hall-depth hall-depth--far"
+        style={depthStyle(farX)}
+      >
+        <div className="hall-back-wall" />
+        <div className="hall-ceiling-grid" />
+        <div className="hall-arch" style={{ left: "11%" }} />
+        <div className="hall-arch" style={{ left: "39%" }} />
+        <div className="hall-arch" style={{ right: "11%" }} />
+      </motion.div>
+
+      <motion.div
+        className="hall-depth hall-depth--mid"
+        style={depthStyle(middleX)}
+      >
+        <HallBanner side="left" />
+        <HallBanner side="right" />
+        <div className="hall-balcony hall-balcony--left" />
+        <div className="hall-balcony hall-balcony--right" />
+        <EnergyPipe side="left" />
+        <EnergyPipe side="right" />
+        <div className="hall-light-beam hall-light-beam--one" />
+        <div className="hall-light-beam hall-light-beam--two" />
+      </motion.div>
+
+      <motion.div
+        className="hall-depth hall-depth--near"
+        style={depthStyle(nearX)}
+      >
+        <div className="hall-support hall-support--left" />
+        <div className="hall-support hall-support--right" />
+        <div className="hall-floor" />
+        <div className="hall-gear hall-gear--left">
+          <i />
+        </div>
+        <div className="hall-gear hall-gear--right is-reverse">
+          <i />
+        </div>
+      </motion.div>
+
+      {dustMotes.map((mote, index) => (
+        <span
+          key={index}
+          className="hall-dust"
+          style={
+            {
+              left: mote.left,
+              top: mote.top,
+              "--dust-delay": mote.delay,
+              "--dust-duration": mote.duration,
+            } as CSSProperties
+          }
+        />
+      ))}
+
+      <div className="hall-readability-vignette" />
+    </div>
+  );
+}
+
+function EnergyPipe({ side }: { side: "left" | "right" }) {
+  return (
+    <div className={`hall-energy-pipe hall-energy-pipe--${side}`}>
+      <span />
+      <i />
+      <i />
+      <i />
+    </div>
+  );
+}
+
+function HallBanner({ side }: { side: "left" | "right" }) {
+  return (
+    <div
+      className="hall-hanging-banner"
+      style={{ [side]: side === "left" ? "17%" : "17%" }}
+    >
+      <i />
+    </div>
+  );
+}
+
+function HallEntrance({ reducedMotion }: { reducedMotion: boolean }) {
+  return (
+    <div className="hall-entrance">
+      <div aria-hidden="true" className="hall-workshop-door">
+        <motion.div
+          className="hall-door-panel hall-door-panel--left"
+          initial={reducedMotion ? { opacity: 1 } : { x: "0%" }}
+          animate={reducedMotion ? { opacity: 0.35 } : { x: "-88%" }}
+          transition={{ duration: reducedMotion ? 0.15 : 1.15, delay: 0.18, ease: hallEase }}
+        />
+        <motion.div
+          className="hall-door-panel hall-door-panel--right"
+          initial={reducedMotion ? { opacity: 1 } : { x: "0%" }}
+          animate={reducedMotion ? { opacity: 0.35 } : { x: "88%" }}
+          transition={{ duration: reducedMotion ? 0.15 : 1.15, delay: 0.18, ease: hallEase }}
+        />
+        <div className="hall-door-light" />
+      </div>
+
+      <motion.header
+        className="hall-chapter-header"
+        initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: reducedMotion ? 0.16 : 0.7, delay: reducedMotion ? 0 : 0.55, ease: hallEase }}
+      >
+        <p className="hall-chapter-index">Scene Three</p>
+        <div aria-hidden="true" className="hall-chapter-rule">
+          <span />
+          <ExhibitGlyph type="archive" />
+          <span />
+        </div>
+        <p className="hall-featured-label">Featured Work</p>
+        <h1 id="featured-work-title">Hall of Creations</h1>
+        <p className="hall-chapter-copy">
+          Every creation tells part of the journey. Enter the guild exhibition
+          and explore the software built along the way.
+        </p>
+        <p className="hall-enter-prompt">
+          Enter the exhibition <span className="hall-enter-caret" aria-hidden="true" />
+        </p>
+      </motion.header>
+    </div>
+  );
+}
+
+type CreationExhibitProps = {
+  project: Project;
+  index: number;
+  projectCount: number;
+  reducedMotion: boolean;
+  scrollRoot: RefObject<HTMLElement | null>;
+  onEnter: () => void;
+};
+
+function CreationExhibit({
+  project,
+  index,
+  projectCount,
+  reducedMotion,
+  scrollRoot,
+  onEnter,
+}: CreationExhibitProps) {
+  const flagship = index === 0;
+  const reverse = index % 2 === 1;
 
   return (
     <motion.article
-      variants={showcaseVariants}
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      aria-label={`${project.title}, project ${projectNumber} of ${projectCount}`}
-      className="absolute inset-0 flex flex-col items-center justify-start"
+      aria-labelledby={`${project.id}-title`}
+      className={`creation-exhibit ${flagship ? "creation-exhibit--flagship" : ""} ${
+        reverse ? "creation-exhibit--reverse" : ""
+      }`}
+      variants={reducedMotion ? undefined : revealVariants}
+      initial={reducedMotion ? { opacity: 0 } : "hidden"}
+      whileInView={reducedMotion ? { opacity: 1 } : "visible"}
+      viewport={{ root: scrollRoot, amount: 0.28, once: false }}
+      transition={reducedMotion ? { duration: 0.15 } : undefined}
+      onViewportEnter={onEnter}
     >
-      <span className="sr-only" aria-live="polite">
-        Showing {project.title}, project {projectNumber} of {projectCount}
-      </span>
-      <div className="my-auto flex w-full flex-col items-center">
-        <motion.div
-          animate={
-            reducedMotion
-              ? undefined
-              : { y: [0, -5, 0], rotate: [-0.35, 0.45, -0.35] }
-          }
-          transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut" }}
-          className="hidden md:block"
-        >
-          <LaptopMockup project={project} reducedMotion={reducedMotion} />
-        </motion.div>
+      <ExhibitLabel
+        label={project.exhibit.label}
+        title={project.exhibit.stationName}
+        theme={project.exhibit.theme}
+      />
 
-        <motion.div
-          animate={
-            reducedMotion
-              ? undefined
-              : { y: [0, -4, 0], rotate: [-0.3, 0.35, -0.3] }
-          }
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-          className="w-full md:hidden"
-        >
-          <MobileTabletMockup project={project} reducedMotion={reducedMotion} />
-        </motion.div>
+      <div className="exhibit-station">
+        <div aria-hidden="true" className="exhibit-station-grid" />
+        <ExhibitCorners />
 
-        <div className="mt-3 w-full max-w-3xl text-center sm:mt-4">
-        <div className="flex items-baseline justify-center gap-3">
-          <p className="portfolio-eyebrow text-[0.62rem] font-semibold tracking-[0.2em] tabular-nums">
-            {String(projectNumber).padStart(2, "0")} / {String(projectCount).padStart(2, "0")}
-          </p>
-          <h2 className="portfolio-heading text-xl font-semibold tracking-tight sm:text-2xl">
-            {project.title}
-          </h2>
-          <span className="portfolio-muted hidden text-sm sm:inline">— {project.subtitle}</span>
-        </div>
-        <p className="portfolio-copy mx-auto mt-2 line-clamp-3 max-w-2xl text-xs leading-5 sm:text-sm sm:leading-6">
-          {project.description}
-        </p>
+        <div className="exhibit-layout">
+          <div className="exhibit-display-column">
+            <PixelExhibitFrame
+              project={project}
+              flagship={flagship}
+              reducedMotion={reducedMotion}
+            />
+            <div aria-hidden="true" className="exhibit-pedestal">
+              <span />
+              <span />
+              <span />
+            </div>
+          </div>
 
-        <ul
-          aria-label={`${project.title} technologies`}
-          className="mx-auto mt-3 flex max-w-3xl flex-wrap justify-center gap-1.5"
-        >
-          {project.technologies.map((technology) => (
-            <li
-              key={technology}
-              className="portfolio-chip rounded-full border px-2.5 py-1 text-[0.62rem] sm:text-[0.68rem]"
+          <div className="exhibit-information">
+            <p className="exhibit-label">
+              Exhibit {String(index + 1).padStart(2, "0")} /{" "}
+              {String(projectCount).padStart(2, "0")}
+            </p>
+            <p className="exhibit-station-name">{project.exhibit.stationName}</p>
+            <h2 id={`${project.id}-title`}>{project.title}</h2>
+            <p className="exhibit-subtitle">{project.subtitle}</p>
+            <p className="exhibit-description">{project.description}</p>
+
+            <dl className="exhibit-readouts">
+              <div>
+                <dt>Class</dt>
+                <dd>{project.presentation.category}</dd>
+              </div>
+              <div>
+                <dt>Status</dt>
+                <dd>{project.presentation.status}</dd>
+              </div>
+              <div>
+                <dt>Signal</dt>
+                <dd>{project.presentation.highlight}</dd>
+              </div>
+            </dl>
+
+            <ul
+              className="exhibit-technologies"
+              aria-label={`${project.title} technologies`}
             >
-              {technology}
-            </li>
-          ))}
-        </ul>
+              {project.technologies.map((technology) => (
+                <PixelTechTag key={technology}>{technology}</PixelTechTag>
+              ))}
+            </ul>
 
-        <div className="mt-3 flex flex-wrap justify-center gap-2 sm:mt-4">
-          <ProjectAction href={project.liveUrl} label="Live Demo" icon={<ExternalLink />} />
-          <ProjectAction href={project.githubUrl} label="GitHub" icon={<FaGithub />} />
-          <ProjectAction href={project.demoVideoUrl} label="Demo Video" icon={<Play />} />
-        </div>
+            <div className="exhibit-actions">
+              <ProjectActionButton
+                href={project.liveUrl}
+                label="Live Demo"
+                projectTitle={project.title}
+                icon={<ExternalLink />}
+              />
+              <ProjectActionButton
+                href={project.githubUrl}
+                label="GitHub"
+                projectTitle={project.title}
+                icon={<FaGithub />}
+              />
+              <ProjectActionButton
+                href={project.demoVideoUrl}
+                label="Demo Video"
+                projectTitle={project.title}
+                icon={<Play />}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </motion.article>
   );
 }
 
-function LaptopMockup({ project, reducedMotion }: DevicePreviewProps) {
+function ExhibitLabel({
+  label,
+  title,
+  theme,
+}: {
+  label: string;
+  title: string;
+  theme: ExhibitTheme;
+}) {
   return (
-    <motion.div
-      whileHover={
-        reducedMotion
-          ? undefined
-          : {
-              y: -4,
-              filter: "drop-shadow(0 30px 38px rgba(0,0,0,0.52))",
-            }
-      }
-      transition={{ duration: 0.35, ease: "easeInOut" }}
-      className="scene-three-laptop w-[min(66vw,43rem)] [filter:drop-shadow(0_24px_32px_rgba(0,0,0,0.42))]"
-    >
-      <div className="portfolio-device-frame relative rounded-[1.15rem] border p-2">
-        <span className="absolute left-1/2 top-1.5 z-20 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-black ring-1 ring-white/10" />
-        <div className="portfolio-device-screen aspect-video overflow-hidden rounded-[0.72rem] border">
-          <ProjectPreview project={project} reducedMotion={reducedMotion} />
+    <div aria-hidden="true" className="exhibit-banner">
+      <span className="exhibit-banner-chain" />
+      <div className="exhibit-banner-plaque">
+        <ExhibitGlyph type={theme} />
+        <div>
+          <span>{label}</span>
+          <strong>{title}</strong>
         </div>
       </div>
-      <div className="mx-auto h-2.5 w-[106%] -translate-x-[3%] rounded-b-[55%] border-t border-white/20 bg-gradient-to-b from-[#a9adb5] via-[#5f636c] to-[#292c32] shadow-[0_8px_18px_rgba(0,0,0,0.4)]" />
-      <div className="mx-auto h-1 w-24 rounded-b-full bg-black/55" />
-    </motion.div>
+      <span className="exhibit-banner-chain" />
+    </div>
   );
 }
 
-function MobileTabletMockup({ project, reducedMotion }: DevicePreviewProps) {
+function ExhibitCorners() {
   return (
-    <motion.div
-      whileHover={reducedMotion ? undefined : { y: -3 }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="portfolio-device-frame mx-auto w-[min(86vw,24rem)] rounded-[1rem] border p-1.5 [filter:drop-shadow(0_18px_26px_rgba(0,0,0,0.38))]"
-    >
-      <div className="portfolio-device-screen relative aspect-video overflow-hidden rounded-[0.68rem] border">
-        <span className="absolute left-1/2 top-1 z-20 size-1 -translate-x-1/2 rounded-full bg-black ring-1 ring-white/10" />
-        <ProjectPreview project={project} reducedMotion={reducedMotion} />
-      </div>
-    </motion.div>
+    <div aria-hidden="true">
+      <span className="exhibit-corner exhibit-corner--tl" />
+      <span className="exhibit-corner exhibit-corner--tr" />
+      <span className="exhibit-corner exhibit-corner--bl" />
+      <span className="exhibit-corner exhibit-corner--br" />
+    </div>
   );
 }
 
-type DevicePreviewProps = {
+function PixelTechTag({ children }: { children: ReactNode }) {
+  return (
+    <li className="pixel-tech-tag">
+      <span aria-hidden="true" />
+      {children}
+    </li>
+  );
+}
+
+function PixelExhibitFrame({
+  project,
+  flagship,
+  reducedMotion,
+}: {
+  project: Project;
+  flagship: boolean;
+  reducedMotion: boolean;
+}) {
+  return (
+    <div
+      className={`pixel-exhibit-frame ${
+        flagship ? "pixel-exhibit-frame--flagship" : ""
+      }`}
+    >
+      <span aria-hidden="true" className="frame-bolt frame-bolt--tl" />
+      <span aria-hidden="true" className="frame-bolt frame-bolt--tr" />
+      <span aria-hidden="true" className="frame-bolt frame-bolt--bl" />
+      <span aria-hidden="true" className="frame-bolt frame-bolt--br" />
+
+      <div className="pixel-exhibit-screen">
+        <ProjectExhibitScreen
+          project={project}
+          reducedMotion={reducedMotion}
+        />
+      </div>
+
+      <HallDecoration theme={project.exhibit.theme} />
+      <span aria-hidden="true" className="frame-energy-trace" />
+    </div>
+  );
+}
+
+function ProjectExhibitScreen({
+  project,
+  reducedMotion,
+}: {
   project: Project;
   reducedMotion: boolean;
-};
-
-function ProjectPreview({ project, reducedMotion }: DevicePreviewProps) {
-const [activePreviewFrame, setActivePreviewFrame] = useState(0);
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [activePreviewFrame, setActivePreviewFrame] = useState(0);
   const previewFrames = project.preview?.frames;
 
+  useManagedVideoPlayback(videoRef, reducedMotion);
+
   useEffect(() => {
-    setActivePreviewFrame(0);
     if (reducedMotion || !previewFrames || previewFrames.length < 2) return;
 
     const frameTimer = window.setInterval(() => {
@@ -432,227 +639,205 @@ const [activePreviewFrame, setActivePreviewFrame] = useState(0);
 
   const previewFrame = previewFrames?.[activePreviewFrame];
 
-  const overlayContainerVariants: Variants = {
-    hidden: {},
-    visible: {
-      transition: reducedMotion
-        ? { staggerChildren: 0.02 }
-        : { delayChildren: 0.22, staggerChildren: 0.1 },
-    },
-  };
-
-  const overlayItemVariants: Variants = {
-    hidden: reducedMotion
-      ? { opacity: 0 }
-      : { opacity: 0, y: 8, scale: 0.97 },
-    visible: reducedMotion
-      ? { opacity: 1, transition: { duration: 0.14 } }
-      : {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          transition: { duration: 0.58, ease: cinematicEase },
-        },
-  };
-
   return (
-    <div className="relative h-full w-full overflow-hidden">
+    <div className="project-exhibit-screen">
       <video
+        ref={videoRef}
         src={project.previewvideo}
-        autoPlay
         muted
         loop
         playsInline
-        preload="auto"
+        preload="metadata"
         aria-label={`${project.title} project demonstration`}
-        className="absolute inset-0 h-full w-full select-none object-cover"
       />
 
-      <motion.div
-        aria-hidden="true"
-        variants={overlayContainerVariants}
-        initial="hidden"
-        animate="visible"
-        className="pointer-events-none absolute inset-0 z-10"
-      >
-        <PreviewOverlayItem
-          variants={overlayItemVariants}
-          reducedMotion={reducedMotion}
-          drift={-2}
-          delay={0}
-          className="left-2 top-2 max-w-[72%] md:left-4 md:top-4 md:max-w-[48%]"
-        >
-          <div className="portfolio-surface rounded-lg border bg-black/60 px-2 py-1.5 md:rounded-xl md:px-3.5 md:py-2.5">
-            <p className="portfolio-eyebrow text-[0.38rem] font-semibold uppercase tracking-[0.2em] md:text-[0.58rem]">
-              {project.presentation.category}
-            </p>
-            <p className="portfolio-heading mt-0.5 truncate text-[0.56rem] font-semibold md:mt-1 md:text-sm">
-              {project.title}
-            </p>
-          </div>
-        </PreviewOverlayItem>
+      <div aria-hidden="true" className="project-screen-grid" />
+      <div className="project-screen-heading">
+        <span>{project.presentation.category}</span>
+        <strong>{project.title}</strong>
+      </div>
+      <div className="project-screen-status">
+        <span aria-hidden="true" />
+        {project.presentation.status}
+      </div>
+      <div className="project-screen-insight">
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={previewFrame?.title ?? project.presentation.highlight}
+            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -3 }}
+            transition={{ duration: reducedMotion ? 0.1 : 0.34, ease: hallEase }}
+          >
+            <span>{previewFrame?.eyebrow ?? "Guild readout"}</span>
+            <strong>
+              {previewFrame?.title ?? project.presentation.highlight}
+            </strong>
+            {previewFrame && <p>{previewFrame.detail}</p>}
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
-        <PreviewOverlayItem
-          variants={overlayItemVariants}
-          reducedMotion={reducedMotion}
-          drift={-1.5}
-          delay={0.35}
-          className="right-2 top-2 md:right-4 md:top-4"
-        >
-          <div className="portfolio-surface flex items-center gap-1 rounded-full border bg-black/60 p-1.5 md:gap-2 md:px-3 md:py-2">
-            <span className="size-1.5 rounded-full bg-[var(--portfolio-accent)] shadow-[0_0_10px_var(--portfolio-glow)] md:size-2" />
-            <span className="portfolio-copy hidden text-[0.58rem] font-medium md:inline">
-              {project.presentation.status}
-            </span>
-          </div>
-        </PreviewOverlayItem>
-
-        <PreviewOverlayItem
-          variants={overlayItemVariants}
-          reducedMotion={reducedMotion}
-          drift={-2.5}
-          delay={0.7}
-          className="bottom-4 left-4 hidden max-w-[46%] md:block"
-        >
-          <div className="portfolio-surface rounded-xl border bg-black/60 px-3.5 py-2.5">
-            <span className="mb-2 block h-px w-8 bg-[var(--portfolio-accent-strong)] shadow-[0_0_10px_var(--portfolio-glow)]" />
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={previewFrame?.title ?? project.presentation.highlight}
-                initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -3 }}
-                transition={{
-                  duration: reducedMotion ? 0.14 : 0.42,
-                  ease: cinematicEase,
-                }}
-              >
-                <p className="portfolio-muted text-[0.55rem] font-semibold uppercase tracking-[0.18em]">
-                  {previewFrame?.eyebrow ?? "Product highlight"}
-                </p>
-                <p className="portfolio-heading mt-1 text-xs font-medium">
-                  {previewFrame?.title ?? project.presentation.highlight}
-                </p>
-                {previewFrame && (
-                  <p className="portfolio-copy mt-1 line-clamp-2 text-[0.55rem] leading-relaxed">
-                    {previewFrame.detail}
-                  </p>
-                )}
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </PreviewOverlayItem>
-
-        <motion.div
-          variants={overlayItemVariants}
-          className="absolute bottom-4 right-4 hidden max-w-[48%] flex-wrap justify-end gap-1.5 md:flex"
-        >
-          {project.technologies.slice(0, 3).map((technology, index) => (
-            <motion.span
-              key={technology}
-              animate={
-                reducedMotion
-                  ? undefined
-                  : { y: [0, index % 2 === 0 ? -2 : -1, 0] }
-              }
-              transition={{
-                duration: 4.8 + index * 0.45,
-                repeat: reducedMotion ? 0 : Infinity,
-                ease: "easeInOut",
-                delay: index * 0.18,
-              }}
-              className="pointer-events-auto"
-            >
-              <motion.span
-                whileHover={
-                  reducedMotion
-                    ? undefined
-                    : { y: -2, scale: 1.025, filter: "brightness(1.08)" }
-                }
-                transition={{ duration: 0.3, ease: "easeInOut" }}
-                className="bg-black/60 portfolio-chip inline-flex rounded-full border px-2.5 py-1 text-[0.55rem] font-medium shadow-[0_8px_20px_rgba(0,0,0,0.24)]"
-              >
-                {technology}
-              </motion.span>
-            </motion.span>
-          ))}
-        </motion.div>
-
-        <motion.div
-          variants={overlayItemVariants}
-          className="absolute inset-x-2 bottom-1.5 md:inset-x-4 md:bottom-2"
-        >
-          <div className="h-px overflow-hidden rounded-full bg-black/45">
-            <motion.span
-              className="block h-full origin-left bg-[var(--portfolio-accent-strong)] shadow-[0_0_12px_var(--portfolio-glow)]"
-              initial={reducedMotion ? { opacity: 0 } : { opacity: 0, scaleX: 0 }}
-              animate={{ opacity: 0.85, scaleX: 1 }}
-              transition={{
-                duration: reducedMotion ? 0.14 : 1.1,
-                delay: reducedMotion ? 0 : 0.65,
-                ease: cinematicEase,
-              }}
-            />
-          </div>
-        </motion.div>
-      </motion.div>
+      {previewFrames && (
+        <div className="sr-only">
+          <p>Additional {project.title} project details:</p>
+          <ul>
+            {previewFrames.map((frame) => (
+              <li key={frame.title}>
+                {frame.title}: {frame.detail}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
 
-type PreviewOverlayItemProps = {
-  children: ReactNode;
-  className: string;
-  variants: Variants;
-  reducedMotion: boolean;
-  drift: number;
-  delay: number;
-};
+function useManagedVideoPlayback(
+  videoRef: RefObject<HTMLVideoElement | null>,
+  reducedMotion: boolean,
+) {
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
 
-function PreviewOverlayItem({
-  children,
-  className,
-  variants,
-  reducedMotion,
-  drift,
-  delay,
-}: PreviewOverlayItemProps) {
+    let inView = false;
+
+    const syncPlayback = () => {
+      if (reducedMotion || document.hidden || !inView) {
+        video.pause();
+        return;
+      }
+
+      void video.play().catch(() => {
+        // Autoplay can be blocked by user-agent settings; the external demo link remains available.
+      });
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        inView = entry.isIntersecting;
+        syncPlayback();
+      },
+      { rootMargin: "20% 0px", threshold: 0.15 },
+    );
+
+    observer.observe(video);
+    document.addEventListener("visibilitychange", syncPlayback);
+
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", syncPlayback);
+      video.pause();
+    };
+  }, [reducedMotion, videoRef]);
+}
+
+function HallDecoration({ theme }: { theme: ExhibitTheme }) {
+  if (theme === "archive") {
+    return (
+      <div aria-hidden="true" className="machine-details">
+        {[0, 1, 2, 3].map((fragment) => (
+          <span
+            key={fragment}
+            className={`memory-fragment memory-fragment--${fragment}`}
+          />
+        ))}
+        <span className="archive-timeline">
+          <i />
+        </span>
+      </div>
+    );
+  }
+
+  if (theme === "cafe") {
+    return (
+      <div aria-hidden="true" className="machine-details">
+        <span className="order-ticket order-ticket--one" />
+        <span className="order-ticket order-ticket--two" />
+        <span className="cafe-cup">
+          <i />
+          <i />
+          <i />
+        </span>
+      </div>
+    );
+  }
+
   return (
-    <motion.div variants={variants} className={`absolute ${className}`}>
-      <motion.div
-        animate={reducedMotion ? undefined : { y: [0, drift, 0] }}
-        transition={{
-          duration: 5.2 + Math.abs(drift) * 0.35,
-          delay,
-          repeat: reducedMotion ? 0 : Infinity,
-          ease: "easeInOut",
-        }}
-        className="pointer-events-auto"
-      >
-        <motion.div
-          whileHover={
-            reducedMotion
-              ? undefined
-              : { y: -2, scale: 1.012, filter: "brightness(1.08)" }
-          }
-          transition={{ duration: 0.32, ease: "easeInOut" }}
-        >
-          {children}
-        </motion.div>
-      </motion.div>
-    </motion.div>
+    <div aria-hidden="true" className="machine-details">
+      <span className="forge-page forge-page--one" />
+      <span className="forge-page forge-page--two" />
+      <span className="forge-scanner" />
+    </div>
   );
 }
 
-type ProjectActionProps = {
+function ExhibitGlyph({ type }: { type: ExhibitTheme }) {
+  if (type === "archive") {
+    return (
+      <svg
+        className="exhibit-glyph"
+        viewBox="0 0 24 24"
+        fill="none"
+        aria-hidden="true"
+        shapeRendering="crispEdges"
+      >
+        <path d="M4 5h16v4H4zM6 9h12v11H6zM9 12h6M9 15h6" />
+      </svg>
+    );
+  }
+
+  if (type === "cafe") {
+    return (
+      <svg
+        className="exhibit-glyph"
+        viewBox="0 0 24 24"
+        fill="none"
+        aria-hidden="true"
+        shapeRendering="crispEdges"
+      >
+        <path d="M5 8h12v9H5zM17 10h3v5h-3M4 20h15M8 5V2M12 5V2M16 5V2" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg
+      className="exhibit-glyph"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+      shapeRendering="crispEdges"
+    >
+      <path d="M5 3h11l3 3v15H5zM8 9h8M8 13h8M8 17h5M16 3v4h4" />
+    </svg>
+  );
+}
+
+type ProjectActionButtonProps = {
   href?: string;
   label: string;
+  projectTitle: string;
   icon: ReactNode;
 };
 
-function ProjectAction({ href, label, icon }: ProjectActionProps) {
-  const className =
-    "portfolio-button-secondary portfolio-focus inline-flex min-h-9 items-center justify-center gap-1.5 rounded-full border px-3.5 text-xs font-medium transition-colors";
+function ProjectActionButton({
+  href,
+  label,
+  projectTitle,
+  icon,
+}: ProjectActionButtonProps) {
+  const content = (
+    <>
+      <span className="project-action-icon" aria-hidden="true">
+        {icon}
+      </span>
+      <span>{label}</span>
+      <span className="project-action-pixel" aria-hidden="true" />
+    </>
+  );
 
   if (!href) {
     return (
@@ -660,12 +845,9 @@ function ProjectAction({ href, label, icon }: ProjectActionProps) {
         type="button"
         disabled
         title={`${label} link coming soon`}
-        className={`${className} cursor-not-allowed opacity-35`}
+        className="project-action-button portfolio-focus"
       >
-        <span className="inline-flex size-3.5 [&>svg]:size-3.5" aria-hidden="true">
-          {icon}
-        </span>
-        {label}
+        {content}
       </button>
     );
   }
@@ -675,12 +857,74 @@ function ProjectAction({ href, label, icon }: ProjectActionProps) {
       href={href}
       target="_blank"
       rel="noreferrer"
-      className={className}
+      aria-label={`${label} for ${projectTitle} (opens in a new tab)`}
+      data-cursor-label={label}
+      className="project-action-button portfolio-focus"
     >
-      <span className="inline-flex size-3.5 [&>svg]:size-3.5" aria-hidden="true">
-        {icon}
-      </span>
-      {label}
+      {content}
     </a>
+  );
+}
+
+function ProjectProgress({
+  activeProject,
+  projectCount,
+}: {
+  activeProject: number;
+  projectCount: number;
+}) {
+  return (
+    <div
+      className="hall-project-progress"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      <span className="hall-progress-count">
+        {String(activeProject + 1).padStart(2, "0")} /{" "}
+        {String(projectCount).padStart(2, "0")}
+      </span>
+      <span className="hall-progress-track" aria-hidden="true">
+        {projects.map((project, index) => (
+          <i key={project.id} className={index === activeProject ? "is-active" : ""} />
+        ))}
+      </span>
+      <span className="hall-progress-name">{projects[activeProject].title}</span>
+    </div>
+  );
+}
+
+function HallExit({
+  disabled,
+  onContinue,
+}: {
+  disabled: boolean;
+  onContinue: () => void;
+}) {
+  return (
+    <section className="hall-exit" aria-labelledby="hall-exit-title">
+      <div aria-hidden="true" className="hall-exit-arch">
+        <div className="hall-exit-light" />
+        <span className="hall-exit-step hall-exit-step--one" />
+        <span className="hall-exit-step hall-exit-step--two" />
+        <span className="hall-exit-step hall-exit-step--three" />
+      </div>
+      <p className="hall-exit-label">The journey continues</p>
+      <h2 id="hall-exit-title" className="hall-exit-copy">
+        The Craft Wing waits beyond the guild corridor.
+      </h2>
+      <div className="exhibit-actions">
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={onContinue}
+          data-cursor-label="Scene Four"
+          className="project-action-button portfolio-focus"
+        >
+          <span>Continue to Scene Four</span>
+          <span className="project-action-pixel" aria-hidden="true" />
+        </button>
+      </div>
+    </section>
   );
 }

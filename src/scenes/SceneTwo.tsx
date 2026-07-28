@@ -569,7 +569,7 @@ function CharacterProfilePage({
   onOpen,
 }: CharacterProfilePageProps) {
   return (
-    <div className="scene-two-character-page relative h-full overflow-hidden">
+    <div className="scene-two-character-page relative h-[full] overflow-hidden">
       <motion.img
         src={profilePortrait}
         alt="Graduation portrait of Jonel Bryan Ablog"
