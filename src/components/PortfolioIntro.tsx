@@ -1,92 +1,76 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
+import { motion, useReducedMotion } from "motion/react";
 import chatbotAvatar from "../assets/images/aichatbot.webp";
-import eclipseBackground from "../assets/images/animebg.webp";
 import firstProjectPreview from "../assets/images/ineloryss.webp";
+import { markPortfolioIntroSeen } from "./portfolioIntroSession";
+import "../styles/portfolio-intro.css";
 
-export const PORTFOLIO_INTRO_SESSION_KEY = "jbta-portfolio-intro-seen";
+const criticalImages = [chatbotAvatar, firstProjectPreview] as const;
 
-const introMessages = [
-  "Initializing flight systems...",
-  "Charting the creative route...",
-  "Entering Jonel’s universe...",
+const readinessLabels = [
+  "Application mounted",
+  "Essential styles ready",
+  "Document ready",
+  "Fonts ready",
+  "Critical assets ready",
+  "Scene One and application ready",
+] as const;
+
+const stageMessages = [
+  "Preparing the journey...",
+  "Mapping the world...",
+  "Raising the mountains...",
+  "Opening the path...",
+  "Adventure ready.",
 ] as const;
 
 const normalTiming = {
-  minimum: 5000,
-  maximum: 6000,
-  arrival: 700,
-  exit: 900,
-  messages: [0, 1800, 3800],
-};
-
-const reducedTiming = {
-  minimum: 650,
-  maximum: 800,
-  arrival: 100,
-  exit: 250,
-  messages: [0, 280, 520],
+  minimum: 4_000,   // Intro plays for at least 4 seconds
+  maximum: 7_000,   // Force completion after 7 seconds
+  readyHold: 1500,   // Hold “The Journey Begins” before exiting
+  exit: 700,        // Fade-out duration
+  skipReveal: 4_500, // Show Skip Intro after 4.5 seconds
 } as const;
 
-const criticalImages = [
-  eclipseBackground,
-  chatbotAvatar,
-  firstProjectPreview,
-] as const;
+const reducedTiming = {
+  minimum: 180,
+  maximum: 900,
+  readyHold: 90,
+  exit: 160,
+  skipReveal: 700,
+} as const;
 
-const introEase = [0.65, 0, 0.35, 1] as const;
-
-type IntroPhase = "loading" | "arriving" | "exiting";
+type IntroPhase = "building" | "ready" | "exiting";
 
 type PortfolioIntroProps = {
   onRevealStart: () => void;
   onComplete: () => void;
 };
 
-type IntroStar = {
-  left: number;
-  top: number;
-  size: number;
-  x: number;
-  y: number;
-  duration: number;
-  delay: number;
-};
+const flowers = [
+  { left: "8%", color: "#ffe08a", delay: "0.82s" },
+  { left: "17%", color: "#f9a8d4", delay: "0.94s" },
+  { left: "29%", color: "#c4b5fd", delay: "1.02s" },
+  { left: "68%", color: "#fde68a", delay: "1.08s" },
+  { left: "81%", color: "#f9a8d4", delay: "1.17s" },
+  { left: "92%", color: "#c4b5fd", delay: "1.25s" },
+] as const;
 
-const introStars: readonly IntroStar[] = Array.from(
-  { length: 32 },
-  (_, index) => {
-    const angle = (((index * 137.5 + 18) % 360) * Math.PI) / 180;
-    const distance = 13 + ((index * 17) % 34);
-    const travel = 12 + (index % 6) * 4;
-
-    return {
-      left: 50 + Math.cos(angle) * distance,
-      top: 50 + Math.sin(angle) * distance * 0.72,
-      size: 1 + (index % 3) * 0.55,
-      x: Math.cos(angle) * travel,
-      y: Math.sin(angle) * travel * 0.72,
-      duration: 4.8 + (index % 7) * 0.42,
-      delay: (index % 9) * -0.58,
-    };
-  },
-);
-
-export function shouldShowPortfolioIntro() {
-  try {
-    return window.sessionStorage.getItem(PORTFOLIO_INTRO_SESSION_KEY) !== "true";
-  } catch {
-    return true;
-  }
-}
-
-function markPortfolioIntroSeen() {
-  try {
-    window.sessionStorage.setItem(PORTFOLIO_INTRO_SESSION_KEY, "true");
-  } catch {
-    // If storage is unavailable, the intro still exits normally.
-  }
-}
+const motes = [
+  ["11%", "28%", "-0.8s"],
+  ["23%", "43%", "-2.1s"],
+  ["36%", "25%", "-3.4s"],
+  ["52%", "35%", "-1.5s"],
+  ["65%", "23%", "-4.3s"],
+  ["77%", "42%", "-2.7s"],
+  ["89%", "30%", "-0.3s"],
+] as const;
 
 function preloadImage(source: string) {
   return new Promise<void>((resolve) => {
@@ -117,18 +101,50 @@ function waitForDocumentReady() {
   });
 }
 
+function waitForFontsReady() {
+  return "fonts" in document
+    ? document.fonts.ready.then(() => undefined)
+    : Promise.resolve();
+}
+
+function waitForStylesReady() {
+  return new Promise<void>((resolve) => {
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => resolve());
+    });
+  });
+}
+
+function waitForDuration(duration: number) {
+  return new Promise<void>((resolve) => {
+    window.setTimeout(resolve, duration);
+  });
+}
+
+function getStageMessage(completedMilestones: number, phase: IntroPhase) {
+  if (phase !== "building" || completedMilestones >= readinessLabels.length) {
+    return stageMessages[4];
+  }
+  if (completedMilestones <= 1) return stageMessages[0];
+  if (completedMilestones <= 3) return stageMessages[1];
+  if (completedMilestones === 4) return stageMessages[2];
+  return stageMessages[3];
+}
+
 export default function PortfolioIntro({
   onRevealStart,
   onComplete,
 }: PortfolioIntroProps) {
   const prefersReducedMotion = useReducedMotion();
-  const reducedMotion = Boolean(prefersReducedMotion);
+  const reducedMotion = prefersReducedMotion !== false;
   const timing = reducedMotion ? reducedTiming : normalTiming;
-  const [phase, setPhase] = useState<IntroPhase>("loading");
-  const [messageIndex, setMessageIndex] = useState(0);
-  const phaseRef = useRef<IntroPhase>("loading");
-  const timersRef = useRef<number[]>([]);
+  const [phase, setPhase] = useState<IntroPhase>("building");
+  const [completedMilestones, setCompletedMilestones] = useState(1);
+  const [showSkip, setShowSkip] = useState(false);
+  const phaseRef = useRef<IntroPhase>("building");
   const completedRef = useRef(false);
+  const revealStartedRef = useRef(false);
+  const timersRef = useRef<number[]>([]);
 
   const clearTimers = useCallback(() => {
     timersRef.current.forEach((timer) => window.clearTimeout(timer));
@@ -141,53 +157,81 @@ export default function PortfolioIntro({
     return timer;
   }, []);
 
+  const revealSceneOne = useCallback(() => {
+    if (revealStartedRef.current) return;
+    revealStartedRef.current = true;
+    onRevealStart();
+  }, [onRevealStart]);
+
   const beginExit = useCallback(() => {
     if (phaseRef.current === "exiting") return;
 
     clearTimers();
-    phaseRef.current = "exiting";
-    setMessageIndex(introMessages.length - 1);
-    setPhase("exiting");
+    revealSceneOne();
     markPortfolioIntroSeen();
-    onRevealStart();
-  }, [clearTimers, onRevealStart]);
+    phaseRef.current = "exiting";
+    setCompletedMilestones(readinessLabels.length);
+    setShowSkip(false);
+    setPhase("exiting");
+  }, [clearTimers, revealSceneOne]);
 
-  const beginArrival = useCallback(() => {
-    if (phaseRef.current !== "loading") return;
+  const beginReady = useCallback(() => {
+    if (phaseRef.current !== "building") return;
 
-    clearTimers();
-    phaseRef.current = "arriving";
-    setMessageIndex(introMessages.length - 1);
-    setPhase("arriving");
-    schedule(beginExit, timing.arrival);
-  }, [beginExit, clearTimers, schedule, timing.arrival]);
+    revealSceneOne();
+    phaseRef.current = "ready";
+    setCompletedMilestones(readinessLabels.length);
+    setShowSkip(false);
+    setPhase("ready");
+    schedule(beginExit, timing.readyHold);
+  }, [beginExit, revealSceneOne, schedule, timing.readyHold]);
 
   useEffect(() => {
     let cancelled = false;
 
-    const readiness = Promise.all([
+    const readinessTasks = [
+      waitForStylesReady(),
       waitForDocumentReady(),
-      ...criticalImages.map(preloadImage),
-    ]);
-    const minimumDuration = new Promise<void>((resolve) => {
-      schedule(resolve, timing.minimum);
+      waitForFontsReady(),
+      Promise.all(criticalImages.map(preloadImage)).then(() => undefined),
+    ];
+
+    readinessTasks.forEach((task, index) => {
+      task.then(() => {
+        if (!cancelled) {
+          setCompletedMilestones((current) =>
+            Math.max(current, Math.min(index + 2, readinessLabels.length - 1)),
+          );
+        }
+      });
     });
 
-    timing.messages.slice(1).forEach((delay, index) => {
-      schedule(() => setMessageIndex(index + 1), delay);
+    Promise.all([
+      Promise.allSettled(readinessTasks),
+      waitForDuration(timing.minimum),
+    ]).then(() => {
+      if (!cancelled) beginReady();
     });
 
-    Promise.all([readiness, minimumDuration]).then(() => {
-      if (!cancelled) beginArrival();
-    });
+    schedule(beginReady, timing.maximum);
 
-    schedule(beginArrival, timing.maximum);
+    if (!reducedMotion) {
+      schedule(() => setShowSkip(true), timing.skipReveal);
+    }
 
     return () => {
       cancelled = true;
       clearTimers();
     };
-  }, [beginArrival, clearTimers, schedule, timing.maximum, timing.messages, timing.minimum]);
+  }, [
+    beginReady,
+    clearTimers,
+    reducedMotion,
+    schedule,
+    timing.maximum,
+    timing.minimum,
+    timing.skipReveal,
+  ]);
 
   const finish = () => {
     if (phaseRef.current !== "exiting" || completedRef.current) return;
@@ -195,215 +239,173 @@ export default function PortfolioIntro({
     onComplete();
   };
 
-  const statusMotion = reducedMotion
-    ? {
-        initial: { opacity: 0 },
-        animate: { opacity: 1 },
-        exit: { opacity: 0 },
-      }
-    : {
-        initial: { opacity: 0, y: 8, filter: "blur(3px)" },
-        animate: { opacity: 1, y: 0, filter: "blur(0px)" },
-        exit: { opacity: 0, y: -6, filter: "blur(2px)" },
-      };
+  const statusMessage = getStageMessage(completedMilestones, phase);
 
   return (
     <motion.section
       aria-label="Loading Jonel’s portfolio"
-      className="fixed inset-0 z-[90] h-[100dvh] min-h-[100svh] overflow-hidden bg-[#020205] text-[var(--portfolio-text-soft)]"
-      initial={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-      animate={
-        phase === "exiting"
-          ? {
-              opacity: 0,
-              scale: reducedMotion ? 1 : 1.012,
-              filter: reducedMotion ? "blur(0px)" : "blur(8px)",
-            }
-          : { opacity: 1, scale: 1, filter: "blur(0px)" }
-      }
+      aria-busy={phase !== "exiting"}
+      className={`pixel-intro pixel-intro--${phase} ${
+        reducedMotion ? "pixel-intro--reduced" : ""
+      }`}
+      initial={{ opacity: 1 }}
+      animate={{ opacity: phase === "exiting" ? 0 : 1 }}
       transition={{
-        duration: phase === "exiting" ? timing.exit / 1_000 : 0.3,
-        ease: introEase,
+        duration: phase === "exiting" ? timing.exit / 1_000 : 0,
+        ease: "linear",
       }}
       onAnimationComplete={finish}
     >
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 bg-[radial-gradient(circle_at_50%_44%,rgba(30,26,34,0.72),rgba(4,5,11,0.94)_48%,#020205_78%)] md:bg-[radial-gradient(circle_at_50%_52%,rgba(30,26,34,0.72),rgba(4,5,11,0.94)_48%,#020205_78%)]"
-      />
+      <PixelWorldBuild />
 
-      {!reducedMotion && (
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-          {introStars.map((star, index) => (
-            <motion.span
-              key={index}
-              className={`absolute rounded-full bg-stone-100 shadow-[0_0_5px_rgba(253,230,138,0.32)] ${
-                index >= 26
-                  ? "hidden lg:block"
-                  : index >= 18
-                    ? "hidden sm:block"
-                    : "block"
-              }`}
-              style={{
-                left: `${star.left}%`,
-                top: `${star.top}%`,
-                width: star.size,
-                height: star.size,
-              }}
-              animate={{
-                x: [0, star.x],
-                y: [0, star.y],
-                scale: [0.72, 1.15],
-                opacity: [0.12, 0.62, 0.08],
-              }}
-              transition={{
-                duration: star.duration,
-                delay: star.delay,
-                repeat: Infinity,
-                ease: "linear",
-              }}
-            />
-          ))}
+      <div className="pixel-intro__story">
+        <div className="pixel-intro__title-wrap" aria-hidden={phase === "building"}>
+          <p className="pixel-intro__chapter">Opening Chapter</p>
+          <h1>The Journey Begins</h1>
+          <p>Entering Jonel’s World...</p>
+          <span className="pixel-intro__completion-sparkle" aria-hidden="true" />
         </div>
-      )}
 
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <motion.div
-          className="absolute left-1/2 top-[18%] size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--portfolio-accent-bright)] md:top-[48%]"
-          animate={
-            reducedMotion
-              ? { opacity: 0.72 }
-              : phase === "arriving"
-                ? {
-                    scale: 16,
-                    opacity: 0.9,
-                    boxShadow: "0 0 38px 18px rgba(252,211,77,0.42)",
-                  }
-                : {
-                    scale: [0.82, 1.08, 0.82],
-                    opacity: [0.55, 0.9, 0.55],
-                    boxShadow: "0 0 24px 8px rgba(252,211,77,0.24)",
-                  }
-          }
-          transition={
-            phase === "arriving"
-              ? { duration: timing.arrival / 1_000, ease: introEase }
-              : { duration: 3.8, repeat: reducedMotion ? 0 : Infinity, ease: "easeInOut" }
-          }
-        />
-        <motion.div
-          className="absolute left-1/2 top-[18%] size-24 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[rgba(253,230,138,0.13)] md:top-[48%] md:size-32"
-          animate={
-            reducedMotion
-              ? { opacity: 0.34 }
-              : { rotate: 360, scale: [0.94, 1.04, 0.94], opacity: [0.22, 0.45, 0.22] }
-          }
-          transition={{ duration: 12, repeat: reducedMotion ? 0 : Infinity, ease: "linear" }}
+        <div className="pixel-intro__status">
+          <p aria-live="polite" aria-atomic="true">
+            {statusMessage}
+          </p>
+          <PixelLoadingPath completedMilestones={completedMilestones} />
+        </div>
+      </div>
+
+      <PixelWalkingAdventurer ready={phase !== "building"} />
+
+      <div aria-hidden="true" className="pixel-intro__sunrise-wash" />
+
+      {showSkip && phase === "building" && (
+        <button
+          type="button"
+          aria-label="Skip portfolio introduction"
+          data-cursor-label="Skip Intro"
+          onClick={beginExit}
+          className="pixel-intro__skip"
         >
-          <span className="absolute left-1/2 top-0 h-2 w-px -translate-x-1/2 bg-[rgba(253,230,138,0.5)]" />
-          <span className="absolute bottom-0 left-1/2 h-2 w-px -translate-x-1/2 bg-[rgba(253,230,138,0.3)]" />
-        </motion.div>
-
-        <div className="absolute left-[10%] right-[10%] top-[18%] h-px bg-gradient-to-r from-transparent via-[rgba(253,230,138,0.14)] to-transparent md:left-[15%] md:right-[15%] md:top-[48%]" />
-        <div className="absolute inset-x-[5%] top-[6%] h-[72%] rounded-[44%] border border-[rgba(254,243,199,0.1)] shadow-[inset_0_0_70px_rgba(0,0,0,0.48)] md:inset-x-[4%] md:h-[82%]" />
-        <div className="absolute inset-x-0 top-0 h-[19%] bg-gradient-to-b from-black/85 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 h-[20%] bg-gradient-to-t from-black/90 to-transparent" />
-        <div className="absolute bottom-[8%] left-[7%] hidden items-center gap-2 sm:flex">
-          {[0, 1, 2].map((item) => (
-            <span
-              key={item}
-              className={`size-1 rounded-full ${
-                item === 0
-                  ? "bg-[var(--portfolio-accent)] shadow-[0_0_9px_var(--portfolio-glow)]"
-                  : "bg-stone-500/45"
-              }`}
-            />
-          ))}
-        </div>
-      </div>
-
-      <motion.div
-        aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-[18%] aspect-square w-[min(125vw,48rem)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(254,243,199,0.7)_0%,rgba(252,211,77,0.23)_18%,rgba(245,158,11,0.06)_45%,transparent_70%)] md:top-[48%]"
-        animate={
-          phase === "arriving"
-            ? { opacity: 0.72, scale: 1.12 }
-            : phase === "exiting"
-              ? { opacity: 0.34, scale: 1.18 }
-              : { opacity: 0, scale: 0.72 }
-        }
-        transition={{ duration: reducedMotion ? 0.16 : timing.arrival / 1_000, ease: introEase }}
-      />
-
-      <div className="absolute inset-x-5 top-[54%] mx-auto flex max-w-md -translate-y-1/2 flex-col items-center text-center sm:inset-x-8 md:top-[69%]">
-        <div className="mb-5 flex items-center gap-2 rounded-full border border-[var(--portfolio-border-subtle)] bg-black/30 px-3 py-1.5 backdrop-blur-md">
-          <motion.span
-            aria-hidden="true"
-            className="size-1.5 rounded-full bg-[var(--portfolio-accent)] shadow-[0_0_10px_var(--portfolio-glow)]"
-            animate={reducedMotion ? undefined : { opacity: [0.48, 1, 0.48] }}
-            transition={{ duration: 2.2, repeat: reducedMotion ? 0 : Infinity, ease: "easeInOut" }}
-          />
-          <span className="text-[0.58rem] font-semibold uppercase tracking-[0.24em] text-stone-300">
-            Flight path 01
-          </span>
-        </div>
-
-        <div aria-live="polite" aria-atomic="true" className="min-h-12 w-full">
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.p
-              key={messageIndex}
-              className="text-sm font-medium tracking-[0.08em] text-stone-100 sm:text-base"
-              initial={statusMotion.initial}
-              animate={statusMotion.animate}
-              exit={statusMotion.exit}
-              transition={{ duration: reducedMotion ? 0.12 : 0.38, ease: introEase }}
-            >
-              {introMessages[messageIndex]}
-            </motion.p>
-          </AnimatePresence>
-        </div>
-
-        <div className="mt-3 w-full max-w-xs">
-          <div className="h-px overflow-hidden bg-stone-700/55">
-            <motion.div
-              className="h-full origin-left bg-gradient-to-r from-amber-700/70 via-[var(--portfolio-accent)] to-[var(--portfolio-accent-bright)] shadow-[0_0_10px_var(--portfolio-glow)]"
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: phase === "loading" ? 0.86 : 1 }}
-              transition={{
-                duration:
-                  phase === "loading"
-                    ? reducedMotion
-                      ? 0.58
-                      : 3.1
-                    : reducedMotion
-                      ? 0.1
-                      : 0.36,
-                ease: phase === "loading" ? "linear" : introEase,
-              }}
-            />
-          </div>
-          <div className="mt-2 flex items-center justify-between text-[0.52rem] font-semibold uppercase tracking-[0.18em] text-stone-500">
-            <span>Departure</span>
-            <span className={phase === "loading" ? "text-stone-500" : "text-amber-200/80"}>
-              Arrival
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <button
-        type="button"
-        aria-label="Skip portfolio introduction"
-        data-cursor-label="Skip Intro"
-        onClick={beginExit}
-        className="portfolio-focus absolute min-h-11 rounded-full border border-[var(--portfolio-border-subtle)] bg-black/35 px-4 py-2 text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-stone-300 backdrop-blur-md transition-[border-color,color,background-color,transform] duration-[250ms] hover:-translate-y-0.5 hover:border-[var(--portfolio-border)] hover:bg-black/50 hover:text-[var(--portfolio-accent-bright)] active:translate-y-0 active:scale-[0.98]"
-        style={{
-          right: "max(1rem, calc(env(safe-area-inset-right) + 0.75rem))",
-          bottom: "max(1rem, calc(env(safe-area-inset-bottom) + 0.75rem))",
-        }}
-      >
-        Skip intro
-      </button>
+          Skip Intro
+        </button>
+      )}
     </motion.section>
+  );
+}
+
+function PixelWorldBuild() {
+  return (
+    <div aria-hidden="true" className="pixel-intro__world">
+      <div className="pixel-intro__predawn" />
+      <div className="pixel-intro__sky-tiles">
+        <span /><span /><span /><span /><span /><span />
+      </div>
+      <span className="pixel-intro__last-star" />
+      <div className="pixel-intro__sun"><span /></div>
+
+      <div className="pixel-intro__cloud pixel-intro__cloud--one">
+        <span /><span /><span />
+      </div>
+      <div className="pixel-intro__cloud pixel-intro__cloud--two">
+        <span /><span /><span />
+      </div>
+
+      <svg
+        className="pixel-intro__mountains"
+        viewBox="0 0 1440 900"
+        preserveAspectRatio="xMidYMid slice"
+        shapeRendering="crispEdges"
+      >
+        <path
+          className="pixel-intro__mountain pixel-intro__mountain--far"
+          d="M0 520 120 420l68 45 138-153 89 99 114-170 121 170 95-110 126 143 100-98 154 164 115-74 120 99v365H0Z"
+        />
+        <path
+          className="pixel-intro__mountain pixel-intro__mountain--near"
+          d="M0 588c142-57 236-71 354-18 114 51 204-19 326-23 134-4 202 68 338 38 167-37 274-16 422 50v265H0Z"
+        />
+        <path
+          className="pixel-intro__hill"
+          d="M0 653c151-63 273-22 391-5 137 21 219-54 361-31 155 26 240 70 388 25 109-33 207-10 300 31v227H0Z"
+        />
+      </svg>
+
+      <div className="pixel-intro__ground">
+        <span className="pixel-intro__grass pixel-intro__grass--back" />
+        <span className="pixel-intro__grass pixel-intro__grass--front" />
+        {flowers.map((flower) => (
+          <i
+            key={flower.left}
+            className="pixel-intro__flower"
+            style={{
+              left: flower.left,
+              "--intro-flower": flower.color,
+              animationDelay: flower.delay,
+            } as CSSProperties}
+          />
+        ))}
+      </div>
+
+      <div className="pixel-intro__birds"><span /><span /><span /></div>
+      <div className="pixel-intro__motes">
+        {motes.map(([left, top, delay]) => (
+          <span
+            key={`${left}-${top}`}
+            style={{ left, top, animationDelay: delay }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PixelLoadingPath({
+  completedMilestones,
+}: {
+  completedMilestones: number;
+}) {
+  return (
+    <div
+      className="pixel-intro__route"
+      role="progressbar"
+      aria-valuemin={0}
+      aria-valuemax={readinessLabels.length}
+      aria-valuenow={completedMilestones}
+      aria-valuetext={readinessLabels[Math.max(0, completedMilestones - 1)]}
+      aria-label="Journey preparation"
+    >
+      {readinessLabels.map((label, index) => (
+        <span
+          key={label}
+          className={index < completedMilestones ? "is-ready" : ""}
+          title={label}
+        />
+      ))}
+    </div>
+  );
+}
+
+function PixelWalkingAdventurer({ ready }: { ready: boolean }) {
+  return (
+    <div
+      aria-hidden="true"
+      className={`pixel-intro-traveler-track ${ready ? "is-ready" : ""}`}
+    >
+      <div className="pixel-intro-adventurer">
+        <span className="pixel-intro-adventurer__head">
+          <i className="pixel-intro-adventurer__hair" />
+        </span>
+        <span className="pixel-intro-adventurer__body" />
+        <span className="pixel-intro-adventurer__cloak" />
+        <span className="pixel-intro-adventurer__backpack" />
+        <span className="pixel-intro-adventurer__arm" />
+        <span className="pixel-intro-adventurer__tool"><i /></span>
+        <span className="pixel-intro-adventurer__leg pixel-intro-adventurer__leg--front" />
+        <span className="pixel-intro-adventurer__leg pixel-intro-adventurer__leg--back" />
+      </div>
+      <div className="pixel-intro-footsteps">
+        <span /><span /><span /><span />
+      </div>
+    </div>
   );
 }

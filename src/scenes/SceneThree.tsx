@@ -6,8 +6,6 @@ import {
   type ReactNode,
   type RefObject,
 } from "react";
-import { ExternalLink, Play } from "lucide-react";
-import { FaGithub } from "react-icons/fa";
 import {
   AnimatePresence,
   motion,
@@ -301,6 +299,11 @@ function HallEnvironment({
         <div className="hall-arch" style={{ left: "11%" }} />
         <div className="hall-arch" style={{ left: "39%" }} />
         <div className="hall-arch" style={{ right: "11%" }} />
+        <div className="hall-skyline">
+          <span />
+          <span />
+          <span />
+        </div>
       </motion.div>
 
       <motion.div
@@ -311,6 +314,10 @@ function HallEnvironment({
         <HallBanner side="right" />
         <div className="hall-balcony hall-balcony--left" />
         <div className="hall-balcony hall-balcony--right" />
+        <HallBookcase side="left" />
+        <HallBookcase side="right" />
+        <div className="hall-lantern hall-lantern--left"><span /></div>
+        <div className="hall-lantern hall-lantern--right"><span /></div>
         <EnergyPipe side="left" />
         <EnergyPipe side="right" />
         <div className="hall-light-beam hall-light-beam--one" />
@@ -330,6 +337,18 @@ function HallEnvironment({
         <div className="hall-gear hall-gear--right is-reverse">
           <i />
         </div>
+        <div className="hall-pixel-plant hall-pixel-plant--left">
+          <i />
+          <i />
+          <i />
+          <span />
+        </div>
+        <div className="hall-pixel-plant hall-pixel-plant--right">
+          <i />
+          <i />
+          <i />
+          <span />
+        </div>
       </motion.div>
 
       {dustMotes.map((mote, index) => (
@@ -348,6 +367,19 @@ function HallEnvironment({
       ))}
 
       <div className="hall-readability-vignette" />
+    </div>
+  );
+}
+
+function HallBookcase({ side }: { side: "left" | "right" }) {
+  const colors = ["gold", "green", "blue", "burgundy", "cream"] as const;
+
+  return (
+    <div className={`hall-bookcase hall-bookcase--${side}`}>
+      {colors.map((color, index) => (
+        <span key={`${side}-${color}`} className={`hall-book hall-book--${color}`} style={{ height: `${30 + (index % 3) * 8}px` }} />
+      ))}
+      <i />
     </div>
   );
 }
@@ -442,7 +474,7 @@ function CreationExhibit({
   return (
     <motion.article
       aria-labelledby={`${project.id}-title`}
-      className={`creation-exhibit ${flagship ? "creation-exhibit--flagship" : ""} ${
+      className={`creation-exhibit creation-exhibit--${project.exhibit.theme} ${flagship ? "creation-exhibit--flagship" : ""} ${
         reverse ? "creation-exhibit--reverse" : ""
       }`}
       variants={reducedMotion ? undefined : revealVariants}
@@ -515,19 +547,19 @@ function CreationExhibit({
                 href={project.liveUrl}
                 label="Live Demo"
                 projectTitle={project.title}
-                icon={<ExternalLink />}
+                icon={<ActionGlyph type="external" />}
               />
               <ProjectActionButton
                 href={project.githubUrl}
                 label="GitHub"
                 projectTitle={project.title}
-                icon={<FaGithub />}
+                icon={<ActionGlyph type="code" />}
               />
               <ProjectActionButton
                 href={project.demoVideoUrl}
                 label="Demo Video"
                 projectTitle={project.title}
-                icon={<Play />}
+                icon={<ActionGlyph type="play" />}
               />
             </div>
           </div>
@@ -812,6 +844,30 @@ function ExhibitGlyph({ type }: { type: ExhibitTheme }) {
       shapeRendering="crispEdges"
     >
       <path d="M5 3h11l3 3v15H5zM8 9h8M8 13h8M8 17h5M16 3v4h4" />
+    </svg>
+  );
+}
+
+function ActionGlyph({ type }: { type: "external" | "code" | "play" }) {
+  if (type === "external") {
+    return (
+      <svg viewBox="0 0 16 16" aria-hidden="true" shapeRendering="crispEdges">
+        <path fill="currentColor" d="M2 3h6v2H4v7h7V8h2v6H2Zm8-1h4v4h-2V5L7 10 6 9l5-5h-1Z" />
+      </svg>
+    );
+  }
+
+  if (type === "code") {
+    return (
+      <svg viewBox="0 0 16 16" aria-hidden="true" shapeRendering="crispEdges">
+        <path fill="currentColor" d="M5 3v2H3v2H1v2h2v2h2v2H3v-1H1v-2H0V6h1V4h2V3Zm6 0h2v1h2v2h1v4h-1v2h-2v1h-2v-2h2V9h2V7h-2V5h-2ZM9 2h2L7 14H5Z" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 16 16" aria-hidden="true" shapeRendering="crispEdges">
+      <path fill="currentColor" d="M3 2h4v2h3v2h3v4h-3v2H7v2H3Z" />
     </svg>
   );
 }

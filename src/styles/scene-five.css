@@ -1,0 +1,2347 @@
+.celestial-observatory {
+  --observatory-font-pixel: "Cascadia Mono", "Lucida Console", "Courier New", monospace;
+  --observatory-ink: #111723;
+  --observatory-night-dark: #10182d;
+  --observatory-night: #1a2846;
+  --observatory-night-light: #31466a;
+  --observatory-violet: #484866;
+  --observatory-stone-dark: #343946;
+  --observatory-stone: #59606c;
+  --observatory-stone-light: #858b91;
+  --observatory-wood-dark: #38271f;
+  --observatory-wood: #6e4930;
+  --observatory-gold: #edbd66;
+  --observatory-cream: #fff0c5;
+  --observatory-green: #536b5a;
+  --observatory-blue: #527b98;
+  --observatory-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  isolation: isolate;
+  background: var(--observatory-night-dark);
+  color: var(--observatory-cream);
+  scrollbar-color: #c99855 #151b2c;
+  scrollbar-width: thin;
+}
+
+.celestial-observatory *,
+.celestial-observatory *::before,
+.celestial-observatory *::after {
+  box-sizing: border-box;
+}
+
+.observatory-environment,
+.observatory-environment * {
+  image-rendering: pixelated;
+}
+
+.observatory-environment {
+  position: sticky;
+  top: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  contain: paint;
+  background: #111a30;
+}
+
+.observatory-content {
+  margin-top: -100dvh;
+}
+
+.observatory-depth {
+  position: absolute;
+  inset: -4rem 0;
+  will-change: transform;
+}
+
+.observatory-night-sky {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      to bottom,
+      #0c1329 0 22%,
+      #151f3b 22% 46%,
+      #283657 46% 70%,
+      #4a4b65 70% 100%
+    );
+}
+
+.observatory-night-sky::after {
+  position: absolute;
+  inset: 0;
+  opacity: 0.12;
+  background:
+    linear-gradient(45deg, rgba(255, 239, 194, 0.18) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(5, 9, 22, 0.25) 25%, transparent 25%);
+  background-position: 0 0, 3px 3px;
+  background-size: 6px 6px;
+  content: "";
+}
+
+.observatory-star {
+  position: absolute;
+  z-index: 2;
+  background: #fff0bf;
+  box-shadow:
+    4px 0 rgba(255, 226, 155, 0.3),
+    -4px 0 rgba(255, 226, 155, 0.3),
+    0 4px rgba(255, 226, 155, 0.3),
+    0 -4px rgba(255, 226, 155, 0.3);
+  animation: observatory-star-twinkle steps(4, end) infinite;
+}
+
+.observatory-star--large {
+  background: #ffe59c;
+  box-shadow:
+    7px 0 rgba(255, 226, 148, 0.42),
+    -7px 0 rgba(255, 226, 148, 0.42),
+    0 7px rgba(255, 226, 148, 0.42),
+    0 -7px rgba(255, 226, 148, 0.42);
+}
+
+.observatory-moon {
+  position: absolute;
+  z-index: 1;
+  top: 10%;
+  right: 13%;
+  width: clamp(3.5rem, 7vw, 6rem);
+  aspect-ratio: 1;
+  background: #f4dfa5;
+  box-shadow:
+    inset -13px -9px #b9b08d,
+    0 0 0 7px rgba(244, 223, 165, 0.08),
+    0 0 20px rgba(244, 223, 165, 0.18);
+  clip-path: polygon(22% 0, 78% 0, 78% 8%, 92% 8%, 92% 22%, 100% 22%, 100% 78%, 92% 78%, 92% 92%, 78% 92%, 78% 100%, 22% 100%, 22% 92%, 8% 92%, 8% 78%, 0 78%, 0 22%, 8% 22%, 8% 8%, 22% 8%);
+}
+
+.observatory-moon span {
+  position: absolute;
+  top: 23%;
+  left: 20%;
+  width: 14%;
+  height: 14%;
+  background: #c6bb94;
+  box-shadow:
+    24px 17px #d1c59c,
+    9px 35px #c0b58f;
+}
+
+.observatory-constellation {
+  position: absolute;
+  z-index: 3;
+  top: 4%;
+  left: 0;
+  width: 100%;
+  height: 46%;
+  overflow: visible;
+}
+
+.constellation-path path {
+  fill: none;
+  stroke: rgba(243, 213, 147, 0.2);
+  stroke-width: 2;
+  stroke-dasharray: 9 9;
+  animation: observatory-constellation-line 14s steps(20, end) infinite;
+}
+
+.constellation-path circle {
+  fill: #f4d797;
+  opacity: 0.72;
+  animation: observatory-constellation-star 7s steps(4, end) infinite;
+}
+
+.constellation-path--two path,
+.constellation-path--two circle {
+  animation-delay: -6s;
+}
+
+.constellation-signal {
+  fill: none;
+  stroke: #f0bd66;
+  stroke-width: 3;
+  stroke-dasharray: 12 390;
+  opacity: 0.72;
+  animation: observatory-constellation-signal 11s steps(28, end) infinite;
+}
+
+.observatory-shooting-star {
+  position: absolute;
+  z-index: 4;
+  top: 15%;
+  left: -12%;
+  width: 82px;
+  height: 4px;
+  background:
+    linear-gradient(to right, transparent, #ffe8aa);
+  box-shadow: 0 0 5px rgba(255, 225, 155, 0.44);
+  rotate: 14deg;
+  animation: observatory-shooting-star 19s steps(24, end) infinite;
+}
+
+.observatory-mountain {
+  position: absolute;
+  right: -5%;
+  bottom: 0;
+  left: -5%;
+  transform-origin: bottom;
+}
+
+.observatory-mountain--far {
+  height: 52%;
+  background: #3a4760;
+  clip-path: polygon(0 100%, 0 65%, 10% 42%, 18% 61%, 29% 25%, 38% 56%, 48% 34%, 58% 65%, 70% 19%, 82% 62%, 91% 37%, 100% 59%, 100% 100%);
+  box-shadow: inset 0 22px rgba(112, 117, 139, 0.16);
+}
+
+.observatory-mountain--near {
+  z-index: 3;
+  height: 36%;
+  background: #263a3e;
+  clip-path: polygon(0 100%, 0 48%, 13% 20%, 24% 59%, 37% 27%, 49% 65%, 62% 35%, 73% 70%, 87% 16%, 100% 53%, 100% 100%);
+  box-shadow: inset 0 17px rgba(84, 111, 102, 0.16);
+}
+
+.observatory-cloud {
+  position: absolute;
+  z-index: 2;
+  bottom: 23%;
+  width: 210px;
+  height: 48px;
+  background: #8b92a1;
+  box-shadow: inset 0 -11px #626a7c;
+  opacity: 0.58;
+  clip-path: polygon(0 58%, 12% 58%, 12% 28%, 29% 28%, 29% 8%, 55% 8%, 55% 26%, 78% 26%, 78% 48%, 100% 48%, 100% 83%, 87% 83%, 87% 100%, 10% 100%, 10% 83%, 0 83%);
+  animation: observatory-cloud-drift 42s linear infinite;
+}
+
+.observatory-cloud--one {
+  left: -5%;
+}
+
+.observatory-cloud--two {
+  right: 9%;
+  bottom: 30%;
+  scale: 0.75;
+  opacity: 0.4;
+  animation-direction: reverse;
+  animation-duration: 50s;
+}
+
+.observatory-cloud--three {
+  left: 43%;
+  bottom: 17%;
+  scale: 0.55;
+  opacity: 0.34;
+  animation-delay: -22s;
+}
+
+.observatory-village-lights {
+  position: absolute;
+  z-index: 2;
+  right: 7%;
+  bottom: 26%;
+  left: 7%;
+  height: 11%;
+}
+
+.observatory-village-lights i {
+  position: absolute;
+  bottom: calc((var(--light-step, 1) * 6px));
+  width: 5px;
+  height: 5px;
+  background: #e6ad5a;
+  box-shadow: 0 0 6px rgba(230, 173, 90, 0.48);
+  animation: observatory-village-light 8s steps(2, end) infinite;
+}
+
+.observatory-village-lights i:nth-child(1) { left: 4%; --light-step: 1; }
+.observatory-village-lights i:nth-child(2) { left: 13%; --light-step: 3; animation-delay: -2s; }
+.observatory-village-lights i:nth-child(3) { left: 24%; --light-step: 2; animation-delay: -4s; }
+.observatory-village-lights i:nth-child(4) { left: 38%; --light-step: 4; animation-delay: -1s; }
+.observatory-village-lights i:nth-child(5) { left: 51%; --light-step: 1; animation-delay: -6s; }
+.observatory-village-lights i:nth-child(6) { left: 64%; --light-step: 3; animation-delay: -3s; }
+.observatory-village-lights i:nth-child(7) { left: 75%; --light-step: 2; animation-delay: -7s; }
+.observatory-village-lights i:nth-child(8) { left: 86%; --light-step: 4; animation-delay: -5s; }
+.observatory-village-lights i:nth-child(9) { left: 95%; --light-step: 1; animation-delay: -1.5s; }
+
+.observatory-tower {
+  position: absolute;
+  z-index: 4;
+  bottom: 16%;
+  left: 8%;
+  width: 152px;
+  height: 270px;
+  border: 8px solid #202633;
+  background:
+    repeating-linear-gradient(to bottom, #555d68 0 38px, #696f76 38px 42px, #454c59 42px 47px);
+  box-shadow:
+    inset 10px 0 rgba(151, 151, 139, 0.12),
+    9px 10px rgba(11, 15, 27, 0.38);
+  clip-path: polygon(8% 0, 92% 0, 92% 7%, 100% 7%, 100% 100%, 0 100%, 0 7%, 8% 7%);
+}
+
+.observatory-dome {
+  position: absolute;
+  top: -80px;
+  left: -24px;
+  width: 184px;
+  height: 92px;
+  overflow: hidden;
+  border: 8px solid #202632;
+  background: #536278;
+  box-shadow:
+    inset 0 -13px #374556,
+    inset 13px 0 rgba(173, 180, 184, 0.12);
+  clip-path: polygon(19% 0, 81% 0, 81% 8%, 91% 8%, 91% 20%, 97% 20%, 97% 42%, 100% 42%, 100% 100%, 0 100%, 0 42%, 3% 42%, 3% 20%, 9% 20%, 9% 8%, 19% 8%);
+}
+
+.observatory-dome i {
+  position: absolute;
+  top: 8px;
+  width: 7px;
+  height: 72px;
+  background: #252b38;
+}
+
+.observatory-dome i:first-child { left: 34%; rotate: -8deg; }
+.observatory-dome i:last-child { right: 34%; rotate: 8deg; }
+
+.observatory-tower-window {
+  position: absolute;
+  top: 37px;
+  left: calc(50% - 35px);
+  display: grid;
+  width: 70px;
+  height: 74px;
+  place-items: center;
+  border: 7px solid #242936;
+  background: #b07848;
+  box-shadow:
+    inset 0 0 0 5px #e0ae5e,
+    5px 6px rgba(20, 23, 34, 0.38);
+}
+
+.observatory-tower-window i {
+  width: 7px;
+  height: 38px;
+  background: #31303b;
+}
+
+.observatory-tower-door {
+  position: absolute;
+  bottom: 0;
+  left: calc(50% - 39px);
+  width: 78px;
+  height: 93px;
+  border: 7px solid #222733;
+  background: #61432f;
+  box-shadow:
+    inset -9px 0 #3e2e27,
+    inset 9px 0 #836044;
+}
+
+.observatory-telescope {
+  position: absolute;
+  z-index: 5;
+  right: 13%;
+  bottom: 30%;
+  width: 185px;
+  height: 120px;
+  transform-origin: 55% 70%;
+  animation: observatory-telescope-scan 18s steps(12, end) infinite;
+}
+
+.observatory-telescope > span {
+  position: absolute;
+  top: 15px;
+  left: 6px;
+  width: 147px;
+  height: 42px;
+  rotate: -17deg;
+  border: 7px solid #202531;
+  background: #6c7180;
+  box-shadow:
+    inset 0 8px #93949a,
+    inset 0 -8px #444b59,
+    6px 6px rgba(17, 20, 31, 0.35);
+  clip-path: polygon(0 17%, 86% 17%, 86% 0, 100% 0, 100% 100%, 86% 100%, 86% 83%, 0 83%);
+}
+
+.observatory-telescope > i {
+  position: absolute;
+  bottom: 0;
+  left: 88px;
+  width: 9px;
+  height: 76px;
+  border: 3px solid #222733;
+  background: #9a704b;
+  transform-origin: top;
+}
+
+.observatory-telescope > i:nth-of-type(1) { rotate: 18deg; }
+.observatory-telescope > i:nth-of-type(2) { rotate: -18deg; }
+
+.observatory-dish {
+  position: absolute;
+  z-index: 4;
+  bottom: 21%;
+  width: 86px;
+  height: 109px;
+}
+
+.observatory-dish--left { left: 30%; }
+.observatory-dish--right {
+  right: 31%;
+  scale: 0.8;
+}
+
+.observatory-dish span {
+  position: absolute;
+  top: 0;
+  width: 80px;
+  height: 47px;
+  border: 7px solid #202633;
+  background: #777d87;
+  box-shadow: inset 0 -10px #505866;
+  clip-path: polygon(0 0, 100% 0, 86% 42%, 72% 69%, 50% 100%, 28% 69%, 14% 42%);
+}
+
+.observatory-dish i {
+  position: absolute;
+  top: 43px;
+  left: 36px;
+  width: 10px;
+  height: 65px;
+  border: 3px solid #212632;
+  background: #9b7250;
+}
+
+.observatory-railing {
+  position: absolute;
+  z-index: 6;
+  bottom: 14%;
+  display: flex;
+  width: 32%;
+  height: 58px;
+  justify-content: space-between;
+  border-top: 7px solid #202633;
+  border-bottom: 8px solid #202633;
+}
+
+.observatory-railing--left { left: 0; }
+.observatory-railing--right { right: 0; }
+
+.observatory-railing i {
+  width: 7px;
+  height: 100%;
+  background: #59606a;
+  border-right: 3px solid #202633;
+  border-left: 3px solid #202633;
+}
+
+.observatory-lantern {
+  position: absolute;
+  z-index: 7;
+  bottom: 18%;
+  width: 32px;
+  height: 58px;
+  border: 6px solid #202632;
+  background: #68472f;
+}
+
+.observatory-lantern--left { left: 35%; }
+.observatory-lantern--right { right: 35%; }
+
+.observatory-lantern span {
+  position: absolute;
+  inset: 8px 5px 7px;
+  background: #f2c164;
+  box-shadow:
+    inset 0 -8px #c77d42,
+    0 0 11px rgba(240, 180, 84, 0.45);
+  animation: observatory-lantern-flicker 2.4s steps(4, end) infinite;
+}
+
+.observatory-flag {
+  position: absolute;
+  z-index: 6;
+  bottom: 46%;
+  width: 6px;
+  height: 116px;
+  background: #312b34;
+}
+
+.observatory-flag--left { left: 24%; }
+.observatory-flag--right { right: 24%; }
+
+.observatory-flag span {
+  position: absolute;
+  top: 7px;
+  left: 6px;
+  width: 62px;
+  height: 42px;
+  border: 5px solid #232735;
+  background: #80506a;
+  box-shadow: inset -8px 0 #583b54;
+  clip-path: polygon(0 0, 100% 0, 84% 48%, 100% 100%, 0 100%);
+  transform-origin: left center;
+  animation: observatory-flag-wave 6s steps(5, end) infinite;
+}
+
+.observatory-flag--right span {
+  left: auto;
+  right: 6px;
+  scale: -1 1;
+  animation-delay: -3s;
+}
+
+.observatory-cable {
+  position: absolute;
+  z-index: 3;
+  top: 31%;
+  width: 35%;
+  height: 85px;
+  border-bottom: 5px solid #242836;
+  border-radius: 50%;
+  transform-origin: top;
+  animation: observatory-cable-sway 8s steps(5, end) infinite;
+}
+
+.observatory-cable--one { left: 12%; rotate: 5deg; }
+.observatory-cable--two {
+  right: 11%;
+  rotate: -6deg;
+  animation-delay: -4s;
+}
+
+.observatory-stone-platform {
+  position: absolute;
+  z-index: 5;
+  right: -5%;
+  bottom: 6%;
+  left: -5%;
+  height: 16%;
+  border-top: 9px solid #252b37;
+  background:
+    repeating-linear-gradient(90deg, #565c65 0 62px, #3d434d 62px 68px),
+    repeating-linear-gradient(to bottom, #5d626a 0 32px, #3a404a 32px 38px);
+  box-shadow: inset 0 11px #777b7e;
+}
+
+.observatory-signal-mote {
+  position: absolute;
+  z-index: 7;
+  bottom: 17%;
+  width: 4px;
+  height: 4px;
+  background: #f2c66e;
+  box-shadow: 0 0 7px rgba(242, 198, 110, 0.68);
+  animation: observatory-signal-rise linear infinite;
+}
+
+.observatory-readability {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  background:
+    linear-gradient(to bottom, rgba(7, 11, 25, 0.05), transparent 36%, transparent 72%, rgba(9, 14, 25, 0.35)),
+    linear-gradient(to right, rgba(7, 11, 24, 0.22), transparent 22%, transparent 78%, rgba(7, 11, 24, 0.22));
+}
+
+.observatory-entrance {
+  position: relative;
+  display: grid;
+  min-height: 100dvh;
+  place-items: center;
+  padding: 7rem 1.5rem 9rem;
+}
+
+.observatory-elevator {
+  position: absolute;
+  top: 0;
+  left: calc(50% - min(42vw, 390px));
+  width: min(84vw, 780px);
+  height: 55%;
+  overflow: hidden;
+  border: 9px solid #202633;
+  border-top: 0;
+  background: #393b45;
+  box-shadow:
+    0 0 0 5px #8d6545,
+    0 0 0 10px #2b2427,
+    11px 13px rgba(7, 10, 21, 0.35);
+  clip-path: polygon(0 0, 100% 0, 100% 88%, 96% 88%, 96% 100%, 4% 100%, 4% 88%, 0 88%);
+}
+
+.observatory-elevator__forge {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, #6d392d 0 25%, #9b4d32 25% 52%, #e07a3d 52% 100%);
+  opacity: 0.85;
+}
+
+.observatory-elevator__night {
+  position: absolute;
+  inset: 5% 12% 10%;
+  background:
+    linear-gradient(to bottom, #10172d 0 38%, #243453 38% 70%, #4a4b63 70% 100%);
+  box-shadow:
+    inset 0 0 0 7px rgba(255, 226, 157, 0.12),
+    0 0 18px rgba(235, 174, 80, 0.24);
+}
+
+.observatory-elevator__chain {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  width: 13px;
+  height: 100%;
+  background:
+    repeating-linear-gradient(to bottom, #25232a 0 11px, #a5734b 11px 18px);
+}
+
+.observatory-elevator__chain--left { left: 10%; }
+.observatory-elevator__chain--right { right: 10%; }
+
+.observatory-elevator__car {
+  position: absolute;
+  z-index: 4;
+  right: 16%;
+  bottom: 8%;
+  left: 16%;
+  height: 39%;
+  border: 8px solid #252129;
+  background: #5d5049;
+  box-shadow:
+    inset 0 0 0 6px #8d6a4e,
+    8px 8px rgba(25, 18, 24, 0.35);
+}
+
+.observatory-elevator__car > span {
+  position: absolute;
+  top: 17px;
+  right: 20%;
+  bottom: 17px;
+  left: 20%;
+  border: 6px solid #28242b;
+  background: #242e46;
+  box-shadow: inset 0 -10px #1b2337;
+}
+
+.observatory-elevator__car > i {
+  position: absolute;
+  top: 13px;
+  width: 10px;
+  height: 10px;
+  border: 3px solid #262129;
+  background: #efbd66;
+  animation: observatory-control-blink 3.2s steps(2, end) infinite;
+}
+
+.observatory-elevator__car > i:first-of-type { left: 12%; }
+.observatory-elevator__car > i:last-of-type {
+  right: 12%;
+  animation-delay: -1.6s;
+}
+
+.observatory-elevator__gate {
+  position: absolute;
+  z-index: 5;
+  right: 7%;
+  bottom: 4%;
+  left: 7%;
+  height: 32px;
+  border: 7px solid #25222a;
+  background:
+    repeating-linear-gradient(90deg, #8e6748 0 18px, #544036 18px 24px);
+}
+
+.observatory-chapter-panel {
+  position: relative;
+  z-index: 8;
+  width: min(100%, 820px);
+  margin-top: 15vh;
+  padding: clamp(1.7rem, 4vw, 3.2rem);
+  border: 4px solid #171d2a;
+  background: #23283a;
+  box-shadow:
+    inset 0 0 0 4px #9c744c,
+    inset 0 0 0 8px #414052,
+    10px 11px rgba(7, 10, 20, 0.48);
+  clip-path: polygon(0 14px, 14px 14px, 14px 0, calc(100% - 14px) 0, calc(100% - 14px) 14px, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 14px calc(100% - 14px), 0 calc(100% - 14px));
+  text-align: center;
+}
+
+.observatory-panel-corner {
+  position: absolute;
+  z-index: 3;
+  width: 9px;
+  height: 9px;
+  background: var(--observatory-gold);
+  box-shadow: 3px 3px #121724;
+}
+
+.observatory-panel-corner--tl { top: 13px; left: 13px; }
+.observatory-panel-corner--tr { top: 13px; right: 13px; }
+.observatory-panel-corner--bl { bottom: 13px; left: 13px; }
+.observatory-panel-corner--br { right: 13px; bottom: 13px; }
+
+.observatory-chapter-index,
+.observatory-chapter-kicker,
+.observatory-chapter-panel h1,
+.observatory-arrival-prompt {
+  font-family: var(--observatory-font-pixel);
+  text-transform: uppercase;
+}
+
+.observatory-chapter-index {
+  color: #efc473;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.28em;
+}
+
+.observatory-chapter-rule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  margin: 0.8rem auto;
+  color: #edbd66;
+}
+
+.observatory-chapter-rule > span {
+  width: min(22vw, 105px);
+  height: 4px;
+  background:
+    linear-gradient(to right, transparent 0 8%, #9f784e 8% 92%, transparent 92%);
+}
+
+.observatory-signal-glyph {
+  width: 30px;
+  height: 30px;
+}
+
+.observatory-chapter-kicker {
+  color: #9fa8c2;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.32em;
+}
+
+.observatory-chapter-panel h1 {
+  max-width: 760px;
+  margin: 0.7rem auto 0;
+  color: var(--observatory-cream);
+  font-size: clamp(2rem, 5.3vw, 4.8rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.06em;
+  text-shadow:
+    3px 0 #111726,
+    0 3px #111726,
+    -3px 0 #111726,
+    0 -3px #111726,
+    7px 7px rgba(7, 10, 20, 0.5);
+}
+
+.observatory-chapter-copy {
+  margin: 1rem auto 0;
+  color: #e5dbbd;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(0.9rem, 1.6vw, 1.1rem);
+}
+
+.observatory-arrival-prompt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.7rem;
+  color: #f1c56f;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.observatory-arrival-prompt i {
+  width: 10px;
+  height: 10px;
+  rotate: 45deg;
+  border-right: 4px solid currentColor;
+  border-bottom: 4px solid currentColor;
+  animation: observatory-arrival-arrow 1.7s steps(4, end) infinite;
+}
+
+.observatory-signal-section {
+  position: relative;
+  display: grid;
+  width: min(calc(100% - 2rem), 1220px);
+  min-height: 100dvh;
+  grid-template-columns: minmax(320px, 0.86fr) minmax(430px, 1.14fr);
+  align-items: center;
+  gap: clamp(2rem, 5vw, 4.5rem);
+  margin: 0 auto;
+  padding: 6rem 1rem 8rem;
+}
+
+.observatory-beacon-column {
+  min-width: 0;
+}
+
+.signal-beacon {
+  position: relative;
+  width: min(100%, 470px);
+  min-height: 490px;
+  margin: 0 auto;
+  image-rendering: pixelated;
+}
+
+.signal-beacon__ring {
+  position: absolute;
+  z-index: 4;
+  top: 42px;
+  left: 50%;
+  aspect-ratio: 1;
+  translate: -50% 0;
+  border: 7px solid #2a3040;
+  box-shadow:
+    inset 0 0 0 4px #8d714f,
+    0 0 10px rgba(237, 189, 102, 0.18);
+  animation: observatory-beacon-ring 18s steps(24, end) infinite;
+}
+
+.signal-beacon__ring i {
+  position: absolute;
+  top: -9px;
+  left: calc(50% - 7px);
+  width: 14px;
+  height: 14px;
+  border: 3px solid #1b202d;
+  background: #efc46e;
+  box-shadow: 0 0 7px rgba(239, 196, 110, 0.52);
+}
+
+.signal-beacon__ring--outer {
+  width: 74%;
+  clip-path: polygon(0 12%, 12% 12%, 12% 0, 88% 0, 88% 12%, 100% 12%, 100% 88%, 88% 88%, 88% 100%, 12% 100%, 12% 88%, 0 88%);
+}
+
+.signal-beacon__ring--middle {
+  top: 78px;
+  width: 57%;
+  border-color: #59627a;
+  animation-direction: reverse;
+  animation-duration: 23s;
+}
+
+.signal-beacon__ring--inner {
+  top: 112px;
+  width: 40%;
+  border-color: #9d774d;
+  animation-duration: 14s;
+}
+
+.signal-beacon__crystal {
+  position: absolute;
+  z-index: 7;
+  top: 117px;
+  left: calc(50% - 50px);
+  display: grid;
+  width: 100px;
+  height: 146px;
+  place-items: center;
+  background: #e3b760;
+  box-shadow:
+    inset -20px -19px #9f5c44,
+    inset 15px 13px #ffe8a3,
+    0 0 19px rgba(238, 189, 95, 0.5);
+  clip-path: polygon(50% 0, 100% 25%, 79% 82%, 50% 100%, 20% 82%, 0 25%);
+  animation: observatory-beacon-breathe 5.5s steps(5, end) infinite;
+}
+
+.signal-beacon__crystal svg {
+  width: 36px;
+  height: 36px;
+  color: #172033;
+  filter: drop-shadow(3px 3px rgba(77, 49, 42, 0.35));
+}
+
+.signal-beacon__support {
+  position: absolute;
+  z-index: 3;
+  top: 250px;
+  width: 24px;
+  height: 151px;
+  border: 6px solid #202633;
+  background: #6d5848;
+  box-shadow: inset -6px 0 #453a35;
+  transform-origin: top;
+}
+
+.signal-beacon__support--left {
+  left: 29%;
+  rotate: 18deg;
+}
+
+.signal-beacon__support--right {
+  right: 29%;
+  rotate: -18deg;
+}
+
+.signal-beacon__console {
+  position: absolute;
+  z-index: 8;
+  top: 310px;
+  left: calc(50% - 92px);
+  display: flex;
+  width: 184px;
+  height: 70px;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+  border: 7px solid #202633;
+  background: #494c58;
+  box-shadow:
+    inset 0 -9px #313541,
+    6px 7px rgba(11, 14, 24, 0.35);
+  clip-path: polygon(7% 0, 93% 0, 100% 100%, 0 100%);
+}
+
+.signal-beacon__console span {
+  width: 11px;
+  height: 11px;
+  border: 3px solid #1c212d;
+  background: #d59b51;
+  animation: observatory-control-blink 3.4s steps(2, end) infinite;
+}
+
+.signal-beacon__console span:nth-child(2) { animation-delay: -1.1s; }
+.signal-beacon__console span:nth-child(3) { animation-delay: -2.2s; }
+
+.signal-beacon__console i {
+  position: absolute;
+  right: 21px;
+  bottom: 9px;
+  left: 21px;
+  height: 6px;
+  background:
+    repeating-linear-gradient(90deg, #efbd66 0 13px, #5a5360 13px 22px);
+  animation: observatory-signal-flow 2.4s steps(9, end) infinite;
+}
+
+.signal-beacon__base {
+  position: absolute;
+  z-index: 6;
+  right: 11%;
+  bottom: 18px;
+  left: 11%;
+  height: 105px;
+  border: 8px solid #202633;
+  background: #555b65;
+  box-shadow:
+    inset 0 -14px #343a47,
+    inset 0 8px #777b81,
+    8px 9px rgba(11, 14, 24, 0.38);
+  clip-path: polygon(10% 0, 90% 0, 100% 100%, 0 100%);
+}
+
+.signal-beacon__base span {
+  position: absolute;
+  top: 20px;
+  right: 15%;
+  left: 15%;
+  height: 12px;
+  border: 4px solid #1f2531;
+  background:
+    repeating-linear-gradient(90deg, #d7a451 0 18px, #594c49 18px 30px);
+}
+
+.signal-beacon__base i {
+  position: absolute;
+  bottom: 16px;
+  width: 33%;
+  height: 13px;
+  border: 4px solid #202633;
+  background: #806148;
+}
+
+.signal-beacon__base i:first-of-type { left: 10%; }
+.signal-beacon__base i:last-of-type { right: 10%; }
+
+.signal-beacon__sky-path {
+  position: absolute;
+  z-index: 2;
+  top: 73px;
+  width: 34%;
+  height: 9px;
+  border: 3px solid #202633;
+  background: #655344;
+  overflow: hidden;
+}
+
+.signal-beacon__sky-path--left {
+  left: 0;
+  rotate: -17deg;
+  transform-origin: right;
+}
+
+.signal-beacon__sky-path--right {
+  right: 0;
+  rotate: 17deg;
+  transform-origin: left;
+}
+
+.signal-beacon__sky-path i {
+  position: absolute;
+  inset: 1px;
+  background:
+    repeating-linear-gradient(90deg, #f1c36d 0 12px, #72543f 12px 23px);
+  animation: observatory-signal-flow 2.1s steps(9, end) infinite;
+}
+
+.signal-beacon__sky-path--left i {
+  animation-direction: reverse;
+}
+
+.beacon-copy {
+  margin: 1rem auto 0;
+  max-width: 430px;
+  text-align: center;
+}
+
+.beacon-copy p,
+.beacon-copy h2 {
+  font-family: var(--observatory-font-pixel);
+  text-transform: uppercase;
+}
+
+.beacon-copy p {
+  color: #efbf68;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+}
+
+.beacon-copy h2 {
+  margin-top: 0.45rem;
+  color: var(--observatory-cream);
+  font-size: clamp(1.25rem, 2.8vw, 2rem);
+  font-weight: 900;
+  line-height: 1.15;
+  text-shadow: 4px 4px #111725;
+}
+
+.beacon-copy > span {
+  display: block;
+  margin-top: 0.65rem;
+  color: #c8c4ba;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.communication-channel {
+  position: relative;
+  width: min(100%, 650px);
+  min-height: 500px;
+  padding: clamp(1rem, 2.5vw, 1.6rem);
+  border: 7px solid #151b29;
+  background: #293044;
+  box-shadow:
+    inset 0 0 0 5px #90704f,
+    inset 0 0 0 9px #3e4051,
+    10px 12px rgba(7, 10, 20, 0.42);
+  clip-path: polygon(0 13px, 13px 13px, 13px 0, calc(100% - 13px) 0, calc(100% - 13px) 13px, 100% 13px, 100% calc(100% - 13px), calc(100% - 13px) calc(100% - 13px), calc(100% - 13px) 100%, 13px 100%, 13px calc(100% - 13px), 0 calc(100% - 13px));
+}
+
+.communication-channel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 0.8rem;
+  border: 4px solid #151b28;
+  background: #1d2333;
+  box-shadow:
+    inset 0 -5px #131925,
+    4px 5px rgba(7, 10, 19, 0.32);
+}
+
+.communication-channel__header p,
+.communication-channel__header h2,
+.communication-channel__status {
+  font-family: var(--observatory-font-pixel);
+  text-transform: uppercase;
+}
+
+.communication-channel__header p {
+  color: #eab55f;
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+
+.communication-channel__header h2 {
+  margin-top: 0.2rem;
+  color: #fff0c7;
+  font-size: clamp(1rem, 2.3vw, 1.45rem);
+  font-weight: 900;
+}
+
+.communication-channel__status {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #bfc5cf;
+  font-size: 0.48rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.communication-channel__status i {
+  width: 9px;
+  height: 9px;
+  border: 2px solid #101522;
+  background: #e5b660;
+  box-shadow: 0 0 7px rgba(229, 182, 96, 0.48);
+  animation: observatory-control-blink 3s steps(2, end) infinite;
+}
+
+.communication-channel__screen {
+  min-height: 390px;
+  margin-top: 0.9rem;
+  padding: clamp(1.1rem, 3vw, 2rem);
+  border: 5px solid #141a27;
+  background: #171e2f;
+  box-shadow:
+    inset 0 0 0 4px #3f4b62,
+    5px 6px rgba(8, 11, 21, 0.35);
+  clip-path: polygon(0 8px, 8px 8px, 8px 0, calc(100% - 8px) 0, calc(100% - 8px) 8px, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 8px calc(100% - 8px), 0 calc(100% - 8px));
+}
+
+.communication-channel__identity {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.communication-channel__icon {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  flex: none;
+  place-items: center;
+  border: 5px solid #111724;
+  background: #252c3e;
+  box-shadow:
+    inset 0 0 0 3px #4d5363,
+    5px 5px #111724;
+}
+
+.communication-channel__icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.communication-channel__identity p,
+.communication-channel__identity h3 {
+  font-family: var(--observatory-font-pixel);
+  text-transform: uppercase;
+}
+
+.communication-channel__identity p {
+  color: #c8a26a;
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.communication-channel__identity h3 {
+  margin-top: 0.25rem;
+  color: var(--observatory-cream);
+  font-size: clamp(1.2rem, 2.9vw, 2rem);
+  font-weight: 900;
+  line-height: 1.08;
+  text-shadow: 3px 3px #0e1421;
+}
+
+.communication-channel__description {
+  max-width: 520px;
+  margin-top: 1.25rem;
+  color: #d8d4c8;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+
+.communication-channel__value {
+  margin-top: 1rem;
+  padding: 0.7rem 0.8rem;
+  overflow-wrap: anywhere;
+  border: 4px solid #121825;
+  background: #222a3b;
+  color: #c4cad4;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  box-shadow: inset 0 -4px #161d2b;
+}
+
+.communication-channel__actions {
+  display: flex;
+  gap: 0.7rem;
+  margin-top: 1.25rem;
+}
+
+.observatory-button {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.68rem 0.9rem;
+  border: 4px solid #111724;
+  font-family: var(--observatory-font-pixel);
+  font-size: 0.6rem;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  box-shadow: 5px 6px #0f1522;
+  clip-path: polygon(0 5px, 5px 5px, 5px 0, calc(100% - 5px) 0, calc(100% - 5px) 5px, 100% 5px, 100% calc(100% - 5px), calc(100% - 5px) calc(100% - 5px), calc(100% - 5px) 100%, 5px 100%, 5px calc(100% - 5px), 0 calc(100% - 5px));
+  transition:
+    translate 160ms steps(2, end),
+    background-color 160ms steps(2, end),
+    box-shadow 160ms steps(2, end);
+}
+
+.observatory-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.observatory-button--primary {
+  background: #aa6940;
+  color: #fff0c5;
+  box-shadow:
+    inset 0 -6px #704431,
+    5px 6px #0f1522;
+}
+
+.observatory-button--secondary {
+  background: #3c465b;
+  color: #ece3ca;
+  box-shadow:
+    inset 0 -6px #293244,
+    5px 6px #0f1522;
+}
+
+.observatory-button:hover,
+.observatory-button:focus-visible {
+  translate: 0 -3px;
+}
+
+.observatory-button--primary:hover,
+.observatory-button--primary:focus-visible {
+  background: #be7844;
+}
+
+.observatory-button--secondary:hover,
+.observatory-button--secondary:focus-visible {
+  background: #4c5870;
+}
+
+.observatory-button:active {
+  translate: 0 2px;
+  box-shadow:
+    inset 0 -2px #293244,
+    2px 2px #0f1522;
+}
+
+.observatory-button:focus-visible {
+  outline: 3px solid #ffe19a;
+  outline-offset: 4px;
+}
+
+.observatory-button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+.communication-channel__feedback {
+  min-height: 1.35rem;
+  margin-top: 0.8rem;
+  color: #f0c36e;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.7rem;
+  line-height: 1.35;
+}
+
+.connection-stations-section {
+  position: relative;
+  width: min(calc(100% - 2rem), 1180px);
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: 7rem 1rem 9rem;
+}
+
+.connection-stations-header {
+  max-width: 680px;
+  margin: 0 auto 2.4rem;
+  text-align: center;
+}
+
+.connection-stations-header p,
+.connection-stations-header h2 {
+  font-family: var(--observatory-font-pixel);
+  text-transform: uppercase;
+}
+
+.connection-stations-header p {
+  color: #efc16c;
+  font-size: 0.61rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+}
+
+.connection-stations-header h2 {
+  margin-top: 0.55rem;
+  color: var(--observatory-cream);
+  font-size: clamp(1.6rem, 4vw, 3rem);
+  font-weight: 900;
+  line-height: 1.1;
+  text-shadow: 4px 4px #101624;
+}
+
+.connection-stations-header span {
+  display: block;
+  margin-top: 0.75rem;
+  color: #cbc8bf;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.connection-stations-grid {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.connection-stations-grid > div:nth-child(1),
+.connection-stations-grid > div:nth-child(2),
+.connection-stations-grid > div:nth-child(3) {
+  grid-column: span 2;
+}
+
+.connection-stations-grid > div:nth-child(4) {
+  grid-column: 2 / span 2;
+}
+
+.connection-stations-grid > div:nth-child(5) {
+  grid-column: 4 / span 2;
+}
+
+.connection-station {
+  position: relative;
+  display: grid;
+  width: 100%;
+  min-height: 188px;
+  grid-template-columns: 54px minmax(0, 1fr);
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1.15rem 1rem;
+  overflow: hidden;
+  border: 6px solid #151b29;
+  background: #2d3447;
+  color: #f5e8c8;
+  box-shadow:
+    inset 0 0 0 4px #57566a,
+    inset 0 -9px #202739,
+    8px 9px rgba(7, 10, 19, 0.4);
+  clip-path: polygon(0 10px, 10px 10px, 10px 0, calc(100% - 10px) 0, calc(100% - 10px) 10px, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 10px calc(100% - 10px), 0 calc(100% - 10px));
+  cursor: pointer;
+  text-align: left;
+  transition:
+    translate 180ms steps(2, end),
+    background-color 180ms steps(2, end),
+    box-shadow 180ms steps(2, end);
+}
+
+.connection-station::before,
+.connection-station::after {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  background: #746a67;
+  content: "";
+  transition: background-color 180ms steps(2, end);
+}
+
+.connection-station::before {
+  top: 12px;
+  left: 12px;
+}
+
+.connection-station::after {
+  right: 12px;
+  bottom: 12px;
+}
+
+.connection-station:hover,
+.connection-station:focus-visible,
+.connection-station.is-active {
+  translate: 0 -3px;
+  background: #394359;
+  box-shadow:
+    inset 0 0 0 4px #9b7953,
+    inset 0 -9px #252e42,
+    8px 12px rgba(7, 10, 19, 0.46),
+    0 0 13px rgba(235, 184, 95, 0.25);
+}
+
+.connection-station:hover::before,
+.connection-station:hover::after,
+.connection-station:focus-visible::before,
+.connection-station:focus-visible::after,
+.connection-station.is-active::before,
+.connection-station.is-active::after {
+  background: #efc16a;
+}
+
+.connection-station:active {
+  translate: 0 2px;
+  box-shadow:
+    inset 0 0 0 4px #9b7953,
+    inset 0 -4px #252e42,
+    3px 3px rgba(7, 10, 19, 0.46);
+}
+
+.connection-station:focus-visible {
+  outline: 3px solid #ffe09a;
+  outline-offset: 4px;
+}
+
+.connection-station__mast {
+  position: absolute;
+  top: 8px;
+  right: 17px;
+  width: 42px;
+  height: 70px;
+  border-left: 5px solid #171d2b;
+}
+
+.connection-station__mast > i {
+  position: absolute;
+  left: -4px;
+  height: 5px;
+  background: #8c735b;
+  border: 2px solid #171d2b;
+  transform-origin: left;
+}
+
+.connection-station__mast > i:nth-child(1) {
+  top: 10px;
+  width: 37px;
+  rotate: -18deg;
+}
+
+.connection-station__mast > i:nth-child(2) {
+  top: 29px;
+  width: 29px;
+  rotate: 12deg;
+}
+
+.connection-station__mast > i:nth-child(3) {
+  top: 49px;
+  width: 20px;
+  rotate: -9deg;
+}
+
+.connection-station__icon {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border: 5px solid #111725;
+  background: #20283a;
+  box-shadow:
+    inset 0 0 0 3px #50586a,
+    5px 5px #111725;
+}
+
+.connection-station__icon svg {
+  width: 24px;
+  height: 24px;
+  transition:
+    scale 180ms steps(2, end),
+    filter 180ms steps(2, end);
+}
+
+.connection-station:hover .connection-station__icon svg,
+.connection-station:focus-visible .connection-station__icon svg,
+.connection-station.is-active .connection-station__icon svg {
+  scale: 1.08;
+  filter: drop-shadow(0 0 5px rgba(240, 192, 103, 0.35));
+}
+
+.connection-station__copy {
+  position: relative;
+  z-index: 2;
+  display: block;
+  min-width: 0;
+}
+
+.connection-station__copy small,
+.connection-station__copy strong,
+.connection-station__copy > span {
+  display: block;
+  font-family: var(--observatory-font-pixel);
+  text-transform: uppercase;
+}
+
+.connection-station__copy small {
+  color: #c19d6c;
+  font-size: 0.49rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.connection-station__copy strong {
+  margin-top: 0.28rem;
+  overflow: hidden;
+  color: var(--observatory-cream);
+  font-size: 0.9rem;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.connection-station__copy > span {
+  margin-top: 0.5rem;
+  color: #9ea7b8;
+  font-size: 0.48rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  transition: color 180ms steps(2, end);
+}
+
+.connection-station:hover .connection-station__copy > span,
+.connection-station:focus-visible .connection-station__copy > span,
+.connection-station.is-active .connection-station__copy > span {
+  color: #efc26d;
+}
+
+.connection-station__signal {
+  position: absolute;
+  right: 0;
+  bottom: 25px;
+  left: 0;
+  height: 8px;
+  border-top: 3px solid #131927;
+  border-bottom: 3px solid #131927;
+  background: #564c4c;
+  overflow: hidden;
+}
+
+.connection-station__signal i {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 17px, #e9b95f 17px 24px, transparent 24px 36px);
+  translate: -36px 0;
+  opacity: 0;
+}
+
+.connection-station:hover .connection-station__signal i,
+.connection-station:focus-visible .connection-station__signal i,
+.connection-station.is-active .connection-station__signal i {
+  opacity: 1;
+  animation: observatory-station-signal 2.2s steps(10, end) infinite;
+}
+
+.connection-station__light {
+  position: absolute;
+  right: 13px;
+  bottom: 39px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid #121826;
+  background: #626675;
+}
+
+.connection-station.is-active .connection-station__light {
+  background: #efc16b;
+  box-shadow: 0 0 7px rgba(239, 193, 107, 0.55);
+  animation: observatory-control-blink 2.5s steps(2, end) infinite;
+}
+
+.connection-stations-signal {
+  position: absolute;
+  z-index: 1;
+  top: 46%;
+  right: 7%;
+  left: 7%;
+  display: flex;
+  justify-content: space-between;
+  height: 12px;
+  border: 4px solid #151b29;
+  background: #5e5149;
+  overflow: hidden;
+}
+
+.connection-stations-signal > span {
+  position: relative;
+  width: 20%;
+  border-right: 4px solid #171d2b;
+}
+
+.connection-stations-signal i {
+  position: absolute;
+  inset: 1px;
+  background:
+    repeating-linear-gradient(90deg, #e9b95f 0 12px, #525169 12px 23px);
+  animation: observatory-signal-flow 2.5s steps(10, end) infinite;
+}
+
+.observatory-finale {
+  position: relative;
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6rem 1.5rem 10rem;
+  text-align: center;
+}
+
+.observatory-final-platform {
+  position: relative;
+  width: min(90vw, 760px);
+  height: min(58vw, 420px);
+  border-bottom: 11px solid #171d29;
+}
+
+.observatory-final-platform::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 85px;
+  border: 8px solid #19202d;
+  background:
+    repeating-linear-gradient(90deg, #555d68 0 58px, #3e4652 58px 65px),
+    #555d68;
+  box-shadow:
+    inset 0 10px #797d80,
+    8px 9px rgba(7, 10, 19, 0.38);
+  clip-path: polygon(8% 0, 92% 0, 100% 100%, 0 100%);
+  content: "";
+}
+
+.observatory-final-telescope {
+  position: absolute;
+  z-index: 3;
+  top: 18%;
+  left: 10%;
+  width: 180px;
+  height: 180px;
+}
+
+.observatory-final-telescope span {
+  position: absolute;
+  top: 7px;
+  left: 0;
+  width: 145px;
+  height: 42px;
+  rotate: -20deg;
+  border: 7px solid #18202e;
+  background: #707887;
+  box-shadow:
+    inset 0 8px #9aa0a6,
+    inset 0 -8px #46505e,
+    6px 6px rgba(9, 12, 23, 0.36);
+}
+
+.observatory-final-telescope i {
+  position: absolute;
+  top: 48px;
+  left: 84px;
+  width: 9px;
+  height: 115px;
+  border: 3px solid #18202e;
+  background: #846247;
+  transform-origin: top;
+}
+
+.observatory-final-telescope i:first-of-type { rotate: 18deg; }
+.observatory-final-telescope i:last-of-type { rotate: -18deg; }
+
+.observatory-final-bench {
+  position: absolute;
+  z-index: 3;
+  right: 11%;
+  bottom: 77px;
+  width: 180px;
+  height: 88px;
+}
+
+.observatory-final-bench span {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 34px;
+  border: 6px solid #1d2029;
+  background:
+    repeating-linear-gradient(to bottom, #765038 0 12px, #523828 12px 17px);
+  box-shadow: 5px 6px rgba(9, 12, 21, 0.35);
+}
+
+.observatory-final-bench i {
+  position: absolute;
+  bottom: 0;
+  width: 11px;
+  height: 58px;
+  border: 3px solid #1d2029;
+  background: #5a4334;
+}
+
+.observatory-final-bench i:first-of-type { left: 21px; }
+.observatory-final-bench i:last-of-type { right: 21px; }
+
+.observatory-final-path {
+  position: absolute;
+  z-index: 4;
+  bottom: -46px;
+  left: calc(50% - 125px);
+  display: flex;
+  width: 250px;
+  height: 116px;
+  align-items: flex-end;
+  justify-content: space-around;
+  background: #786a60;
+  clip-path: polygon(32% 0, 68% 0, 100% 100%, 0 100%);
+}
+
+.observatory-final-path span {
+  width: 34px;
+  height: 17px;
+  margin-bottom: calc(var(--path-step, 1) * 15px);
+  border: 4px solid #202532;
+  background: #a78862;
+}
+
+.observatory-final-path span:nth-child(1) { --path-step: 1; }
+.observatory-final-path span:nth-child(2) { --path-step: 2; }
+.observatory-final-path span:nth-child(3) { --path-step: 3; }
+.observatory-final-path span:nth-child(4) { --path-step: 4; }
+
+.observatory-next-gate {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  left: calc(50% - 74px);
+  display: grid;
+  width: 148px;
+  height: 180px;
+  place-items: center;
+  border: 8px solid #18202d;
+  background: #5b5968;
+  box-shadow:
+    inset 0 0 0 6px #8f7454,
+    7px 8px rgba(8, 11, 21, 0.38);
+  clip-path: polygon(27% 0, 73% 0, 73% 5%, 85% 5%, 85% 13%, 94% 13%, 94% 100%, 6% 100%, 6% 13%, 15% 13%, 15% 5%, 27% 5%);
+}
+
+.observatory-next-gate span {
+  width: 66%;
+  height: 75%;
+  background:
+    linear-gradient(to bottom, #252d4b 0 27%, #4a5677 27% 57%, #a78668 57% 100%);
+  box-shadow:
+    inset 0 0 0 6px rgba(255, 235, 181, 0.14),
+    0 0 13px rgba(201, 180, 128, 0.28);
+  animation: observatory-gate-light 5.5s steps(5, end) infinite;
+}
+
+.observatory-next-gate i {
+  position: absolute;
+  bottom: 18px;
+  width: 12px;
+  height: 12px;
+  border: 3px solid #171d2a;
+  background: #efc26c;
+  animation: observatory-control-blink 3s steps(2, end) infinite;
+}
+
+.observatory-next-gate i:first-of-type { left: 19px; }
+.observatory-next-gate i:last-of-type {
+  right: 19px;
+  animation-delay: -1.5s;
+}
+
+.observatory-finale-label,
+.observatory-finale h2,
+.observatory-finale-button {
+  font-family: var(--observatory-font-pixel);
+  text-transform: uppercase;
+}
+
+.observatory-finale-label {
+  margin-top: 2.1rem;
+  color: #efc16a;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+}
+
+.observatory-finale h2 {
+  max-width: 680px;
+  margin-top: 0.6rem;
+  color: var(--observatory-cream);
+  font-size: clamp(1.45rem, 3.8vw, 2.9rem);
+  font-weight: 900;
+  line-height: 1.13;
+  text-shadow: 4px 4px #0f1522;
+}
+
+.observatory-finale-copy {
+  max-width: 560px;
+  margin-top: 0.8rem;
+  color: #c9c7c0;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.observatory-finale-button {
+  margin-top: 1.5rem;
+}
+
+.observatory-finale-button > span {
+  width: 9px;
+  height: 9px;
+  rotate: 45deg;
+  border-top: 4px solid currentColor;
+  border-right: 4px solid currentColor;
+}
+
+.observatory-progress {
+  position: fixed;
+  z-index: 35;
+  bottom: max(5.5rem, calc(env(safe-area-inset-bottom) + 4.5rem));
+  left: max(1.25rem, env(safe-area-inset-left));
+  display: flex;
+  max-width: calc(100vw - 2.5rem);
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.48rem 0.62rem;
+  border: 3px solid #131927;
+  background: #252c3e;
+  box-shadow:
+    inset 0 -4px #151b29,
+    4px 5px rgba(7, 10, 19, 0.42);
+  clip-path: polygon(0 5px, 5px 5px, 5px 0, calc(100% - 5px) 0, calc(100% - 5px) 5px, 100% 5px, 100% calc(100% - 5px), calc(100% - 5px) calc(100% - 5px), calc(100% - 5px) 100%, 5px 100%, 5px calc(100% - 5px), 0 calc(100% - 5px));
+  pointer-events: none;
+}
+
+.observatory-progress__count,
+.observatory-progress__name {
+  font-family: var(--observatory-font-pixel);
+  font-size: 0.52rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.observatory-progress__count { color: #efbf68; }
+.observatory-progress__name {
+  overflow: hidden;
+  max-width: 130px;
+  color: #e5dbc2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.observatory-progress__track {
+  display: flex;
+  gap: 4px;
+}
+
+.observatory-progress__track i {
+  width: 7px;
+  height: 7px;
+  border: 2px solid #111725;
+  background: #5d6070;
+  transition:
+    width 240ms steps(3, end),
+    background-color 240ms steps(3, end);
+}
+
+.observatory-progress__track i.is-active {
+  width: 25px;
+  background: #ebbc66;
+  box-shadow: 0 0 7px rgba(235, 188, 102, 0.52);
+}
+
+.observatory-animation-paused *,
+.observatory-animation-paused *::before,
+.observatory-animation-paused *::after {
+  animation-play-state: paused !important;
+}
+
+@keyframes observatory-star-twinkle {
+  0%, 100% { opacity: 0.48; }
+  50% { opacity: 1; }
+}
+
+@keyframes observatory-constellation-line {
+  0%, 22% { opacity: 0.12; stroke-dashoffset: 60; }
+  45%, 72% { opacity: 0.48; stroke-dashoffset: 0; }
+  100% { opacity: 0.12; stroke-dashoffset: -60; }
+}
+
+@keyframes observatory-constellation-star {
+  0%, 100% { opacity: 0.42; }
+  50% { opacity: 0.9; }
+}
+
+@keyframes observatory-constellation-signal {
+  to { stroke-dashoffset: -420; }
+}
+
+@keyframes observatory-shooting-star {
+  0%, 76% { opacity: 0; translate: 0 0; }
+  78% { opacity: 0.8; }
+  89% { opacity: 0.8; translate: 125vw 31vh; }
+  91%, 100% { opacity: 0; translate: 125vw 31vh; }
+}
+
+@keyframes observatory-cloud-drift {
+  from { translate: -40px 0; }
+  to { translate: 160px 0; }
+}
+
+@keyframes observatory-village-light {
+  0%, 68%, 100% { opacity: 0.35; }
+  70%, 86% { opacity: 1; }
+}
+
+@keyframes observatory-telescope-scan {
+  0%, 35%, 100% { rotate: -1deg; }
+  52%, 82% { rotate: 2deg; }
+}
+
+@keyframes observatory-lantern-flicker {
+  0%, 100% { opacity: 0.78; }
+  45% { opacity: 1; }
+  68% { opacity: 0.86; }
+}
+
+@keyframes observatory-flag-wave {
+  0%, 100% { scale: 1 1; skew: 0deg 0deg; }
+  50% { scale: 0.92 1; skew: 0deg 2deg; }
+}
+
+@keyframes observatory-cable-sway {
+  0%, 100% { scale: 1 1; }
+  50% { scale: 1 1.05; }
+}
+
+@keyframes observatory-signal-rise {
+  0% { opacity: 0; translate: 0 14px; }
+  17% { opacity: 0.9; }
+  78% { opacity: 0.42; }
+  100% { opacity: 0; translate: 13px -110px; }
+}
+
+@keyframes observatory-control-blink {
+  0%, 68%, 100% { opacity: 0.52; }
+  70%, 86% { opacity: 1; }
+}
+
+@keyframes observatory-arrival-arrow {
+  0%, 100% { translate: 0 -2px; opacity: 0.55; }
+  50% { translate: 0 4px; opacity: 1; }
+}
+
+@keyframes observatory-beacon-ring {
+  to { rotate: 360deg; }
+}
+
+@keyframes observatory-beacon-breathe {
+  0%, 100% { scale: 0.98; opacity: 0.85; }
+  50% { scale: 1.03; opacity: 1; }
+}
+
+@keyframes observatory-signal-flow {
+  to { background-position-x: 66px; }
+}
+
+@keyframes observatory-station-signal {
+  to { translate: 36px 0; }
+}
+
+@keyframes observatory-gate-light {
+  0%, 100% { opacity: 0.72; }
+  50% { opacity: 1; }
+}
+
+@media (max-width: 1023.98px) {
+  .observatory-signal-mote--desktop,
+  .observatory-dish--right,
+  .observatory-flag--right,
+  .observatory-cable--two {
+    display: none;
+  }
+
+  .observatory-signal-section {
+    grid-template-columns: minmax(260px, 0.78fr) minmax(390px, 1.22fr);
+    gap: 1.3rem;
+    padding-inline: 1.5rem;
+  }
+
+  .signal-beacon {
+    min-height: 440px;
+    scale: 0.88;
+  }
+
+  .communication-channel {
+    min-height: 480px;
+  }
+
+  .connection-stations-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .connection-stations-grid > div:nth-child(n) {
+    grid-column: auto;
+  }
+
+  .connection-stations-grid > div:last-child {
+    grid-column: 1 / -1;
+    width: 50%;
+    justify-self: center;
+  }
+
+  .connection-stations-signal {
+    top: 51%;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .observatory-depth {
+    inset: -2rem 0;
+    transform: none !important;
+  }
+
+  .observatory-constellation .constellation-path--two,
+  .observatory-shooting-star,
+  .observatory-telescope,
+  .observatory-dish,
+  .observatory-railing--right,
+  .observatory-flag,
+  .observatory-cable,
+  .observatory-tower {
+    display: none;
+  }
+
+  .observatory-moon {
+    top: 8%;
+    right: 9%;
+    scale: 0.75;
+  }
+
+  .observatory-cloud {
+    scale: 0.65;
+  }
+
+  .observatory-cloud--two {
+    right: -9%;
+    scale: 0.52;
+  }
+
+  .observatory-cloud--three {
+    display: none;
+  }
+
+  .observatory-mountain--far {
+    height: 46%;
+  }
+
+  .observatory-mountain--near {
+    height: 32%;
+  }
+
+  .observatory-lantern--left { left: 24%; }
+  .observatory-lantern--right { right: 24%; }
+
+  .observatory-entrance {
+    min-height: 100dvh;
+    padding: 6rem 1rem 8rem;
+  }
+
+  .observatory-elevator {
+    left: 5%;
+    width: 90%;
+    height: 47%;
+    border-width: 7px;
+  }
+
+  .observatory-chapter-panel {
+    margin-top: 16vh;
+    padding: 1.6rem 1.1rem;
+  }
+
+  .observatory-chapter-panel h1 {
+    font-size: clamp(1.7rem, 10.5vw, 3.2rem);
+  }
+
+  .observatory-chapter-copy {
+    font-size: 0.86rem;
+  }
+
+  .observatory-signal-section {
+    display: flex;
+    min-height: auto;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 6rem 0.8rem;
+  }
+
+  .observatory-beacon-column {
+    width: 100%;
+  }
+
+  .signal-beacon {
+    width: min(100%, 430px);
+    min-height: 440px;
+    scale: 0.9;
+  }
+
+  .beacon-copy {
+    margin-top: -1rem;
+  }
+
+  .communication-channel {
+    min-height: auto;
+    padding: 0.8rem;
+    border-width: 5px;
+    box-shadow:
+      inset 0 0 0 4px #90704f,
+      inset 0 0 0 7px #3e4051,
+      7px 8px rgba(7, 10, 20, 0.42);
+  }
+
+  .communication-channel__header {
+    align-items: flex-start;
+    padding: 0.65rem;
+  }
+
+  .communication-channel__status {
+    align-items: flex-start;
+    font-size: 0.42rem;
+  }
+
+  .communication-channel__screen {
+    min-height: 405px;
+    padding: 1rem;
+    border-width: 4px;
+  }
+
+  .communication-channel__identity {
+    align-items: flex-start;
+  }
+
+  .communication-channel__identity h3 {
+    font-size: 1.15rem;
+  }
+
+  .communication-channel__description {
+    font-size: 0.82rem;
+  }
+
+  .communication-channel__actions {
+    flex-direction: column;
+  }
+
+  .observatory-button {
+    width: 100%;
+    min-height: 50px;
+  }
+
+  .connection-stations-section {
+    min-height: auto;
+    padding: 6rem 0.7rem 8rem;
+  }
+
+  .connection-stations-grid {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+
+  .connection-stations-grid > div:last-child {
+    grid-column: auto;
+    width: 100%;
+  }
+
+  .connection-station {
+    min-height: 145px;
+    grid-template-columns: 49px minmax(0, 1fr);
+    border-width: 5px;
+  }
+
+  .connection-stations-signal {
+    top: 17%;
+    bottom: 12%;
+    left: calc(50% - 6px);
+    display: block;
+    width: 12px;
+    height: auto;
+    border-width: 3px;
+  }
+
+  .connection-stations-signal > span {
+    display: block;
+    width: 100%;
+    height: 20%;
+    border-right: 0;
+    border-bottom: 3px solid #171d2b;
+  }
+
+  .connection-stations-signal i {
+    background:
+      repeating-linear-gradient(to bottom, #e9b95f 0 12px, #525169 12px 23px);
+    animation-name: observatory-mobile-signal-flow;
+  }
+
+  .observatory-finale {
+    min-height: auto;
+    padding: 7rem 1rem 10rem;
+  }
+
+  .observatory-final-platform {
+    width: min(96vw, 580px);
+    height: 310px;
+  }
+
+  .observatory-final-telescope {
+    left: 0;
+    scale: 0.72;
+    transform-origin: left center;
+  }
+
+  .observatory-final-bench {
+    right: 0;
+    scale: 0.72;
+    transform-origin: right bottom;
+  }
+
+  .observatory-next-gate {
+    scale: 0.78;
+    transform-origin: top center;
+  }
+
+  .observatory-final-path {
+    scale: 0.8;
+    transform-origin: bottom center;
+  }
+
+  .observatory-progress {
+    right: max(0.8rem, env(safe-area-inset-right));
+    bottom: max(5.3rem, calc(env(safe-area-inset-bottom) + 4.25rem));
+    left: auto;
+    max-width: calc(100vw - 1.6rem);
+  }
+
+  .observatory-progress__name {
+    display: none;
+  }
+}
+
+@media (max-width: 419.98px) {
+  .signal-beacon {
+    min-height: 400px;
+    scale: 0.8;
+    margin-block: -2rem;
+  }
+
+  .communication-channel__status {
+    display: none;
+  }
+
+  .communication-channel__screen {
+    min-height: 430px;
+  }
+
+  .connection-station {
+    min-height: 137px;
+  }
+
+  .observatory-final-platform {
+    height: 275px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .connection-stations-section {
+    padding-inline: 1.5rem;
+  }
+
+  .observatory-progress {
+    left: max(1.5rem, env(safe-area-inset-left));
+  }
+}
+
+@media (min-width: 1024px) and (max-height: 760px) {
+  .observatory-signal-section {
+    min-height: 780px;
+  }
+
+  .signal-beacon {
+    min-height: 440px;
+    scale: 0.88;
+  }
+
+  .communication-channel {
+    min-height: 460px;
+  }
+
+  .communication-channel__screen {
+    min-height: 350px;
+  }
+
+  .connection-stations-section {
+    min-height: 780px;
+  }
+}
+
+@keyframes observatory-mobile-signal-flow {
+  to { background-position-y: 66px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .celestial-observatory *,
+  .celestial-observatory *::before,
+  .celestial-observatory *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  .observatory-depth {
+    transform: none !important;
+    will-change: auto;
+  }
+
+  .connection-station,
+  .observatory-button {
+    transition-duration: 0.01ms;
+  }
+}

@@ -1,0 +1,2160 @@
+.journey-horizon {
+  --horizon-font-pixel: "Cascadia Mono", "Lucida Console", "Courier New", monospace;
+  --horizon-ink: #171824;
+  --horizon-night: #111a32;
+  --horizon-night-light: #293b5b;
+  --horizon-dawn-blue: #617d96;
+  --horizon-lavender: #8d8292;
+  --horizon-peach: #d78c6a;
+  --horizon-gold: #efbd62;
+  --horizon-cream: #fff0c5;
+  --horizon-earth: #5d4431;
+  --horizon-wood-dark: #38271d;
+  --horizon-wood: #6e4930;
+  --horizon-wood-light: #9b6b3d;
+  --horizon-stone-dark: #3a3e48;
+  --horizon-stone: #626671;
+  --horizon-green-dark: #344b3d;
+  --horizon-green: #56705a;
+  --horizon-green-light: #789067;
+  --horizon-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  isolation: isolate;
+  background: var(--horizon-night);
+  color: var(--horizon-cream);
+  scrollbar-color: #d49a57 #182033;
+  scrollbar-width: thin;
+}
+
+.journey-horizon *,
+.journey-horizon *::before,
+.journey-horizon *::after {
+  box-sizing: border-box;
+}
+
+.horizon-environment,
+.horizon-environment * {
+  image-rendering: pixelated;
+}
+
+.horizon-environment {
+  position: sticky;
+  top: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  contain: paint;
+  background: #151d34;
+}
+
+.horizon-content {
+  margin-top: -100dvh;
+}
+
+.horizon-depth {
+  position: absolute;
+  inset: -4rem 0;
+  will-change: transform;
+}
+
+.horizon-dawn-sky {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      to bottom,
+      #0d1429 0 16%,
+      #192744 16% 31%,
+      #354766 31% 46%,
+      #65778d 46% 60%,
+      #a27f83 60% 69%,
+      #d78c6a 69% 78%,
+      #efb56e 78% 86%,
+      #f6d490 86% 100%
+    );
+}
+
+.horizon-dawn-sky::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  opacity: 0.12;
+  background-image:
+    linear-gradient(90deg, rgba(255, 242, 197, 0.16) 0 2px, transparent 2px),
+    linear-gradient(rgba(255, 242, 197, 0.12) 0 2px, transparent 2px);
+  background-size: 42px 42px;
+}
+
+.horizon-stars {
+  position: absolute;
+  inset: 0 0 45%;
+}
+
+.horizon-star {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #fff1c9;
+  box-shadow: 0 0 6px rgba(255, 230, 164, 0.46);
+  animation: horizon-star-fade 8s steps(4, end) infinite;
+}
+
+.horizon-star--2 {
+  width: 3px;
+  height: 3px;
+  opacity: 0.75;
+}
+
+.horizon-star--3 {
+  width: 2px;
+  height: 2px;
+  opacity: 0.58;
+}
+
+.horizon-sun {
+  position: absolute;
+  left: 50%;
+  top: 61%;
+  width: clamp(7rem, 12vw, 11rem);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  background: #f7d47d;
+  border: 6px solid #d58c56;
+  box-shadow:
+    0 0 0 8px rgba(244, 177, 93, 0.28),
+    0 0 0 16px rgba(244, 177, 93, 0.12);
+  clip-path: polygon(
+    20% 0,
+    80% 0,
+    80% 6%,
+    92% 6%,
+    92% 18%,
+    100% 18%,
+    100% 82%,
+    92% 82%,
+    92% 94%,
+    80% 94%,
+    80% 100%,
+    20% 100%,
+    20% 94%,
+    8% 94%,
+    8% 82%,
+    0 82%,
+    0 18%,
+    8% 18%,
+    8% 6%,
+    20% 6%
+  );
+  animation: horizon-sunrise-glow 7s steps(5, end) infinite;
+}
+
+.horizon-sun span {
+  position: absolute;
+  inset: 20%;
+  border: 4px solid rgba(255, 244, 190, 0.74);
+}
+
+.horizon-cloud {
+  position: absolute;
+  height: 38px;
+  width: 170px;
+  background: #d5c0b2;
+  border: 5px solid #695d67;
+  box-shadow:
+    inset 0 -8px #b69291,
+    6px 6px rgba(49, 49, 62, 0.18);
+  clip-path: polygon(
+    0 42%,
+    12% 42%,
+    12% 24%,
+    28% 24%,
+    28% 8%,
+    54% 8%,
+    54% 20%,
+    78% 20%,
+    78% 34%,
+    100% 34%,
+    100% 88%,
+    90% 88%,
+    90% 100%,
+    8% 100%,
+    8% 88%,
+    0 88%
+  );
+  animation: horizon-cloud-drift 28s steps(28, end) infinite;
+}
+
+.horizon-cloud i {
+  position: absolute;
+  inset: 6px 16px auto;
+  height: 4px;
+  background: rgba(255, 238, 203, 0.48);
+}
+
+.horizon-cloud--one {
+  left: -5%;
+  top: 47%;
+}
+
+.horizon-cloud--two {
+  right: 4%;
+  top: 35%;
+  scale: 0.76;
+  opacity: 0.72;
+  animation-duration: 35s;
+  animation-delay: -11s;
+}
+
+.horizon-cloud--three {
+  left: 62%;
+  top: 57%;
+  scale: 0.55;
+  opacity: 0.62;
+  animation-duration: 39s;
+  animation-delay: -19s;
+}
+
+.horizon-birds {
+  position: absolute;
+  left: 61%;
+  top: 36%;
+  width: 130px;
+  height: 60px;
+  animation: horizon-birds-travel 18s steps(28, end) infinite;
+}
+
+.horizon-birds span {
+  position: absolute;
+  width: 14px;
+  height: 7px;
+  border-top: 3px solid #24263a;
+  border-left: 3px solid #24263a;
+  transform: rotate(34deg);
+}
+
+.horizon-birds span:nth-child(2) {
+  left: 38px;
+  top: 17px;
+  scale: 0.8;
+}
+
+.horizon-birds span:nth-child(3) {
+  left: 77px;
+  top: 5px;
+  scale: 0.65;
+}
+
+.horizon-airship {
+  position: absolute;
+  left: -8rem;
+  top: 29%;
+  width: 80px;
+  height: 48px;
+  opacity: 0.62;
+  animation: horizon-airship-pass 42s steps(56, end) infinite;
+  animation-delay: -18s;
+}
+
+.horizon-airship__balloon {
+  position: absolute;
+  left: 4px;
+  top: 0;
+  width: 68px;
+  height: 30px;
+  background: #826a6b;
+  border: 4px solid #343243;
+  box-shadow: inset 0 -6px #5e5260;
+  clip-path: polygon(12% 0, 88% 0, 100% 35%, 88% 82%, 62% 100%, 38% 100%, 12% 82%, 0 35%);
+}
+
+.horizon-airship__basket {
+  position: absolute;
+  left: 28px;
+  top: 34px;
+  width: 24px;
+  height: 12px;
+  background: #6f4d32;
+  border: 3px solid #2c2630;
+}
+
+.horizon-mountain {
+  position: absolute;
+  left: -5%;
+  width: 110%;
+}
+
+.horizon-mountain--far {
+  bottom: 22%;
+  height: 42%;
+  background: #596275;
+  box-shadow: inset 0 18px rgba(169, 145, 143, 0.2);
+  clip-path: polygon(0 100%, 0 61%, 8% 42%, 15% 58%, 26% 23%, 35% 53%, 44% 31%, 53% 63%, 63% 17%, 73% 58%, 83% 29%, 91% 53%, 100% 38%, 100% 100%);
+}
+
+.horizon-mountain--middle {
+  bottom: 10%;
+  height: 42%;
+  background: #465464;
+  box-shadow: inset 0 15px rgba(113, 132, 129, 0.16);
+  clip-path: polygon(0 100%, 0 53%, 11% 29%, 22% 67%, 34% 36%, 45% 72%, 59% 28%, 70% 67%, 82% 20%, 93% 62%, 100% 47%, 100% 100%);
+}
+
+.horizon-valley {
+  position: absolute;
+  inset: auto -5% 0;
+  height: 36%;
+  background:
+    linear-gradient(to bottom, #4e6257 0 35%, #3c5546 35% 62%, #2f4639 62% 100%);
+  box-shadow: inset 0 9px #718174;
+}
+
+.horizon-forest {
+  position: absolute;
+  left: -2%;
+  width: 104%;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 13px,
+      #34483c 13px 21px,
+      transparent 21px 29px
+    );
+  clip-path: polygon(0 100%, 0 48%, 3% 48%, 3% 26%, 6% 26%, 6% 50%, 10% 50%, 10% 15%, 14% 15%, 14% 54%, 18% 54%, 18% 32%, 22% 32%, 22% 48%, 27% 48%, 27% 20%, 31% 20%, 31% 52%, 36% 52%, 36% 29%, 40% 29%, 40% 45%, 45% 45%, 45% 14%, 49% 14%, 49% 53%, 54% 53%, 54% 26%, 58% 26%, 58% 47%, 63% 47%, 63% 18%, 67% 18%, 67% 52%, 72% 52%, 72% 31%, 76% 31%, 76% 49%, 81% 49%, 81% 21%, 85% 21%, 85% 52%, 90% 52%, 90% 28%, 94% 28%, 94% 46%, 100% 46%, 100% 100%);
+}
+
+.horizon-forest--far {
+  bottom: 21%;
+  height: 24%;
+  opacity: 0.65;
+}
+
+.horizon-forest--near {
+  bottom: 8%;
+  height: 28%;
+  translate: 12px 0;
+  background-color: #2d4337;
+}
+
+.horizon-road {
+  position: absolute;
+  background: #ad8c62;
+  border: 5px solid #44382f;
+}
+
+.horizon-road--distant {
+  left: 51%;
+  bottom: 0;
+  width: 23%;
+  height: 41%;
+  transform: translateX(-50%);
+  clip-path: polygon(44% 0, 58% 0, 100% 100%, 0 100%);
+  box-shadow: inset 0 0 0 5px #d0a96d;
+}
+
+.horizon-landmarks {
+  position: absolute;
+  inset: 0;
+}
+
+.horizon-landmark {
+  position: absolute;
+  bottom: 31%;
+  filter: saturate(0.75);
+}
+
+.horizon-landmark--workshop {
+  left: 13%;
+  width: 80px;
+  height: 62px;
+}
+
+.landmark-house {
+  position: absolute;
+  left: 8px;
+  bottom: 0;
+  width: 61px;
+  height: 35px;
+  background: #77533b;
+  border: 4px solid #303039;
+}
+
+.landmark-roof {
+  position: absolute;
+  left: 0;
+  bottom: 31px;
+  width: 76px;
+  height: 26px;
+  background: #6b3e38;
+  border: 4px solid #303039;
+  clip-path: polygon(16% 0, 84% 0, 100% 100%, 0 100%);
+}
+
+.landmark-chimney {
+  position: absolute;
+  right: 12px;
+  top: 0;
+  width: 13px;
+  height: 25px;
+  background: #4c4547;
+  border: 3px solid #292a33;
+}
+
+.horizon-landmark--workshop i {
+  position: absolute;
+  left: 22px;
+  bottom: 10px;
+  width: 9px;
+  height: 9px;
+  background: #e5b45d;
+  box-shadow: 23px 0 #e5b45d;
+}
+
+.horizon-landmark--hall {
+  left: 33%;
+  width: 52px;
+  height: 87px;
+}
+
+.landmark-hall-tower {
+  position: absolute;
+  inset: 17px 7px 0;
+  background: #6e6a6d;
+  border: 4px solid #33323a;
+  box-shadow: inset 0 8px #8f8984;
+}
+
+.landmark-hall-tower::before {
+  position: absolute;
+  left: -9px;
+  top: -21px;
+  width: 44px;
+  height: 24px;
+  content: "";
+  background: #795145;
+  border: 4px solid #33323a;
+  clip-path: polygon(18% 0, 82% 0, 100% 100%, 0 100%);
+}
+
+.landmark-hall-banner {
+  position: absolute;
+  left: 20px;
+  top: 31px;
+  width: 13px;
+  height: 26px;
+  background: #a54f57;
+  border: 2px solid #3b3038;
+}
+
+.horizon-landmark--foundry {
+  right: 30%;
+  width: 82px;
+  height: 82px;
+}
+
+.landmark-foundry-stack {
+  position: absolute;
+  left: 9px;
+  bottom: 0;
+  width: 24px;
+  height: 72px;
+  background: #535157;
+  border: 4px solid #302e35;
+  box-shadow: inset 0 -17px #8d5238;
+}
+
+.landmark-foundry-stack::after {
+  position: absolute;
+  left: -6px;
+  top: -5px;
+  width: 29px;
+  height: 9px;
+  content: "";
+  background: #745440;
+  border: 3px solid #302e35;
+}
+
+.landmark-foundry-gear {
+  position: absolute;
+  right: 5px;
+  bottom: 7px;
+  width: 42px;
+  height: 42px;
+  background: #8b6341;
+  border: 5px solid #302e35;
+  box-shadow: inset 0 0 0 7px #4b4650;
+  clip-path: polygon(34% 0, 66% 0, 68% 15%, 83% 8%, 100% 34%, 85% 43%, 100% 66%, 74% 72%, 69% 100%, 37% 100%, 32% 85%, 14% 92%, 0 66%, 15% 56%, 0 34%, 25% 28%);
+}
+
+.horizon-landmark--observatory {
+  right: 12%;
+  width: 70px;
+  height: 102px;
+}
+
+.landmark-observatory-tower {
+  position: absolute;
+  left: 19px;
+  bottom: 0;
+  width: 37px;
+  height: 63px;
+  background: #545a67;
+  border: 4px solid #292e3b;
+}
+
+.landmark-observatory-dish {
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  width: 58px;
+  height: 34px;
+  background: #72798a;
+  border: 4px solid #292e3b;
+  clip-path: polygon(0 0, 100% 0, 84% 45%, 68% 73%, 50% 100%, 31% 73%, 16% 45%);
+}
+
+.horizon-landmark--observatory i {
+  position: absolute;
+  left: 36px;
+  top: 39px;
+  width: 5px;
+  height: 5px;
+  background: #efbd62;
+  box-shadow: 0 0 6px rgba(239, 189, 98, 0.68);
+  animation: horizon-landmark-light 3.4s steps(2, end) infinite;
+}
+
+.horizon-cliff {
+  position: absolute;
+  inset: auto -8% -9% -8%;
+  height: 48%;
+  background:
+    linear-gradient(to bottom, #60715a 0 17%, #455642 17% 27%, #51493f 27% 42%, #403a35 42% 100%);
+  border-top: 8px solid #2d3730;
+  clip-path: polygon(0 14%, 9% 11%, 18% 18%, 29% 10%, 42% 15%, 52% 7%, 64% 13%, 74% 4%, 85% 12%, 100% 5%, 100% 100%, 0 100%);
+}
+
+.horizon-road--near {
+  left: 51%;
+  bottom: -4%;
+  width: 35%;
+  height: 44%;
+  transform: translateX(-50%);
+  clip-path: polygon(37% 0, 61% 0, 100% 100%, 0 100%);
+  box-shadow: inset 0 0 0 6px #caa36d;
+}
+
+.horizon-tree {
+  position: absolute;
+  left: 5%;
+  bottom: 20%;
+  width: 230px;
+  height: 340px;
+  transform-origin: bottom center;
+  animation: horizon-tree-sway 8s steps(5, end) infinite;
+}
+
+.horizon-tree__trunk {
+  position: absolute;
+  left: 96px;
+  bottom: 0;
+  width: 55px;
+  height: 225px;
+  background: #66432d;
+  border: 7px solid #2d2928;
+  box-shadow: inset -13px 0 #493224;
+  clip-path: polygon(18% 0, 82% 0, 92% 55%, 100% 100%, 0 100%, 10% 55%);
+}
+
+.horizon-tree__branch {
+  position: absolute;
+  height: 23px;
+  background: #60402c;
+  border: 6px solid #2d2928;
+  transform-origin: right center;
+}
+
+.horizon-tree__branch--one {
+  left: 34px;
+  bottom: 168px;
+  width: 83px;
+  rotate: -21deg;
+}
+
+.horizon-tree__branch--two {
+  right: 16px;
+  bottom: 208px;
+  width: 91px;
+  rotate: 23deg;
+}
+
+.horizon-tree__crown {
+  position: absolute;
+  background: #526d4d;
+  border: 7px solid #29382d;
+  box-shadow:
+    inset -10px -10px #3e5b42,
+    inset 8px 8px #789061;
+  clip-path: polygon(18% 0, 82% 0, 82% 8%, 94% 8%, 94% 20%, 100% 20%, 100% 82%, 92% 82%, 92% 94%, 80% 94%, 80% 100%, 20% 100%, 20% 94%, 8% 94%, 8% 82%, 0 82%, 0 20%, 8% 20%, 8% 8%, 18% 8%);
+}
+
+.horizon-tree__crown--one {
+  left: 1px;
+  top: 43px;
+  width: 118px;
+  height: 110px;
+}
+
+.horizon-tree__crown--two {
+  left: 65px;
+  top: 0;
+  width: 122px;
+  height: 124px;
+}
+
+.horizon-tree__crown--three {
+  right: 0;
+  top: 66px;
+  width: 105px;
+  height: 101px;
+}
+
+.horizon-tree__crown--four {
+  left: 48px;
+  top: 93px;
+  width: 131px;
+  height: 105px;
+}
+
+.horizon-resting-place {
+  position: absolute;
+  right: 8%;
+  bottom: 22%;
+  width: 190px;
+  height: 105px;
+}
+
+.horizon-bench {
+  position: absolute;
+  inset: 25px 0 auto;
+  height: 28px;
+  background: #765038;
+  border: 6px solid #302a28;
+  box-shadow: inset 0 -7px #543b2c;
+}
+
+.horizon-bench::before,
+.horizon-bench::after {
+  position: absolute;
+  top: 24px;
+  width: 13px;
+  height: 42px;
+  content: "";
+  background: #4a3930;
+  border: 4px solid #29262a;
+}
+
+.horizon-bench::before {
+  left: 22px;
+}
+
+.horizon-bench::after {
+  right: 22px;
+}
+
+.horizon-marker {
+  position: absolute;
+  right: -20px;
+  bottom: 0;
+  width: 43px;
+  height: 73px;
+  background: #68686a;
+  border: 5px solid #30323a;
+  box-shadow: inset -7px -7px #4f5156;
+  clip-path: polygon(20% 0, 80% 0, 100% 20%, 100% 100%, 0 100%, 0 20%);
+}
+
+.horizon-grass {
+  position: absolute;
+  bottom: 17%;
+  width: 190px;
+  height: 43px;
+  background: repeating-linear-gradient(90deg, #769060 0 6px, transparent 6px 15px);
+  clip-path: polygon(0 100%, 0 72%, 5% 72%, 5% 15%, 10% 15%, 10% 78%, 17% 78%, 17% 28%, 22% 28%, 22% 81%, 30% 81%, 30% 9%, 35% 9%, 35% 74%, 43% 74%, 43% 38%, 48% 38%, 48% 79%, 57% 79%, 57% 18%, 62% 18%, 62% 76%, 71% 76%, 71% 31%, 76% 31%, 76% 79%, 86% 79%, 86% 11%, 91% 11%, 91% 72%, 100% 72%, 100% 100%);
+  animation: horizon-grass-wave 6s steps(4, end) infinite;
+}
+
+.horizon-grass--left {
+  left: 1%;
+}
+
+.horizon-grass--right {
+  right: 1%;
+  animation-delay: -2.4s;
+}
+
+.horizon-flowers {
+  position: absolute;
+  bottom: 22%;
+  width: 105px;
+  height: 55px;
+}
+
+.horizon-flowers--left {
+  left: 24%;
+}
+
+.horizon-flowers--right {
+  right: 25%;
+}
+
+.horizon-flowers i {
+  position: absolute;
+  bottom: 0;
+  width: 5px;
+  height: 34px;
+  background: #415f43;
+  transform-origin: bottom;
+  animation: horizon-flower-sway 5s steps(4, end) infinite;
+}
+
+.horizon-flowers i::before {
+  position: absolute;
+  left: -5px;
+  top: -5px;
+  width: 14px;
+  height: 14px;
+  content: "";
+  background: #f0c26e;
+  border: 3px solid #624a39;
+  clip-path: polygon(34% 0, 66% 0, 66% 34%, 100% 34%, 100% 66%, 66% 66%, 66% 100%, 34% 100%, 34% 66%, 0 66%, 0 34%, 34% 34%);
+}
+
+.horizon-flowers i:nth-child(2) {
+  left: 36px;
+  height: 44px;
+  animation-delay: -1.6s;
+}
+
+.horizon-flowers i:nth-child(3) {
+  left: 73px;
+  height: 29px;
+  animation-delay: -3s;
+}
+
+.horizon-motes span {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #f4ca73;
+  box-shadow: 0 0 7px rgba(244, 202, 115, 0.68);
+  animation: horizon-mote-rise 8s steps(12, end) infinite;
+}
+
+.horizon-threshold {
+  position: relative;
+  min-height: 92dvh;
+  display: grid;
+  place-items: center;
+  padding: 7rem 1.5rem 9rem;
+}
+
+.horizon-observatory-exit {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 190px;
+  height: 174px;
+  translate: -50% 0;
+}
+
+.horizon-observatory-exit__tower {
+  position: absolute;
+  left: 52px;
+  top: 0;
+  width: 86px;
+  height: 107px;
+  background: #414957;
+  border: 7px solid #151b29;
+  box-shadow: inset 0 -15px #303845;
+}
+
+.horizon-observatory-exit__dish {
+  position: absolute;
+  left: 28px;
+  top: -4px;
+  width: 131px;
+  height: 57px;
+  background: #697283;
+  border: 7px solid #151b29;
+  clip-path: polygon(0 0, 100% 0, 88% 40%, 72% 70%, 51% 100%, 29% 70%, 12% 40%);
+}
+
+.horizon-observatory-exit__light {
+  position: absolute;
+  left: 91px;
+  top: 68px;
+  width: 10px;
+  height: 10px;
+  background: #edbd66;
+  box-shadow: 0 0 9px rgba(237, 189, 102, 0.68);
+  animation: horizon-landmark-light 3s steps(2, end) infinite;
+}
+
+.horizon-observatory-exit__steps {
+  position: absolute;
+  left: 21px;
+  bottom: 0;
+  width: 148px;
+  height: 68px;
+  background:
+    linear-gradient(to bottom, #686b73 0 25%, #41454f 25% 34%, #5c6068 34% 58%, #393d47 58% 67%, #50545c 67% 100%);
+  border: 6px solid #191d28;
+  clip-path: polygon(30% 0, 70% 0, 100% 100%, 0 100%);
+}
+
+.horizon-chapter {
+  position: relative;
+  width: min(100%, 50rem);
+  margin-top: 5rem;
+  padding: 2.2rem clamp(1.3rem, 4vw, 3rem);
+  text-align: center;
+  background: #242337;
+  border: 7px solid #171824;
+  box-shadow:
+    inset 0 0 0 4px #80674b,
+    inset 0 0 0 8px #3b3540,
+    10px 12px rgba(23, 24, 36, 0.34);
+  clip-path: polygon(0 14px, 14px 14px, 14px 0, calc(100% - 14px) 0, calc(100% - 14px) 14px, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) calc(100% - 14px), calc(100% - 14px) 100%, 14px 100%, 14px calc(100% - 14px), 0 calc(100% - 14px));
+}
+
+.horizon-chapter__eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  color: #e8bb6c;
+  font-family: var(--horizon-font-pixel);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.horizon-chapter__eyebrow i {
+  width: 34px;
+  height: 4px;
+  background: #a27547;
+  box-shadow: 3px 3px #111622;
+}
+
+.horizon-chapter__title {
+  margin-top: 1rem;
+  color: #fff1c8;
+  font-family: var(--horizon-font-pixel);
+  font-size: clamp(1.7rem, 5vw, 3.7rem);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  text-shadow: 4px 4px #151622;
+}
+
+.horizon-chapter__subtitle {
+  margin: 1rem auto 0;
+  max-width: 32rem;
+  color: #d9d4c4;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(0.9rem, 2vw, 1.08rem);
+  line-height: 1.7;
+}
+
+.horizon-threshold__direction {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.4rem;
+  color: #c6a66e;
+  font-family: var(--horizon-font-pixel);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.horizon-threshold__direction span {
+  width: 10px;
+  height: 10px;
+  border-right: 4px solid #edbd66;
+  border-bottom: 4px solid #edbd66;
+  rotate: 45deg;
+  animation: horizon-direction 1.8s steps(4, end) infinite;
+}
+
+.horizon-overlook {
+  position: relative;
+  min-height: 108dvh;
+  display: grid;
+  grid-template-columns: minmax(0, 0.48fr) minmax(22rem, 0.52fr);
+  align-items: center;
+  gap: clamp(2rem, 7vw, 7rem);
+  width: min(100% - 3rem, 76rem);
+  margin: 0 auto;
+  padding: 7rem 0 10rem;
+}
+
+.horizon-overlook__stage {
+  position: relative;
+  min-height: 34rem;
+}
+
+.horizon-viewpoint-rail {
+  position: absolute;
+  left: 3%;
+  right: 2%;
+  bottom: 19%;
+  height: 17px;
+  background: #4c4140;
+  border: 5px solid #24242c;
+  box-shadow: inset 0 -4px #342f32;
+}
+
+.horizon-viewpoint-rail i {
+  position: absolute;
+  top: 10px;
+  width: 13px;
+  height: 132px;
+  background: #484044;
+  border: 4px solid #24242c;
+}
+
+.horizon-viewpoint-rail i:first-child {
+  left: 4%;
+}
+
+.horizon-viewpoint-rail i:nth-child(2) {
+  left: 48%;
+}
+
+.horizon-viewpoint-rail i:last-child {
+  right: 4%;
+}
+
+.pixel-adventurer {
+  position: absolute;
+  left: 50%;
+  bottom: 26%;
+  z-index: 2;
+  width: 108px;
+  height: 190px;
+  translate: -50% 0;
+  transform-origin: bottom center;
+  animation: horizon-adventurer-idle 4.5s steps(3, end) infinite;
+}
+
+.pixel-adventurer__sunline {
+  position: absolute;
+  inset: 4px 9px 8px 43px;
+  background: rgba(249, 204, 112, 0.26);
+  clip-path: polygon(0 0, 100% 8%, 100% 100%, 18% 92%);
+}
+
+.pixel-adventurer__head {
+  position: absolute;
+  left: 39px;
+  top: 21px;
+  z-index: 4;
+  width: 41px;
+  height: 45px;
+  background: #c9865c;
+  border: 6px solid #27242a;
+  box-shadow: inset -6px 0 #9b6249;
+}
+
+.pixel-adventurer__hair {
+  position: absolute;
+  inset: -5px -4px 22px -4px;
+  background: #3a2925;
+  clip-path: polygon(0 0, 100% 0, 100% 80%, 82% 80%, 82% 100%, 58% 100%, 58% 68%, 31% 68%, 31% 90%, 0 90%);
+}
+
+.pixel-adventurer__body {
+  position: absolute;
+  left: 34px;
+  top: 63px;
+  z-index: 3;
+  width: 53px;
+  height: 76px;
+  background: #506675;
+  border: 6px solid #27242a;
+  box-shadow: inset -9px 0 #394f5d;
+  clip-path: polygon(10% 0, 90% 0, 100% 100%, 0 100%);
+}
+
+.pixel-adventurer__cloak {
+  position: absolute;
+  left: 23px;
+  top: 65px;
+  z-index: 2;
+  width: 71px;
+  height: 97px;
+  background: #79504a;
+  border: 6px solid #27242a;
+  box-shadow: inset -11px 0 #583d40;
+  clip-path: polygon(15% 0, 86% 0, 100% 100%, 61% 91%, 23% 100%, 0 100%);
+  transform-origin: 50% 8%;
+  animation: horizon-cloak-wave 5.5s steps(5, end) infinite;
+}
+
+.pixel-adventurer__backpack {
+  position: absolute;
+  left: 11px;
+  top: 77px;
+  z-index: 4;
+  width: 37px;
+  height: 58px;
+  background: #6f4e32;
+  border: 5px solid #28252a;
+  box-shadow: inset 0 -8px #503a2b;
+  clip-path: polygon(16% 0, 84% 0, 100% 18%, 100% 100%, 0 100%, 0 18%);
+}
+
+.pixel-adventurer__arm {
+  position: absolute;
+  right: 9px;
+  top: 80px;
+  z-index: 5;
+  width: 20px;
+  height: 62px;
+  background: #506675;
+  border: 5px solid #27242a;
+  rotate: -8deg;
+}
+
+.pixel-adventurer__book {
+  position: absolute;
+  right: -2px;
+  top: 121px;
+  z-index: 6;
+  width: 36px;
+  height: 27px;
+  background: #d19d4f;
+  border: 5px solid #27242a;
+  box-shadow: 0 0 8px rgba(239, 189, 98, 0.62);
+}
+
+.pixel-adventurer__book i {
+  position: absolute;
+  left: 12px;
+  top: 2px;
+  width: 4px;
+  height: 14px;
+  background: #fff0b2;
+}
+
+.pixel-adventurer__leg {
+  position: absolute;
+  top: 137px;
+  z-index: 2;
+  width: 23px;
+  height: 48px;
+  background: #343f48;
+  border: 5px solid #27242a;
+}
+
+.pixel-adventurer__leg--left {
+  left: 34px;
+}
+
+.pixel-adventurer__leg--right {
+  right: 21px;
+}
+
+.horizon-path-light {
+  position: absolute;
+  left: 50%;
+  bottom: 5%;
+  width: 53%;
+  height: 22%;
+  translate: -50% 0;
+  background: rgba(239, 189, 98, 0.18);
+  clip-path: polygon(43% 0, 58% 0, 100% 100%, 0 100%);
+  animation: horizon-path-glow 6s steps(5, end) infinite;
+}
+
+.horizon-path-light span {
+  position: absolute;
+  left: 50%;
+  top: 3%;
+  width: 5px;
+  height: 5px;
+  background: #ffe08a;
+  box-shadow: 0 0 7px rgba(255, 215, 125, 0.72);
+  animation: horizon-path-spark 5s steps(10, end) infinite;
+}
+
+.horizon-ending-panel {
+  position: relative;
+  width: min(100%, 38rem);
+  padding: clamp(1.6rem, 4vw, 2.8rem);
+  background: #252538;
+  border: 8px solid #171824;
+  box-shadow:
+    inset 0 0 0 4px #8d704b,
+    inset 0 0 0 8px #3c3540,
+    11px 13px rgba(22, 22, 31, 0.4);
+  clip-path: polygon(0 16px, 16px 16px, 16px 0, calc(100% - 16px) 0, calc(100% - 16px) 16px, 100% 16px, 100% calc(100% - 16px), calc(100% - 16px) calc(100% - 16px), calc(100% - 16px) 100%, 16px 100%, 16px calc(100% - 16px), 0 calc(100% - 16px));
+}
+
+.horizon-panel-corner {
+  position: absolute;
+  z-index: 3;
+  width: 13px;
+  height: 13px;
+  background: #efbd62;
+  border: 3px solid #171824;
+}
+
+.horizon-panel-corner--tl {
+  left: 8px;
+  top: 8px;
+}
+
+.horizon-panel-corner--tr {
+  right: 8px;
+  top: 8px;
+}
+
+.horizon-panel-corner--bl {
+  left: 8px;
+  bottom: 8px;
+}
+
+.horizon-panel-corner--br {
+  right: 8px;
+  bottom: 8px;
+}
+
+.horizon-ending-panel__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 36px;
+  padding: 0.35rem 0.65rem;
+  color: #e8b965;
+  background: #302b38;
+  border: 4px solid #14151f;
+  font-family: var(--horizon-font-pixel);
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  box-shadow: 4px 4px #14151f;
+}
+
+.horizon-ending-panel__location {
+  margin-top: 1.8rem;
+  color: #d2a75e;
+  font-family: var(--horizon-font-pixel);
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.horizon-ending-panel__title {
+  margin-top: 0.75rem;
+  color: #fff1c8;
+  font-family: var(--horizon-font-pixel);
+  font-size: clamp(2rem, 5vw, 4.1rem);
+  font-weight: 900;
+  line-height: 1.06;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  text-shadow: 4px 4px #151622;
+}
+
+.horizon-ending-panel__copy {
+  margin-top: 1.35rem;
+  color: #e4ded0;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.horizon-ending-panel__copy p + p {
+  margin-top: 0.5rem;
+  color: #cfc8bb;
+}
+
+.horizon-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin-top: 1.8rem;
+}
+
+.horizon-button {
+  position: relative;
+  display: inline-flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 0.75rem 1rem;
+  border: 5px solid #151620;
+  color: #f4ead2;
+  font-family: var(--horizon-font-pixel);
+  font-size: 0.7rem;
+  font-weight: 900;
+  line-height: 1.25;
+  letter-spacing: 0.04em;
+  text-align: center;
+  text-transform: uppercase;
+  box-shadow: 5px 6px #11131b;
+  clip-path: polygon(0 7px, 7px 7px, 7px 0, calc(100% - 7px) 0, calc(100% - 7px) 7px, 100% 7px, 100% calc(100% - 7px), calc(100% - 7px) calc(100% - 7px), calc(100% - 7px) 100%, 7px 100%, 7px calc(100% - 7px), 0 calc(100% - 7px));
+  transition:
+    translate 160ms steps(2, end),
+    background-color 160ms steps(2, end),
+    box-shadow 160ms steps(2, end);
+}
+
+.horizon-button--primary {
+  grid-column: 1 / -1;
+  color: #1d1a20;
+  background: #e8b45f;
+  box-shadow:
+    inset 0 -6px #b87845,
+    5px 6px #11131b;
+}
+
+.horizon-button--secondary {
+  background: #3d3b4b;
+  box-shadow:
+    inset 0 -6px #2d2d3a,
+    5px 6px #11131b;
+}
+
+.horizon-button:hover,
+.horizon-button:focus-visible {
+  translate: 0 -2px;
+}
+
+.horizon-button--primary:hover,
+.horizon-button--primary:focus-visible {
+  background: #f4ca74;
+  box-shadow:
+    inset 0 -6px #c38347,
+    5px 8px #11131b,
+    0 0 0 3px rgba(255, 225, 150, 0.38);
+}
+
+.horizon-button--secondary:hover,
+.horizon-button--secondary:focus-visible {
+  background: #514c59;
+  box-shadow:
+    inset 0 -6px #343341,
+    5px 8px #11131b,
+    0 0 0 3px rgba(239, 189, 98, 0.26);
+}
+
+.horizon-button:focus-visible {
+  outline: 3px solid #fff0b8;
+  outline-offset: 4px;
+}
+
+.horizon-button:active {
+  translate: 3px 4px;
+  box-shadow: 2px 2px #11131b;
+}
+
+.horizon-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.journey-glyph {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  fill: currentColor;
+  shape-rendering: crispEdges;
+}
+
+.journey-glyph__cut {
+  fill: #252538;
+}
+
+.journey-archive {
+  position: relative;
+  min-height: 82dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 10rem 1.5rem max(8rem, calc(6rem + env(safe-area-inset-bottom)));
+  background:
+    linear-gradient(to bottom, transparent 0 13%, rgba(44, 55, 46, 0.7) 13% 20%, #344537 20% 100%);
+}
+
+.journey-archive__approach {
+  position: absolute;
+  inset: 0;
+}
+
+.journey-archive__path {
+  position: absolute;
+  left: 50%;
+  top: -1px;
+  width: min(32%, 24rem);
+  height: 48%;
+  translate: -50% 0;
+  background: #a98b63;
+  border-inline: 6px solid #493c32;
+  clip-path: polygon(36% 0, 64% 0, 100% 100%, 0 100%);
+  box-shadow: inset 0 0 0 6px rgba(212, 178, 115, 0.35);
+}
+
+.journey-archive__lantern {
+  position: absolute;
+  top: 18%;
+  width: 20px;
+  height: 28px;
+  background: #e8b45e;
+  border: 5px solid #28252b;
+  box-shadow: 0 0 9px rgba(232, 180, 94, 0.56);
+  animation: horizon-lantern 2.8s steps(4, end) infinite;
+}
+
+.journey-archive__lantern::after {
+  position: absolute;
+  left: 3px;
+  top: 24px;
+  width: 5px;
+  height: 56px;
+  content: "";
+  background: #443936;
+}
+
+.journey-archive__lantern--left {
+  left: 21%;
+}
+
+.journey-archive__lantern--right {
+  right: 21%;
+  animation-delay: -1.2s;
+}
+
+.journey-archive__board {
+  position: relative;
+  width: min(100%, 76rem);
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  background:
+    linear-gradient(to bottom, #785137 0 7%, #69472f 7% 93%, #523925 93% 100%);
+  border: 9px solid #292328;
+  box-shadow:
+    inset 0 0 0 5px #a67845,
+    inset 0 0 0 10px #4a3227,
+    13px 15px rgba(25, 25, 29, 0.44);
+  clip-path: polygon(0 18px, 18px 18px, 18px 0, calc(100% - 18px) 0, calc(100% - 18px) 18px, 100% 18px, 100% calc(100% - 18px), calc(100% - 18px) calc(100% - 18px), calc(100% - 18px) 100%, 18px 100%, 18px calc(100% - 18px), 0 calc(100% - 18px));
+}
+
+.journey-archive__board::before {
+  position: absolute;
+  inset: 18px;
+  content: "";
+  pointer-events: none;
+  border: 3px solid rgba(243, 197, 113, 0.26);
+}
+
+.journey-archive__post {
+  position: absolute;
+  z-index: -1;
+  bottom: -94px;
+  width: 38px;
+  height: 120px;
+  background: #4c3528;
+  border: 7px solid #292328;
+  box-shadow: inset -7px 0 #382822;
+}
+
+.journey-archive__post--left {
+  left: 7%;
+}
+
+.journey-archive__post--right {
+  right: 7%;
+}
+
+.journey-archive__heading {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 1.4rem;
+  border-bottom: 5px solid #3d2e29;
+}
+
+.journey-archive__heading > .journey-glyph {
+  width: 34px;
+  height: 34px;
+  color: #efbd62;
+  filter: drop-shadow(3px 3px #2e2425);
+}
+
+.journey-archive__heading p,
+.journey-archive__section-label {
+  color: #dba55c;
+  font-family: var(--horizon-font-pixel);
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.journey-archive__heading h2 {
+  margin-top: 0.25rem;
+  color: #fff0c7;
+  font-family: var(--horizon-font-pixel);
+  font-size: clamp(1.35rem, 3vw, 2.25rem);
+  font-weight: 900;
+  line-height: 1.1;
+  text-transform: uppercase;
+  text-shadow: 3px 3px #33252a;
+}
+
+.journey-archive__seal {
+  display: grid;
+  width: 49px;
+  aspect-ratio: 1;
+  place-items: center;
+  color: #2c2326;
+  background: #d19a4c;
+  border: 5px solid #3a2928;
+  box-shadow: inset 0 -6px #a7653c;
+  font-family: var(--horizon-font-pixel);
+  font-size: 0.8rem;
+  font-weight: 900;
+  clip-path: polygon(18% 0, 82% 0, 82% 8%, 100% 8%, 100% 82%, 82% 82%, 82% 100%, 18% 100%, 18% 82%, 0 82%, 0 8%, 18% 8%);
+}
+
+.journey-archive__grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.15fr 1fr 0.9fr 1.1fr;
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+  padding: 2rem 0;
+}
+
+.journey-archive__grid section,
+.journey-archive__grid nav {
+  min-width: 0;
+}
+
+.journey-archive__identity h3,
+.journey-archive__record h3 {
+  margin-top: 0.75rem;
+  color: #fff0c7;
+  font-family: var(--horizon-font-pixel);
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.journey-archive__identity > p:not(.journey-archive__section-label),
+.journey-archive__record > p:not(.journey-archive__section-label) {
+  margin-top: 0.75rem;
+  color: #e1d5c2;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.84rem;
+  line-height: 1.65;
+}
+
+.journey-archive__stamp {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.45rem 0.6rem;
+  color: #e7ba6b;
+  background: rgba(49, 36, 32, 0.72);
+  border: 3px solid #34282a;
+  font-family: var(--horizon-font-pixel);
+  font-size: 0.58rem;
+  font-weight: 800;
+  line-height: 1.5;
+  text-transform: uppercase;
+  rotate: -1deg;
+}
+
+.journey-archive__navigation ul,
+.journey-archive__connections ul {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.8rem;
+}
+
+.journey-archive__navigation button,
+.journey-archive__connections a {
+  display: flex;
+  width: 100%;
+  min-height: 38px;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.4rem 0.5rem;
+  color: #e7dcc9;
+  background: rgba(53, 38, 33, 0.58);
+  border: 3px solid transparent;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: left;
+  transition:
+    translate 150ms steps(2, end),
+    background-color 150ms steps(2, end),
+    border-color 150ms steps(2, end);
+}
+
+.journey-archive__navigation button > span {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  background: #dca95e;
+  border: 2px solid #33272a;
+  rotate: 45deg;
+}
+
+.journey-archive__connections .journey-glyph,
+.journey-archive__brand-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  color: #e9bb69;
+}
+
+.journey-archive__navigation button:hover,
+.journey-archive__navigation button:focus-visible,
+.journey-archive__connections a:hover,
+.journey-archive__connections a:focus-visible {
+  translate: 2px -1px;
+  color: #fff2ca;
+  background: rgba(110, 75, 47, 0.78);
+  border-color: #d19a53;
+}
+
+.journey-archive__navigation button:focus-visible,
+.journey-archive__connections a:focus-visible,
+.journey-archive__return:focus-visible {
+  outline: 3px solid #fff0b8;
+  outline-offset: 3px;
+}
+
+.journey-archive__navigation button:disabled,
+.journey-archive__return:disabled {
+  cursor: not-allowed;
+  opacity: 0.46;
+}
+
+.journey-archive__return {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  margin-top: 1rem;
+  padding: 0.55rem 0.75rem;
+  color: #201c20;
+  background: #dfab59;
+  border: 4px solid #2d2528;
+  box-shadow:
+    inset 0 -5px #aa6940,
+    4px 5px #33262a;
+  font-family: var(--horizon-font-pixel);
+  font-size: 0.62rem;
+  font-weight: 900;
+  line-height: 1.35;
+  text-transform: uppercase;
+  transition:
+    translate 150ms steps(2, end),
+    background-color 150ms steps(2, end),
+    box-shadow 150ms steps(2, end);
+}
+
+.journey-archive__return:hover,
+.journey-archive__return:focus-visible {
+  translate: 0 -2px;
+  background: #efc16e;
+}
+
+.journey-archive__return:active {
+  translate: 2px 3px;
+  box-shadow:
+    inset 0 -3px #aa6940,
+    2px 2px #33262a;
+}
+
+.journey-archive__legal {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(1rem, 1fr) auto minmax(1rem, 1fr);
+  align-items: center;
+  gap: 1rem;
+  padding-top: 1.3rem;
+  border-top: 4px solid #3d2e29;
+}
+
+.journey-archive__legal span {
+  height: 3px;
+  background: #8f6945;
+}
+
+.journey-archive__legal p {
+  color: #d5c8b5;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.72rem;
+  text-align: center;
+}
+
+.journey-archive__ground {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: -1;
+  height: 28%;
+  overflow: hidden;
+  background: #2f4034;
+  border-top: 7px solid #243229;
+}
+
+.journey-archive__ground span {
+  position: absolute;
+  bottom: 0;
+  width: 42px;
+  height: 62px;
+  background: #4f674c;
+  border: 5px solid #263229;
+  clip-path: polygon(0 100%, 0 54%, 18% 54%, 18% 17%, 35% 17%, 35% 62%, 55% 62%, 55% 0, 72% 0, 72% 57%, 100% 57%, 100% 100%);
+}
+
+.journey-archive__ground span:nth-child(1) {
+  left: 5%;
+}
+
+.journey-archive__ground span:nth-child(2) {
+  left: 17%;
+  scale: 0.7;
+}
+
+.journey-archive__ground span:nth-child(3) {
+  right: 7%;
+}
+
+.journey-archive__ground span:nth-child(4) {
+  right: 21%;
+  scale: 0.8;
+}
+
+.journey-archive__ground span:nth-child(5) {
+  left: 47%;
+  scale: 0.55;
+}
+
+.horizon-animation-paused *,
+.horizon-animation-paused *::before,
+.horizon-animation-paused *::after {
+  animation-play-state: paused !important;
+}
+
+@keyframes horizon-star-fade {
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 0.18;
+  }
+}
+
+@keyframes horizon-sunrise-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 8px rgba(244, 177, 93, 0.28),
+      0 0 0 16px rgba(244, 177, 93, 0.12);
+  }
+  50% {
+    box-shadow:
+      0 0 0 11px rgba(244, 177, 93, 0.34),
+      0 0 0 20px rgba(244, 177, 93, 0.16);
+  }
+}
+
+@keyframes horizon-cloud-drift {
+  0%,
+  100% {
+    translate: -12px 0;
+  }
+  50% {
+    translate: 22px 0;
+  }
+}
+
+@keyframes horizon-birds-travel {
+  0%,
+  100% {
+    translate: -10px 4px;
+  }
+  50% {
+    translate: 24px -10px;
+  }
+}
+
+@keyframes horizon-airship-pass {
+  0% {
+    translate: 0 5px;
+  }
+  100% {
+    translate: calc(100vw + 16rem) -18px;
+  }
+}
+
+@keyframes horizon-landmark-light {
+  0%,
+  48% {
+    opacity: 0.55;
+  }
+  50%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes horizon-tree-sway {
+  0%,
+  100% {
+    rotate: -0.6deg;
+  }
+  50% {
+    rotate: 0.7deg;
+  }
+}
+
+@keyframes horizon-grass-wave {
+  0%,
+  100% {
+    skew: -1deg 0;
+  }
+  50% {
+    skew: 2deg 0;
+  }
+}
+
+@keyframes horizon-flower-sway {
+  0%,
+  100% {
+    rotate: -2deg;
+  }
+  50% {
+    rotate: 3deg;
+  }
+}
+
+@keyframes horizon-mote-rise {
+  0% {
+    opacity: 0;
+    translate: 0 12px;
+  }
+  25%,
+  70% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+    translate: 7px -42px;
+  }
+}
+
+@keyframes horizon-direction {
+  0%,
+  100% {
+    translate: 0 -3px;
+  }
+  50% {
+    translate: 0 4px;
+  }
+}
+
+@keyframes horizon-adventurer-idle {
+  0%,
+  100% {
+    translate: -50% 0;
+  }
+  50% {
+    translate: -50% -2px;
+  }
+}
+
+@keyframes horizon-cloak-wave {
+  0%,
+  100% {
+    skew: -1deg 0;
+  }
+  50% {
+    skew: 2deg 0;
+  }
+}
+
+@keyframes horizon-path-glow {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.74;
+  }
+}
+
+@keyframes horizon-path-spark {
+  0% {
+    translate: -50% 90px;
+    opacity: 0;
+  }
+  20%,
+  70% {
+    opacity: 0.9;
+  }
+  100% {
+    translate: -50% 0;
+    opacity: 0;
+  }
+}
+
+@keyframes horizon-lantern {
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(232, 180, 94, 0.48);
+  }
+  50% {
+    box-shadow: 0 0 13px rgba(232, 180, 94, 0.68);
+  }
+}
+
+@media (max-width: 1023.98px) {
+  .horizon-landmark--hall,
+  .horizon-landmark--foundry {
+    opacity: 0.72;
+    scale: 0.82;
+  }
+
+  .horizon-tree {
+    left: -1.5rem;
+    scale: 0.82;
+    transform-origin: bottom left;
+  }
+
+  .horizon-resting-place {
+    right: 2%;
+    scale: 0.78;
+    transform-origin: bottom right;
+  }
+
+  .horizon-overlook {
+    grid-template-columns: 0.42fr minmax(22rem, 0.58fr);
+    gap: 2rem;
+    width: min(100% - 2rem, 64rem);
+  }
+
+  .horizon-overlook__stage {
+    min-height: 30rem;
+  }
+
+  .journey-archive__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767.98px) {
+  .horizon-depth {
+    inset: -2rem 0;
+  }
+
+  .horizon-stars {
+    bottom: 55%;
+  }
+
+  .horizon-star:nth-child(n + 12),
+  .horizon-airship,
+  .horizon-cloud--three,
+  .horizon-landmark--hall,
+  .horizon-landmark--foundry,
+  .horizon-resting-place,
+  .horizon-flowers--right {
+    display: none;
+  }
+
+  .horizon-sun {
+    top: 57%;
+    width: 6.8rem;
+  }
+
+  .horizon-cloud {
+    scale: 0.7;
+  }
+
+  .horizon-cloud--one {
+    left: -18%;
+  }
+
+  .horizon-cloud--two {
+    right: -17%;
+  }
+
+  .horizon-mountain--far {
+    height: 35%;
+  }
+
+  .horizon-mountain--middle {
+    height: 37%;
+  }
+
+  .horizon-landmark--workshop {
+    left: 5%;
+    scale: 0.65;
+  }
+
+  .horizon-landmark--observatory {
+    right: 4%;
+    scale: 0.64;
+  }
+
+  .horizon-tree {
+    left: -4rem;
+    bottom: 19%;
+    scale: 0.58;
+  }
+
+  .horizon-road--distant {
+    width: 34%;
+  }
+
+  .horizon-road--near {
+    width: 48%;
+  }
+
+  .horizon-grass {
+    width: 130px;
+  }
+
+  .horizon-flowers--left {
+    left: 8%;
+    scale: 0.78;
+  }
+
+  .horizon-motes span:nth-child(n + 6) {
+    display: none;
+  }
+
+  .horizon-threshold {
+    min-height: 88dvh;
+    padding: 8rem 1rem 7rem;
+  }
+
+  .horizon-observatory-exit {
+    scale: 0.72;
+    transform-origin: top center;
+  }
+
+  .horizon-chapter {
+    margin-top: 3.5rem;
+    padding: 1.7rem 1.2rem;
+    border-width: 6px;
+    box-shadow:
+      inset 0 0 0 3px #80674b,
+      inset 0 0 0 7px #3b3540,
+      7px 8px rgba(23, 24, 36, 0.34);
+  }
+
+  .horizon-chapter__eyebrow {
+    gap: 0.6rem;
+    font-size: 0.6rem;
+  }
+
+  .horizon-chapter__eyebrow i {
+    width: 22px;
+  }
+
+  .horizon-overlook {
+    min-height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: min(100% - 1.5rem, 40rem);
+    padding: 4rem 0 7rem;
+  }
+
+  .horizon-overlook__stage {
+    order: 2;
+    width: 100%;
+    min-height: 17rem;
+  }
+
+  .horizon-ending-panel {
+    order: 1;
+    padding: 1.55rem 1.2rem;
+    border-width: 6px;
+    box-shadow:
+      inset 0 0 0 3px #8d704b,
+      inset 0 0 0 7px #3c3540,
+      7px 8px rgba(22, 22, 31, 0.4);
+  }
+
+  .horizon-ending-panel__title {
+    font-size: clamp(1.8rem, 10vw, 2.8rem);
+  }
+
+  .horizon-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .horizon-button--primary {
+    grid-column: auto;
+  }
+
+  .pixel-adventurer {
+    left: 68%;
+    bottom: 21%;
+    scale: 0.72;
+  }
+
+  .horizon-viewpoint-rail {
+    left: 8%;
+    right: 7%;
+    bottom: 13%;
+  }
+
+  .horizon-path-light {
+    bottom: 0;
+    height: 34%;
+  }
+
+  .journey-archive {
+    min-height: auto;
+    padding: 7rem 0.75rem max(8rem, calc(6rem + env(safe-area-inset-bottom)));
+  }
+
+  .journey-archive__path {
+    width: 50%;
+  }
+
+  .journey-archive__lantern--left {
+    left: 9%;
+  }
+
+  .journey-archive__lantern--right {
+    right: 9%;
+  }
+
+  .journey-archive__board {
+    padding: 1.35rem 1rem;
+    border-width: 7px;
+    box-shadow:
+      inset 0 0 0 4px #a67845,
+      inset 0 0 0 8px #4a3227,
+      8px 10px rgba(25, 25, 29, 0.44);
+  }
+
+  .journey-archive__heading {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .journey-archive__seal {
+    display: none;
+  }
+
+  .journey-archive__grid {
+    grid-template-columns: 1fr;
+    gap: 1.6rem;
+  }
+
+  .journey-archive__navigation ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .journey-archive__connections ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .journey-archive__legal {
+    grid-template-columns: 1fr;
+  }
+
+  .journey-archive__legal span {
+    display: none;
+  }
+}
+
+@media (max-width: 420px) {
+  .horizon-ending-panel__label {
+    font-size: 0.58rem;
+  }
+
+  .journey-archive__navigation ul,
+  .journey-archive__connections ul {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 768px) and (max-height: 760px) {
+  .horizon-threshold {
+    min-height: 100dvh;
+    padding-block: 5rem 6rem;
+  }
+
+  .horizon-chapter {
+    margin-top: 2.5rem;
+    scale: 0.9;
+  }
+
+  .horizon-overlook {
+    min-height: 120dvh;
+    padding-block: 5rem 8rem;
+  }
+
+  .horizon-overlook__stage {
+    min-height: 28rem;
+  }
+
+  .pixel-adventurer {
+    scale: 0.86;
+    transform-origin: bottom center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journey-horizon {
+    scroll-behavior: auto;
+  }
+
+  .journey-horizon *,
+  .journey-horizon *::before,
+  .journey-horizon *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .horizon-star {
+    opacity: 0.42;
+  }
+
+  .horizon-button:hover,
+  .horizon-button:focus-visible,
+  .journey-archive__navigation button:hover,
+  .journey-archive__navigation button:focus-visible,
+  .journey-archive__connections a:hover,
+  .journey-archive__connections a:focus-visible,
+  .journey-archive__return:hover,
+  .journey-archive__return:focus-visible {
+    translate: 0;
+  }
+}

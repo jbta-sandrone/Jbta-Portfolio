@@ -12,11 +12,9 @@ import {
   useReducedMotion,
   type Variants,
 } from "motion/react";
-import CinematicBackground from "./components/CinematicBackground";
 import FloatingAIButton from "./components/FloatingAIButton";
-import PortfolioIntro, {
-  shouldShowPortfolioIntro,
-} from "./components/PortfolioIntro";
+import PortfolioIntro from "./components/PortfolioIntro";
+import { shouldShowPortfolioIntro } from "./components/portfolioIntroSession";
 import PortfolioCursor from "./components/PortfolioCursor";
 import SceneNavigationControl from "./components/SceneNavigationControl";
 import { SceneNavigationContext } from "./components/SceneNavigationContext";
@@ -343,14 +341,13 @@ function App() {
   return (
     <SceneNavigationContext.Provider value={sceneNavigationValue}>
       <div
-        className="portfolio-scene relative isolate h-dvh overflow-hidden bg-[var(--portfolio-bg)]"
+        className="portfolio-world-shell portfolio-scene relative isolate h-dvh overflow-hidden"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onTouchCancel={() => {
           touchStartRef.current = null;
         }}
       >
-        <CinematicBackground activeScene={activeScene} />
         <PortfolioCursor />
 
         {sceneExperienceReady && (
@@ -363,9 +360,9 @@ function App() {
               id="portfolio-world"
               aria-hidden={introActive || undefined}
               inert={introActive}
-              className="relative z-10 h-full overflow-hidden"
+              className="portfolio-world relative z-10 h-full overflow-hidden"
             >
-              <AnimatePresence mode="wait" custom={direction}>
+              <AnimatePresence mode="sync" custom={direction}>
                 <motion.div
                   key={SCENES[activeScene].id}
                   id={SCENES[activeScene].id}
@@ -376,7 +373,7 @@ function App() {
                   animate="animate"
                   exit="exit"
                   onAnimationComplete={() => finishTransition(activeScene)}
-                  className="absolute inset-0 h-full overflow-hidden"
+                  className="portfolio-scene-frame absolute inset-0 h-full overflow-hidden"
                 >
                   <CurrentScene />
                 </motion.div>

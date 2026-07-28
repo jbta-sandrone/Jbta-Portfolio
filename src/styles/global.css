@@ -19,7 +19,7 @@
   --portfolio-border-subtle: rgba(255, 255, 255, 0.15);
   --portfolio-glow: rgba(245, 158, 11, 0.18);
   --portfolio-shadow: rgba(0, 0, 0, 0.38);
-  --portfolio-overlay: rgba(0, 0, 0, 0.5);
+  --portfolio-world-fallback: #172638;
   --portfolio-status: #34d399;
   --portfolio-status-soft: rgba(167, 243, 208, 0.9);
 }
@@ -29,8 +29,26 @@ body,
 #root {
   height: 100%;
   overflow: hidden;
-  background: var(--portfolio-bg);
+  background: var(--portfolio-world-fallback);
   color: var(--portfolio-text-soft);
+}
+
+.portfolio-world-shell,
+.portfolio-world,
+.portfolio-scene-frame {
+  background: var(--portfolio-world-fallback);
+}
+
+.portfolio-world-shell,
+.portfolio-world {
+  isolation: isolate;
+}
+
+.portfolio-scene-frame {
+  inset: -1px;
+  min-width: calc(100% + 2px);
+  min-height: calc(100% + 2px);
+  contain: paint;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -232,10 +250,6 @@ body,
     background: linear-gradient(to right, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.2), transparent);
   }
 
-  .portfolio-background-overlay {
-    background: var(--portfolio-overlay);
-  }
-
   .portfolio-notebook-frame {
     border-color: var(--portfolio-border);
     background: var(--portfolio-bg-secondary);
@@ -376,36 +390,6 @@ body,
   }
 }
 
-.cinematic-background__stage {
-  position: absolute;
-  top: 70%;
-  left: 50%;
-  width: max(100vw, 147.64vh);
-  aspect-ratio: 896 / 1821;
-  translate: -50% -20%;
-}
-
-.cinematic-background__camera {
-  position: absolute;
-  inset: 0;
-  transform-origin: center;
-  backface-visibility: hidden;
-  will-change: transform;
-}
-
-@media (min-width: 768px) and (max-width: 1023.98px) {
-  .cinematic-background__stage {
-    top: 42vh;
-  }
-}
-
-@media (max-width: 767.98px) {
-  .cinematic-background__stage {
-    top: 38vh;
-    width: max(200vw, 118.1vh);
-  }
-}
-
 @media (min-width: 768px) and (max-height: 860px) {
   .scene-three-layout {
     padding-top: 1.25rem;
@@ -443,10 +427,6 @@ body,
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cinematic-background__camera {
-    will-change: auto;
-  }
-
   .portfolio-tech-orbit {
     animation: none;
     transform: scaleY(var(--orbit-y-scale, 1)) rotate(var(--orbit-start));
