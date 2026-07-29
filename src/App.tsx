@@ -27,11 +27,11 @@ import SceneSix from "./scenes/SceneSix";
 
 const SCENES = [
   { id: "arrival", label: "Arrival", Component: SceneOne },
-  { id: "behind-the-work", label: "Depth", Component: SceneTwo },
-  { id: "featured-work", label: "Work", Component: SceneThree },
-  { id: "craft", label: "Craft", Component: SceneFour },
+  { id: "behind-the-work", label: "Behind the Work", Component: SceneTwo },
+  { id: "featured-work", label: "Featured Work", Component: SceneThree },
+  { id: "craft", label: "Crafts", Component: SceneFour },
   { id: "connect", label: "Connections", Component: SceneFive },
-  { id: "ending", label: "Ending", Component: SceneSix },
+  { id: "ending", label: "Journey's Horizon", Component: SceneSix },
 ] as const;
 
 type HistoryMode = "push" | "none";

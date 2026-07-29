@@ -986,6 +986,7 @@
 }
 
 .scene-two-profile-book {
+  min-height: 0;
   filter: drop-shadow(10px 13px 0 rgba(16, 9, 6, 0.4));
 }
 
@@ -1026,8 +1027,15 @@
 }
 
 .scene-two-character-page {
+  min-height: 100%;
   background: #17110d;
   border: 3px solid #23150f;
+}
+
+.scene-two-character-page > .scene-two-page-button {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
 }
 
 .scene-two-character-page__wash {
@@ -1115,6 +1123,9 @@
 
 .scene-two-page-button {
   z-index: 3;
+  max-width: calc(100% - 2rem);
+  white-space: nowrap;
+  touch-action: manipulation;
   border-color: #6f4a2b;
   background: #39251a;
   color: #ffe5a3;
@@ -1405,7 +1416,7 @@
   }
 
   .scene-two-profile-book {
-    max-width: 19rem;
+    max-width: 20rem;
     margin-inline: auto;
   }
 }
@@ -1429,7 +1440,7 @@
   }
 
   .scene-two-profile-book {
-    width: min(15.5rem, 34vh);
+    width: min(17rem, 38vh);
   }
 
   .scene-two-object-label {

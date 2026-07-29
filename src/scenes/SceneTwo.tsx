@@ -277,7 +277,7 @@ export default function SceneTwo() {
             variants={portraitVariants}
             initial="hidden"
             animate="visible"
-            className="mx-auto w-full max-w-[19rem] sm:max-w-[21rem] lg:max-w-[22rem]"
+            className="mx-auto w-full max-w-[20rem] sm:max-w-[22rem] lg:max-w-[23rem]"
           >
             <div className="scene-two-object-label mb-3">
               <WorkshopGlyph type="profile" />
@@ -569,7 +569,7 @@ function CharacterProfilePage({
   onOpen,
 }: CharacterProfilePageProps) {
   return (
-    <div className="scene-two-character-page relative h-[full] overflow-hidden">
+    <div className="scene-two-character-page relative h-full overflow-hidden">
       <motion.img
         src={profilePortrait}
         alt="Graduation portrait of Jonel Bryan Ablog"

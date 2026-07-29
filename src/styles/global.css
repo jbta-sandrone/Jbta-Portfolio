@@ -52,30 +52,56 @@ body,
 }
 
 @media (hover: hover) and (pointer: fine) {
+  a[href],
+  button:not(:disabled),
+  select:not(:disabled),
+  label[for],
+  input[type="button"]:not(:disabled),
+  input[type="submit"]:not(:disabled),
+  input[type="reset"]:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled),
+  input[type="range"]:not(:disabled),
+  input[type="color"]:not(:disabled),
+  input[type="file"]:not(:disabled),
+  [role="button"],
+  [role="link"],
+  [data-cursor-interactive] {
+    cursor: pointer;
+  }
+
+  input:not([type]),
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="number"],
+  textarea,
+  [contenteditable="true"] {
+    cursor: text;
+  }
+
+  [draggable="true"],
+  [data-cursor-drag],
+  [aria-grabbed="true"] {
+    cursor: grab;
+  }
+
+  button:disabled,
+  input:disabled,
+  select:disabled,
+  textarea:disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+
   html.portfolio-cursor-enabled,
   html.portfolio-cursor-enabled body,
   html.portfolio-cursor-enabled #root,
   html.portfolio-cursor-enabled #root * {
     cursor: none !important;
-  }
-
-  html.portfolio-cursor-enabled #root input,
-  html.portfolio-cursor-enabled #root select,
-  html.portfolio-cursor-enabled #root [data-native-cursor],
-  html.portfolio-cursor-enabled #root [data-native-cursor] * {
-    cursor: auto !important;
-  }
-
-  html.portfolio-cursor-enabled #root input:not([type]),
-  html.portfolio-cursor-enabled #root input[type="text"],
-  html.portfolio-cursor-enabled #root input[type="email"],
-  html.portfolio-cursor-enabled #root input[type="password"],
-  html.portfolio-cursor-enabled #root input[type="search"],
-  html.portfolio-cursor-enabled #root input[type="tel"],
-  html.portfolio-cursor-enabled #root input[type="url"],
-  html.portfolio-cursor-enabled #root textarea,
-  html.portfolio-cursor-enabled #root [contenteditable="true"] {
-    cursor: text !important;
   }
 }
 

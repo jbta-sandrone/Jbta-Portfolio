@@ -35,7 +35,7 @@ const normalTiming = {
   maximum: 7_000,   // Force completion after 7 seconds
   readyHold: 1500,   // Hold “The Journey Begins” before exiting
   exit: 700,        // Fade-out duration
-  skipReveal: 4_500, // Show Skip Intro after 4.5 seconds
+  skipReveal: 4_500, 
 } as const;
 
 const reducedTiming = {

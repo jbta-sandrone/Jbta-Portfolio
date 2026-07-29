@@ -5,8 +5,8 @@ import {
   useState,
   type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import "../styles/scene-navigation.css";
 
 type SceneItem = {
   label: string;
@@ -22,6 +22,19 @@ type SceneNavigationControlProps = {
 
 const menuEase = [0.65, 0, 0.35, 1] as const;
 
+function PixelTravelArrow({ direction }: { direction: "previous" | "next" }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`scene-travel-arrow scene-travel-arrow--${direction}`}
+    >
+      <i />
+      <i />
+      <i />
+    </span>
+  );
+}
+
 export default function SceneNavigationControl({
   scenes,
   activeScene,
@@ -30,7 +43,7 @@ export default function SceneNavigationControl({
   onSelectScene,
 }: SceneNavigationControlProps) {
   const prefersReducedMotion = useReducedMotion();
-  const reducedMotion = prefersReducedMotion !== false;
+  const reducedMotion = Boolean(prefersReducedMotion);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigationRef = useRef<HTMLElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -120,15 +133,14 @@ export default function SceneNavigationControl({
     <nav
       ref={navigationRef}
       aria-label="Scene navigation"
-      className="portfolio-navigation fixed right-4 z-30 flex items-center gap-1 rounded-full border p-1.5 md:right-8"
-      style={{ bottom: "max(1rem, env(safe-area-inset-bottom))" }}
+      className="scene-travel-nav"
     >
       <AnimatePresence>
         {menuOpen && (
           <motion.div
             id="scene-selection-menu"
             role="menu"
-            aria-label="Select a scene"
+            aria-label="Select a journey destination"
             onWheel={(event) => event.stopPropagation()}
             onTouchStart={(event) => event.stopPropagation()}
             onTouchMove={(event) => event.stopPropagation()}
@@ -136,25 +148,38 @@ export default function SceneNavigationControl({
             initial={
               reducedMotion
                 ? { opacity: 0 }
-                : { opacity: 0, y: 8, scale: 0.96, filter: "blur(4px)" }
+                : { opacity: 0, y: 7, scale: 0.97 }
             }
-            animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={
               reducedMotion
                 ? { opacity: 0 }
-                : { opacity: 0, y: 6, scale: 0.97, filter: "blur(3px)" }
+                : { opacity: 0, y: 5, scale: 0.98 }
             }
             transition={{
-              duration: reducedMotion ? 0.1 : 0.24,
+              duration: reducedMotion ? 0.08 : 0.22,
               ease: menuEase,
             }}
             style={{
               maxHeight:
-                "calc(100dvh - 7rem - env(safe-area-inset-bottom))",
+                "calc(100dvh - 7.5rem - env(safe-area-inset-bottom))",
             }}
-            className="portfolio-navigation absolute bottom-full left-1/2 mb-3 w-52 max-w-[calc(100vw-2rem)] -translate-x-1/2 origin-bottom overflow-x-hidden overflow-y-auto rounded-2xl border p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.42),0_0_24px_var(--portfolio-glow)] [scrollbar-width:none] sm:mb-4 [&::-webkit-scrollbar]:hidden"
+            className="scene-travel-menu"
           >
-            <ol className="space-y-1">
+            <span aria-hidden="true" className="scene-travel-menu__pin scene-travel-menu__pin--left" />
+            <span aria-hidden="true" className="scene-travel-menu__pin scene-travel-menu__pin--right" />
+
+            <header className="scene-travel-menu__header">
+              <span aria-hidden="true" className="scene-travel-menu__compass">
+                <i />
+              </span>
+              <div>
+                <p>Adventurer&apos;s Map</p>
+                <span>Choose destination</span>
+              </div>
+            </header>
+
+            <ol className="scene-travel-menu__route">
               {scenes.map((scene, index) => {
                 const active = activeScene === index;
 
@@ -171,27 +196,28 @@ export default function SceneNavigationControl({
                       disabled={isTransitioning}
                       onClick={() => selectScene(index)}
                       onKeyDown={(event) => handleMenuKeyDown(event, index)}
-                      whileHover={reducedMotion ? undefined : { scale: 1.015 }}
-                      whileTap={reducedMotion ? undefined : { scale: 0.98 }}
-                      transition={{ duration: 0.2, ease: "easeInOut" }}
-                      className={`portfolio-focus group relative flex min-h-11 w-full items-center rounded-xl border px-4 text-left text-sm transition-[background-color,border-color,color,box-shadow] duration-200 disabled:pointer-events-none disabled:opacity-45 ${
-                        active
-                          ? "border-[rgba(253,230,138,0.25)] bg-[var(--portfolio-accent-soft)] text-[var(--portfolio-accent-bright)] shadow-[0_0_14px_var(--portfolio-glow)]"
-                          : "border-transparent text-[var(--portfolio-text-muted)] hover:border-[var(--portfolio-border-subtle)] hover:bg-white/[0.06] hover:text-[var(--portfolio-text-soft)]"
-                      }`}
+                      whileTap={reducedMotion ? undefined : { y: 2 }}
+                      transition={{ duration: 0.1, ease: "easeOut" }}
+                      className={`scene-travel-destination portfolio-focus${active ? " is-active" : ""}`}
                     >
+                      <span aria-hidden="true" className="scene-travel-destination__marker">
+                        <i />
+                      </span>
+                      <span className="scene-travel-destination__label">{scene.label}</span>
                       {active && (
                         <motion.span
-                          layoutId="scene-menu-active-indicator"
+                          layoutId="scene-travel-active-flag"
                           aria-hidden="true"
-                          className="absolute left-1 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-[var(--portfolio-accent-strong)] shadow-[0_0_9px_var(--portfolio-glow)]"
+                          className="scene-travel-destination__flag"
                           transition={{
-                            duration: reducedMotion ? 0.1 : 0.3,
+                            duration: reducedMotion ? 0.08 : 0.26,
                             ease: menuEase,
                           }}
-                        />
+                        >
+                          <i />
+                        </motion.span>
                       )}
-                      <span className="font-medium">{scene.label}</span>
+                      <span aria-hidden="true" className="scene-travel-destination__spark">+</span>
                     </motion.button>
                   </li>
                 );
@@ -201,48 +227,50 @@ export default function SceneNavigationControl({
         )}
       </AnimatePresence>
 
-      <button
-        type="button"
-        aria-label="Previous scene"
-        data-cursor-label="Previous"
-        onClick={() => onMove(-1)}
-        disabled={activeScene === 0 || isTransitioning}
-        className="portfolio-navigation-button portfolio-focus flex size-11 items-center justify-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-25"
-      >
-        <ChevronUp aria-hidden="true" className="size-5" />
-      </button>
+      <div className="scene-travel-controls">
+        <span aria-hidden="true" className="scene-travel-controls__corner scene-travel-controls__corner--left" />
+        <span aria-hidden="true" className="scene-travel-controls__corner scene-travel-controls__corner--right" />
 
-      <button
-        ref={triggerRef}
-        type="button"
-        aria-label={menuOpen ? "Close scene navigation" : "Open scene navigation"}
-        aria-expanded={menuOpen}
-        aria-controls="scene-selection-menu"
-        aria-haspopup="menu"
-        data-cursor-label="Scenes"
-        onClick={toggleMenu}
-        className={`portfolio-focus min-h-11 min-w-16 rounded-full px-2 text-center text-xs font-medium tracking-[0.18em] tabular-nums transition-[background-color,color,box-shadow] duration-200 ${
-          menuOpen
-            ? "bg-[var(--portfolio-accent-soft)] text-[var(--portfolio-accent-bright)] shadow-[0_0_14px_var(--portfolio-glow)]"
-            : "portfolio-copy hover:bg-white/[0.06] hover:text-[var(--portfolio-text-soft)]"
-        }`}
-      >
-        <span aria-live="polite" aria-atomic="true">
-          <span className="sr-only">{scenes[activeScene]?.label}, scene </span>
-          {activeScene + 1} / {scenes.length}
-        </span>
-      </button>
+        <button
+          type="button"
+          aria-label="Previous scene"
+          data-cursor-label="Previous"
+          onClick={() => onMove(-1)}
+          disabled={activeScene === 0 || isTransitioning}
+          className="scene-travel-step portfolio-focus"
+        >
+          <PixelTravelArrow direction="previous" />
+        </button>
 
-      <button
-        type="button"
-        aria-label="Next scene"
-        data-cursor-label="Next"
-        onClick={() => onMove(1)}
-        disabled={activeScene === scenes.length - 1 || isTransitioning}
-        className="portfolio-navigation-button portfolio-focus flex size-11 items-center justify-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-25"
-      >
-        <ChevronDown aria-hidden="true" className="size-5" />
-      </button>
+        <button
+          ref={triggerRef}
+          type="button"
+          aria-label={menuOpen ? "Close scene navigation" : "Open scene navigation"}
+          aria-expanded={menuOpen}
+          aria-controls="scene-selection-menu"
+          aria-haspopup="menu"
+          data-cursor-label="Journey Map"
+          onClick={toggleMenu}
+          className={`scene-travel-current portfolio-focus${menuOpen ? " is-open" : ""}`}
+        >
+          <span className="scene-travel-current__eyebrow">Journey Map</span>
+          <span aria-live="polite" aria-atomic="true" className="scene-travel-current__label">
+            {scenes[activeScene]?.label}
+          </span>
+          <span aria-hidden="true" className="scene-travel-current__notch" />
+        </button>
+
+        <button
+          type="button"
+          aria-label="Next scene"
+          data-cursor-label="Next"
+          onClick={() => onMove(1)}
+          disabled={activeScene === scenes.length - 1 || isTransitioning}
+          className="scene-travel-step portfolio-focus"
+        >
+          <PixelTravelArrow direction="next" />
+        </button>
+      </div>
     </nav>
   );
 }
