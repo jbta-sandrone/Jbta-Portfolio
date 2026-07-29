@@ -6,7 +6,6 @@ import {
   type FormEvent,
   type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
-import { ChevronRight, SendHorizontal, Sparkles, X } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import chatbotAvatar from "../assets/images/aichatbot.webp";
 import {
@@ -14,6 +13,7 @@ import {
   chatbotSuggestionGroups,
   getChatbotAnswer,
 } from "../data/chatbot";
+import "../styles/neli-companion.css";
 
 type ChatMessage = {
   id: number;
@@ -259,12 +259,16 @@ export default function FloatingAIButton() {
         duration: reducedMotion ? 0.15 : 0.52,
         ease: controlEase,
       }}
-      className="floating-ai-control fixed z-40"
+      className="floating-ai-control neli-control fixed z-40"
     >
       <motion.button
         ref={triggerRef}
         type="button"
-        aria-label={panelOpen ? "Close JBTA Assistant" : "Open JBTA Assistant"}
+        aria-label={
+          panelOpen
+            ? "Close Neli, Pixel Oracle Companion"
+            : "Open Neli, Pixel Oracle Companion"
+        }
         aria-expanded={panelOpen}
         aria-controls="jbta-assistant-panel"
         data-cursor-label={panelOpen ? "Close Chat" : "Ask JBTA"}
@@ -282,7 +286,7 @@ export default function FloatingAIButton() {
         }
         whileTap={reducedMotion ? undefined : { scale: 0.97 }}
         transition={{ duration: 0.24, ease: "easeInOut" }}
-        className="portfolio-focus group relative flex size-12 items-center justify-center overflow-hidden rounded-[0.95rem]"
+        className="neli-summon-button portfolio-focus group relative flex size-12 items-center justify-center overflow-hidden sm:size-14"
       >
         <motion.span
           aria-hidden="true"
@@ -292,14 +296,14 @@ export default function FloatingAIButton() {
             repeat: reducedMotion ? 0 : Infinity,
             ease: "easeInOut",
           }}
-          className="pointer-events-none absolute inset-1 rounded-xl shadow-[0_0_18px_rgba(245,158,11,0.3)]"
+          className="neli-summon-aura pointer-events-none absolute inset-1"
         />
         <img
           src={chatbotAvatar}
           alt=""
           aria-hidden="true"
           draggable={false}
-          className="relative z-10 size-10 select-none rounded-full object-cover transition-[filter] duration-300 group-hover:brightness-110 sm:size-12"
+          className="neli-summon-portrait relative z-10 size-10 select-none object-cover transition-[filter] duration-300 group-hover:brightness-110 sm:size-12"
         />
       </motion.button>
 
@@ -312,13 +316,13 @@ export default function FloatingAIButton() {
             initial={
               reducedMotion
                 ? { opacity: 0 }
-                : { opacity: 0, y: -8, scale: 0.97, filter: "blur(5px)" }
+                : { opacity: 0, y: 24, clipPath: "inset(100% 0 0 0)" }
             }
-            animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+            animate={{ opacity: 1, y: 0, clipPath: "inset(0 0 0 0)" }}
             exit={
               reducedMotion
                 ? { opacity: 0 }
-                : { opacity: 0, y: -6, scale: 0.98, filter: "blur(4px)" }
+                : { opacity: 0, y: 16, clipPath: "inset(0 0 100% 0)" }
             }
             transition={{
               duration: reducedMotion ? 0.12 : 0.26,
@@ -342,37 +346,34 @@ export default function FloatingAIButton() {
                 event.stopPropagation();
               }
             }}
-            className="portfolio-navigation absolute right-0 top-full mt-3 flex w-[min(22rem,calc(100vw-2rem))] origin-top-right flex-col overflow-hidden rounded-2xl border shadow-[0_24px_60px_rgba(0,0,0,0.52),0_0_30px_var(--portfolio-glow)]"
+            className="neli-panel absolute right-0 top-full mt-3 flex w-[min(23.5rem,calc(100vw-1.5rem))] origin-bottom-right flex-col overflow-hidden"
           >
-            <header className="flex shrink-0 items-center gap-3 border-b border-[var(--portfolio-border-subtle)] bg-black/30 px-4 py-3">
+            <header className="neli-header flex shrink-0 items-center gap-3 px-4 py-3">
               <img
                 src={chatbotAvatar}
-                alt="JBTA Assistant avatar"
-                className="size-10 rounded-xl border border-[var(--portfolio-border)] object-cover"
+                alt="Neli, Pixel Oracle Companion"
+                className="neli-header-portrait size-10 object-cover"
               />
               <div className="min-w-0 flex-1">
                 <h2
                   id="jbta-assistant-title"
-                  className="portfolio-heading truncate text-sm font-semibold"
+                  className="neli-title truncate text-sm font-semibold"
                 >
-                  JBTA Assistant
+                  NELI
                 </h2>
-                <p className="mt-0.5 flex items-center gap-1.5 text-[0.65rem] font-medium text-[var(--portfolio-status-soft)]">
-                  <span
-                    aria-hidden="true"
-                    className="size-1.5 rounded-full bg-[var(--portfolio-status)] shadow-[0_0_8px_rgba(52,211,153,0.55)]"
-                  />
-                  Online
+                <p className="neli-subtitle mt-0.5">
+                  Pixel Oracle Companion
                 </p>
               </div>
+              <span aria-hidden="true" className="neli-minimize-mark" />
               <button
                 type="button"
-                aria-label="Close JBTA Assistant"
+                aria-label="Close Neli, Pixel Oracle Companion"
                 data-cursor-label="Close"
                 onClick={() => closePanel()}
-                className="portfolio-focus portfolio-navigation-button flex size-9 shrink-0 items-center justify-center rounded-xl transition-colors"
+                className="neli-titlebar-button portfolio-focus flex size-9 shrink-0 items-center justify-center"
               >
-                <X aria-hidden="true" className="size-4" />
+                <PixelGlyph type="close" />
               </button>
             </header>
 
@@ -381,8 +382,8 @@ export default function FloatingAIButton() {
               role="log"
               aria-live="polite"
               aria-relevant="additions"
-              aria-label="Conversation with JBTA Assistant"
-              className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-3.5 py-4 [scrollbar-color:rgba(253,230,138,0.22)_transparent] [scrollbar-width:thin]"
+              aria-label="Conversation with Neli, Pixel Oracle Companion"
+              className="neli-message-scroll min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-3.5 py-4"
             >
               {messages.map((message) => (
                 <ChatBubble key={message.id} message={message} reducedMotion={reducedMotion} />
@@ -391,7 +392,7 @@ export default function FloatingAIButton() {
               {responding && <TypingIndicator reducedMotion={reducedMotion} />}
             </div>
 
-            <footer className="relative shrink-0 border-t border-[var(--portfolio-border-subtle)] bg-black/35">
+            <footer className="neli-footer relative shrink-0">
               <div className="relative flex items-center px-3 pt-2.5">
                 <button
                   ref={suggestionTriggerRef}
@@ -407,15 +408,15 @@ export default function FloatingAIButton() {
                   title="Suggested questions"
                   data-cursor-label="Suggestions"
                   onClick={toggleSuggestions}
-                  className={`portfolio-focus group flex min-h-8 items-center gap-1.5 rounded-lg border px-2.5 text-[0.65rem] font-semibold uppercase tracking-[0.08em] transition-[color,background-color,border-color,box-shadow] duration-200 ${
+                  className={`neli-prompt-trigger portfolio-focus group flex min-h-9 items-center gap-1.5 px-2.5 text-[0.65rem] font-semibold uppercase tracking-[0.08em] ${
                     suggestionsOpen
-                      ? "border-[var(--portfolio-border)] bg-[var(--portfolio-accent-soft)] text-[var(--portfolio-accent-bright)] shadow-[0_0_14px_var(--portfolio-glow)]"
-                      : "border-[var(--portfolio-border-subtle)] bg-[var(--portfolio-surface)] text-[var(--portfolio-text-muted)] hover:border-[var(--portfolio-border)] hover:text-[var(--portfolio-accent-bright)]"
+                      ? "neli-prompt-trigger--open"
+                      : ""
                   }`}
                 >
-                  <Sparkles aria-hidden="true" className="size-3.5 shrink-0" />
+                  <PixelGlyph type="spark" />
                   <span className="hidden min-[350px]:inline">
-                    Suggested questions
+                    Guild prompts
                   </span>
                 </button>
 
@@ -429,45 +430,34 @@ export default function FloatingAIButton() {
                       initial={
                         reducedMotion
                           ? { opacity: 0 }
-                          : {
-                              opacity: 0,
-                              y: 6,
-                              scale: 0.97,
-                              filter: "blur(3px)",
-                            }
+                          : { opacity: 0, y: 8, clipPath: "inset(100% 0 0 0)" }
                       }
                       animate={{
                         opacity: 1,
                         y: 0,
-                        scale: 1,
-                        filter: "blur(0px)",
+                        clipPath: "inset(0 0 0 0)",
                       }}
                       exit={
                         reducedMotion
                           ? { opacity: 0 }
-                          : {
-                              opacity: 0,
-                              y: 5,
-                              scale: 0.97,
-                              filter: "blur(2px)",
-                            }
+                          : { opacity: 0, y: 6, clipPath: "inset(0 0 100% 0)" }
                       }
                       transition={{
                         duration: reducedMotion ? 0.1 : 0.21,
                         ease: controlEase,
                       }}
-                      className="portfolio-navigation absolute bottom-full left-3 right-3 z-20 mb-2 max-h-[min(12rem,38dvh)] origin-bottom-left overflow-y-auto overscroll-contain rounded-xl border border-[var(--portfolio-border)] p-2 shadow-[0_18px_38px_rgba(0,0,0,0.48),0_0_22px_var(--portfolio-glow)] [scrollbar-color:rgba(253,230,138,0.22)_transparent] [scrollbar-width:thin]"
+                      className="neli-suggestion-panel absolute bottom-full left-3 right-3 z-20 mb-2 max-h-[min(12rem,38dvh)] origin-bottom-left overflow-y-auto overscroll-contain p-2"
                     >
                       {chatbotSuggestionGroups.map((group) => (
                         <div
                           key={group.id}
                           role="group"
                           aria-label={group.label}
-                          className="mb-2 border-b border-[var(--portfolio-border-subtle)] pb-2 last:mb-0 last:border-0 last:pb-0"
+                          className="neli-suggestion-group mb-2 pb-2 last:mb-0 last:border-0 last:pb-0"
                         >
                           <p
                             aria-hidden="true"
-                            className="px-2 pb-1 text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-[var(--portfolio-accent-strong)]"
+                            className="neli-suggestion-label px-2 pb-1 text-[0.6rem] font-semibold uppercase tracking-[0.16em]"
                           >
                             {group.label}
                           </p>
@@ -496,13 +486,10 @@ export default function FloatingAIButton() {
                                       questionIndex,
                                     )
                                   }
-                                  className="portfolio-focus group/question flex min-h-10 w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-left text-xs leading-4 text-[var(--portfolio-text-muted)] transition-[color,background-color] duration-200 hover:bg-[var(--portfolio-accent-soft)] hover:text-[var(--portfolio-accent-bright)] focus-visible:bg-[var(--portfolio-accent-soft)] disabled:cursor-not-allowed disabled:opacity-40"
+                                  className="neli-prompt-option portfolio-focus group/question flex min-h-10 w-full items-center justify-between gap-2 px-2.5 py-2 text-left text-xs leading-4 disabled:cursor-not-allowed disabled:opacity-40"
                                 >
                                   <span>{question}</span>
-                                  <ChevronRight
-                                    aria-hidden="true"
-                                    className="size-3.5 shrink-0 text-[var(--portfolio-accent-strong)] transition-transform duration-200 group-hover/question:translate-x-0.5 group-focus-visible/question:translate-x-0.5"
-                                  />
+                                  <span aria-hidden="true" className="neli-prompt-arrow" />
                                 </button>
                               );
                             })}
@@ -516,10 +503,10 @@ export default function FloatingAIButton() {
 
               <form
                 onSubmit={submitQuestion}
-                className="flex items-end gap-2 p-3 pt-2"
+                className="neli-command-form flex items-end gap-2 p-3 pt-2"
               >
                 <label htmlFor="jbta-assistant-input" className="sr-only">
-                  Ask JBTA Assistant about Jonel
+                  Ask Neli about Jonel
                 </label>
                 <input
                   ref={inputRef}
@@ -530,16 +517,16 @@ export default function FloatingAIButton() {
                   autoComplete="off"
                   placeholder="Ask about Jonel…"
                   onChange={(event) => setInput(event.target.value)}
-                  className="portfolio-focus min-h-11 min-w-0 flex-1 rounded-xl border border-[var(--portfolio-border-subtle)] bg-black/45 px-3.5 text-sm text-[var(--portfolio-text-soft)] placeholder:text-[var(--portfolio-text-subtle)]"
+                  className="neli-command-input portfolio-focus min-h-11 min-w-0 flex-1 px-3.5 text-sm"
                 />
                 <button
                   type="submit"
-                  aria-label="Send question"
+                  aria-label="Send inquiry to Neli"
                   data-cursor-label="Send"
                   disabled={!input.trim() || responding}
-                  className="portfolio-button-primary portfolio-focus flex size-11 shrink-0 items-center justify-center rounded-xl border transition-colors disabled:cursor-not-allowed disabled:opacity-35"
+                  className="neli-send-button portfolio-focus flex size-11 shrink-0 items-center justify-center disabled:cursor-not-allowed disabled:opacity-35"
                 >
-                  <SendHorizontal aria-hidden="true" className="size-4" />
+                  <PixelGlyph type="rune" />
                 </button>
               </form>
             </footer>
@@ -561,24 +548,22 @@ function ChatBubble({
 
   return (
     <motion.div
-      initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 6, scale: 0.985 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
+      initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: reducedMotion ? 0.1 : 0.24, ease: controlEase }}
-      className={`flex items-end gap-2 ${assistantMessage ? "justify-start" : "justify-end"}`}
+      className={`neli-message flex items-end gap-2 ${assistantMessage ? "neli-message--oracle justify-start" : "neli-message--traveler justify-end"}`}
     >
       {assistantMessage && (
         <img
           src={chatbotAvatar}
           alt=""
           aria-hidden="true"
-          className="size-6 shrink-0 rounded-lg object-cover"
+          className="neli-message-portrait size-7 shrink-0 object-cover"
         />
       )}
       <p
-        className={`max-w-[82%] whitespace-pre-wrap rounded-2xl px-3.5 py-2.5 text-xs leading-5 shadow-md ${
-          assistantMessage
-            ? "rounded-bl-md border border-[var(--portfolio-border-subtle)] bg-[rgba(28,23,18,0.88)] text-[var(--portfolio-text-muted)]"
-            : "rounded-br-md border border-[rgba(253,230,138,0.24)] bg-[var(--portfolio-accent-soft)] text-[var(--portfolio-accent-bright)]"
+        className={`neli-message-bubble max-w-[82%] whitespace-pre-wrap px-3.5 py-2.5 text-xs leading-5 ${
+          assistantMessage ? "neli-message-bubble--oracle" : "neli-message-bubble--traveler"
         }`}
       >
         {message.text}
@@ -589,33 +574,34 @@ function ChatBubble({
 
 function TypingIndicator({ reducedMotion }: { reducedMotion: boolean }) {
   return (
-    <div className="flex items-end gap-2" aria-label="JBTA Assistant is responding">
+    <div className="neli-message neli-message--oracle flex items-end gap-2" aria-label="Neli is responding">
       <img
         src={chatbotAvatar}
         alt=""
         aria-hidden="true"
-        className="size-6 shrink-0 rounded-lg object-cover"
+        className="neli-message-portrait size-7 shrink-0 object-cover"
       />
-      <div className="flex h-9 items-center gap-1 rounded-2xl rounded-bl-md border border-[var(--portfolio-border-subtle)] bg-[rgba(28,23,18,0.88)] px-3">
+      <div className={`neli-typing flex h-9 items-center gap-1 px-3 ${reducedMotion ? "neli-typing--still" : ""}`}>
         {[0, 1, 2].map((dot) => (
-          <motion.span
+          <span
             key={dot}
             aria-hidden="true"
-            animate={
-              reducedMotion
-                ? { opacity: 0.55 }
-                : { opacity: [0.3, 0.9, 0.3], y: [0, -2, 0] }
-            }
-            transition={{
-              duration: 0.9,
-              delay: dot * 0.12,
-              repeat: reducedMotion ? 0 : Infinity,
-              ease: "easeInOut",
-            }}
-            className="size-1 rounded-full bg-[var(--portfolio-accent-strong)]"
+            className="neli-typing-pixel"
           />
         ))}
       </div>
     </div>
   );
+}
+
+function PixelGlyph({ type }: { type: "close" | "rune" | "spark" }) {
+  if (type === "close") {
+    return <span aria-hidden="true" className="neli-glyph neli-glyph--close" />;
+  }
+
+  if (type === "spark") {
+    return <span aria-hidden="true" className="neli-glyph neli-glyph--spark" />;
+  }
+
+  return <span aria-hidden="true" className="neli-glyph neli-glyph--rune" />;
 }

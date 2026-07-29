@@ -237,7 +237,7 @@ export const chatbotRules: readonly ChatbotRule[] = [
       /portfolio (site|website|project)/i,
     ],
     answer:
-      "Jonel’s portfolio is a cinematic, scene-based React experience built around one cosmic visual world. It uses React, TypeScript, Tailwind CSS, and Motion for responsive interfaces, scene transitions, and interactive project storytelling.",
+      "Jonel’s portfolio is a pixelated game, scene-based React experience built around one pixel visual world. It uses React, TypeScript, Tailwind CSS, and Motion for responsive interfaces, scene transitions, and interactive project storytelling.",
   },
   {
     id: "deployment",
@@ -259,7 +259,7 @@ export const chatbotRules: readonly ChatbotRule[] = [
       /featured work/i,
     ],
     answer:
-      "Jonel’s featured projects are I-Nelory, a personal memory journal; CLIQ, a café mobile-ordering system; and Nelume, an AI résumé viewer. This cinematic portfolio is also part of his interface and motion work.",
+      "Jonel’s featured projects are I-Nelory, a personal memory journal; CLIQ, a café mobile-ordering system; and Nelume, an AI résumé viewer. This pixelated portfolio is also part of his interface and motion work.",
   },
   {
     id: "journey",
