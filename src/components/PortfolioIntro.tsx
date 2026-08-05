@@ -157,7 +157,7 @@ export default function PortfolioIntro({
     return timer;
   }, []);
 
-  const revealSceneOne = useCallback(() => {
+  const revealArrival = useCallback(() => {
     if (revealStartedRef.current) return;
     revealStartedRef.current = true;
     onRevealStart();
@@ -167,24 +167,24 @@ export default function PortfolioIntro({
     if (phaseRef.current === "exiting") return;
 
     clearTimers();
-    revealSceneOne();
+    revealArrival();
     markPortfolioIntroSeen();
     phaseRef.current = "exiting";
     setCompletedMilestones(readinessLabels.length);
     setShowSkip(false);
     setPhase("exiting");
-  }, [clearTimers, revealSceneOne]);
+  }, [clearTimers, revealArrival]);
 
   const beginReady = useCallback(() => {
     if (phaseRef.current !== "building") return;
 
-    revealSceneOne();
+    revealArrival();
     phaseRef.current = "ready";
     setCompletedMilestones(readinessLabels.length);
     setShowSkip(false);
     setPhase("ready");
     schedule(beginExit, timing.readyHold);
-  }, [beginExit, revealSceneOne, schedule, timing.readyHold]);
+  }, [beginExit, revealArrival, schedule, timing.readyHold]);
 
   useEffect(() => {
     let cancelled = false;

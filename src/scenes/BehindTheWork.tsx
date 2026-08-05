@@ -17,7 +17,7 @@ import {
 } from "motion/react";
 import { useSceneNavigation } from "../components/SceneNavigationContext";
 import profilePortrait from "../assets/images/my-portrait.jpg";
-import "../styles/scene-two.css";
+import "../styles/behind-the-work.css";
 
 const easing = [0.22, 1, 0.36, 1] as const;
 const pageTurnEase = [0.65, 0, 0.35, 1] as const;
@@ -164,7 +164,7 @@ function WorkshopEnvironment() {
   );
 }
 
-export default function SceneTwo() {
+export default function BehindTheWork() {
   const sceneRef = useRef<HTMLElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const reducedMotion = prefersReducedMotion !== false;

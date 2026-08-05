@@ -156,7 +156,7 @@ function PixelLandscape() {
   );
 }
 
-export default function SceneOne() {
+export default function Arrival() {
   const prefersReducedMotion = useReducedMotion();
   const reducedMotion = prefersReducedMotion !== false;
 

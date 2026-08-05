@@ -10,7 +10,7 @@ import {
 import { FaFacebookF, FaGithub, FaLinkedinIn } from "react-icons/fa";
 import type { IconType } from "react-icons";
 import { useSceneNavigation } from "../components/SceneNavigationContext";
-import "../styles/scene-six.css";
+import "../styles/journeys-horizon.css";
 
 const horizonEase = [0.22, 1, 0.36, 1] as const;
 
@@ -116,7 +116,7 @@ const childVariants = (reducedMotion: boolean): Variants => ({
   },
 });
 
-export default function SceneSix() {
+export default function JourneysHorizon() {
   const sceneRef = useRef<HTMLElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const reducedMotion = prefersReducedMotion !== false;

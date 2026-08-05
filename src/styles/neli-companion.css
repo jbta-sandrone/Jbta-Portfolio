@@ -52,7 +52,7 @@
 .neli-header-portrait,
 .neli-message-portrait {
   image-rendering: pixelated;
-  background: #080504;
+  background: none;
 }
 
 .neli-summon-portrait {

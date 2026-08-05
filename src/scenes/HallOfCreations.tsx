@@ -19,7 +19,7 @@ import { useSceneNavigation } from "../components/SceneNavigationContext";
 import projectVideo from "../assets/videos/Project video.mp4";
 import NelumeVideo from "../assets/videos/Nelume video.mp4";
 import IntelliCLIQVideo from "../assets/videos/IntelliCLIQ video.mp4";
-import "../styles/sceneThree.css";
+import "../styles/hall-of-creations.css";
 
 type PreviewFrame = {
   eyebrow: string;
@@ -196,7 +196,7 @@ const revealVariants: Variants = {
   },
 };
 
-export default function SceneThree() {
+export default function HallOfCreations() {
   const sceneRef = useRef<HTMLElement>(null);
   const scrollContainerRef = useRef<HTMLElement>(null);
   const [activeProject, setActiveProject] = useState(0);

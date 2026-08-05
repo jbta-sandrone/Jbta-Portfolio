@@ -18,20 +18,22 @@ import { shouldShowPortfolioIntro } from "./components/portfolioIntroSession";
 import PortfolioCursor from "./components/PortfolioCursor";
 import SceneNavigationControl from "./components/SceneNavigationControl";
 import { SceneNavigationContext } from "./components/SceneNavigationContext";
-import SceneOne from "./scenes/SceneOne";
-import SceneTwo from "./scenes/SceneTwo";
-import SceneThree from "./scenes/SceneThree";
-import SceneFour from "./scenes/SceneFour";
-import SceneFive from "./scenes/SceneFive";
-import SceneSix from "./scenes/SceneSix";
+import Arrival from "./scenes/Arrival";
+import BehindTheWork from "./scenes/BehindTheWork";
+import HallOfCreations from "./scenes/HallOfCreations";
+import QuestBoard from "./scenes/QuestBoard";
+import ArcaneFoundry from "./scenes/ArcaneFoundry";
+import SignalObservatory from "./scenes/SignalObservatory";
+import JourneysHorizon from "./scenes/JourneysHorizon";
 
 const SCENES = [
-  { id: "arrival", label: "Arrival", Component: SceneOne },
-  { id: "behind-the-work", label: "Behind the Work", Component: SceneTwo },
-  { id: "featured-work", label: "Featured Work", Component: SceneThree },
-  { id: "craft", label: "Crafts", Component: SceneFour },
-  { id: "connect", label: "Connections", Component: SceneFive },
-  { id: "ending", label: "Journey's Horizon", Component: SceneSix },
+  { id: "arrival", label: "Arrival", Component: Arrival },
+  { id: "behind-the-work", label: "Behind the Work", Component: BehindTheWork },
+  { id: "featured-work", label: "Featured Work", Component: HallOfCreations },
+  { id: "quest-board", label: "Quest Board", Component: QuestBoard },
+  { id: "craft", label: "Crafts", Component: ArcaneFoundry },
+  { id: "connect", label: "Connections", Component: SignalObservatory },
+  { id: "ending", label: "Journey's Horizon", Component: JourneysHorizon },
 ] as const;
 
 type HistoryMode = "push" | "none";

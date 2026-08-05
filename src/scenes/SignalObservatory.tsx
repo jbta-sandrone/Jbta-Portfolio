@@ -21,7 +21,7 @@ import {
 import type { IconType } from "react-icons";
 import { FaFacebookF, FaGithub, FaLinkedinIn } from "react-icons/fa";
 import { useSceneNavigation } from "../components/SceneNavigationContext";
-import "../styles/scene-five.css";
+import "../styles/signal-observatory.css";
 
 type ConnectionType = "email" | "profile" | "resume";
 type ConnectionIcon = LucideIcon | IconType;
@@ -172,7 +172,7 @@ const childVariants = (reducedMotion: boolean): Variants => ({
   },
 });
 
-export default function SceneFive() {
+export default function SignalObservatory() {
   const sectionRef = useRef<HTMLElement>(null);
   const activeIndexRef = useRef(0);
   const [activeIndex, setActiveIndex] = useState(0);

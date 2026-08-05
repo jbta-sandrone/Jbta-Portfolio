@@ -1,0 +1,317 @@
+.quest-board-scene {
+  --quest-ink: #1c110a;
+  --quest-wood-dark: #442819;
+  --quest-wood: #70472a;
+  --quest-wood-light: #a76d35;
+  --quest-parchment: #e7c98c;
+  --quest-parchment-light: #fff0bd;
+  --quest-amber: #f3b94f;
+  --quest-red: #a74936;
+  --quest-green: #6f8f4a;
+  --quest-cork: #8a5a34;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  background:
+    radial-gradient(circle at 18% 22%, rgb(0 0 0 / 12%) 0 2px, transparent 3px),
+    radial-gradient(circle at 62% 68%, rgb(0 0 0 / 12%) 0 2px, transparent 3px),
+    radial-gradient(circle at 84% 30%, rgb(0 0 0 / 10%) 0 2px, transparent 3px),
+    radial-gradient(circle at 38% 82%, rgb(0 0 0 / 10%) 0 2px, transparent 3px),
+    repeating-linear-gradient(0deg, rgb(0 0 0 / 4%) 0 2px, transparent 2px 26px),
+    repeating-linear-gradient(90deg, rgb(0 0 0 / 4%) 0 2px, transparent 2px 26px),
+    linear-gradient(160deg, #9c6a3d, var(--quest-cork) 55%, #7a4d2c);
+  image-rendering: pixelated;
+}
+
+.quest-board-scene *,
+.quest-board-scene *::before,
+.quest-board-scene *::after {
+  box-sizing: border-box;
+}
+
+.quest-board-scroll {
+  scrollbar-color: rgb(255 219 148 / 45%) transparent;
+  scrollbar-width: thin;
+}
+
+.quest-board-inner {
+  max-width: 64rem;
+  margin-inline: auto;
+  padding: clamp(4.5rem, 9vh, 6.5rem) clamp(1.25rem, 4vw, 2.5rem) clamp(3rem, 8vh, 5rem);
+}
+
+.quest-board-header {
+  position: relative;
+  margin: 0 auto clamp(2rem, 5vh, 3rem);
+  padding: 1.1rem 1.4rem 1.3rem;
+  max-width: 34rem;
+  text-align: center;
+  border: 4px solid var(--quest-ink);
+  background:
+    repeating-linear-gradient(90deg, transparent 0 24px, rgb(255 255 255 / 4%) 24px 27px),
+    var(--quest-wood);
+  box-shadow:
+    inset 0 0 0 3px var(--quest-wood-light),
+    inset 0 -7px rgb(39 21 13 / 32%),
+    6px 7px 0 rgb(18 11 8 / 68%);
+  clip-path: polygon(0 8px, 8px 8px, 8px 0, calc(100% - 8px) 0, calc(100% - 8px) 8px, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 8px calc(100% - 8px), 0 calc(100% - 8px));
+}
+
+.quest-board-header__pin {
+  position: absolute;
+  top: -6px;
+  width: 9px;
+  height: 9px;
+  border: 2px solid #3a2115;
+  background: var(--quest-red);
+  box-shadow: 2px 2px 0 rgb(50 27 16 / 40%);
+}
+
+.quest-board-header__pin--left {
+  left: 14px;
+}
+
+.quest-board-header__pin--right {
+  right: 14px;
+}
+
+.quest-board-eyebrow {
+  margin: 0;
+  color: #d8a957;
+  font-family: "Cascadia Mono", "Lucida Console", "Courier New", monospace;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.quest-board-title {
+  margin: 0.35rem 0 0.55rem;
+  color: var(--quest-parchment-light);
+  font-family: "Cascadia Mono", "Lucida Console", "Courier New", monospace;
+  font-size: clamp(1.5rem, 4vw, 2.1rem);
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-shadow: 2px 2px 0 #1a0d06;
+  text-transform: uppercase;
+}
+
+.quest-board-subtitle {
+  margin: 0;
+  color: rgb(255 240 190 / 82%);
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.quest-board-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15.5rem, 1fr));
+  gap: clamp(1rem, 2.5vw, 1.5rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.quest-card-wrap {
+  perspective: 800px;
+}
+
+.quest-card {
+  position: relative;
+  height: 100%;
+  padding: 1.35rem 1.2rem 1.2rem;
+  border: 3px solid #6a4227;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 27px, rgb(93 57 32 / 8%) 27px 29px),
+    var(--quest-parchment);
+  box-shadow:
+    inset 0 0 0 3px #9e6938,
+    inset 0 0 0 6px #f3dca3,
+    5px 6px 0 rgb(18 11 8 / 55%);
+  clip-path: polygon(0 9px, 9px 9px, 9px 0, calc(100% - 9px) 0, calc(100% - 9px) 9px, 100% 9px, 100% calc(100% - 9px), calc(100% - 9px) calc(100% - 9px), calc(100% - 9px) 100%, 9px 100%, 9px calc(100% - 9px), 0 calc(100% - 9px));
+  color: #50321f;
+  transition:
+    translate 200ms ease,
+    rotate 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.quest-card-wrap:nth-child(3n + 1) .quest-card {
+  rotate: -0.6deg;
+}
+
+.quest-card-wrap:nth-child(3n + 2) .quest-card {
+  rotate: 0.4deg;
+}
+
+.quest-card-wrap:nth-child(3n) .quest-card {
+  rotate: -0.2deg;
+}
+
+.quest-card:hover {
+  translate: 0 -3px;
+  rotate: 0deg;
+  box-shadow:
+    inset 0 0 0 3px #9e6938,
+    inset 0 0 0 6px #f3dca3,
+    6px 9px 0 rgb(18 11 8 / 55%);
+}
+
+.quest-card__pin {
+  position: absolute;
+  left: 50%;
+  top: -7px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid #3a2115;
+  background: var(--quest-red);
+  translate: -50% 0;
+  box-shadow: 2px 2px 0 rgb(50 27 16 / 38%);
+}
+
+.quest-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.quest-rank {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.5rem 0.22rem;
+  border: 2px solid #4a2d1c;
+  background: var(--quest-wood);
+  font-family: "Cascadia Mono", "Lucida Console", "Courier New", monospace;
+  clip-path: polygon(5px 0, calc(100% - 5px) 0, 100% 5px, 100% calc(100% - 5px), calc(100% - 5px) 100%, 5px 100%, 0 calc(100% - 5px), 0 5px);
+}
+
+.quest-rank__label {
+  color: rgb(255 240 190 / 68%);
+  font-size: 0.5rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.quest-rank__value {
+  color: var(--quest-parchment-light);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.quest-rank--s .quest-rank__value {
+  color: var(--quest-amber);
+  text-shadow: 0 0 6px rgb(243 185 79 / 70%);
+  animation: quest-rank-glow 1.8s steps(2, end) infinite;
+}
+
+.quest-rank--a .quest-rank__value {
+  color: #ffb199;
+}
+
+.quest-rank--b .quest-rank__value {
+  color: #ffe9b0;
+}
+
+.quest-rank--c .quest-rank__value {
+  color: #cfe4b0;
+}
+
+.quest-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  color: var(--quest-green);
+  font-family: "Cascadia Mono", "Lucida Console", "Courier New", monospace;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.quest-status__dot {
+  display: block;
+  width: 6px;
+  height: 6px;
+  background: var(--quest-green);
+  box-shadow: 0 0 5px rgb(111 143 74 / 65%);
+}
+
+.quest-card__title {
+  margin: 0 0 0.35rem;
+  font-family: "Cascadia Mono", "Lucida Console", "Courier New", monospace;
+  font-size: 0.95rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.quest-card__brief {
+  margin: 0 0 0.55rem;
+  color: #6a4227;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.quest-card__detail {
+  margin: 0 0 0.85rem;
+  color: #402718;
+  font-size: 0.82rem;
+  font-weight: 500;
+  line-height: 1.55;
+}
+
+.quest-card__rewards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0.7rem 0 0;
+  list-style: none;
+  border-top: 2px dashed rgb(91 57 32 / 45%);
+}
+
+.quest-reward-tag {
+  padding: 0.22rem 0.45rem;
+  border: 2px solid #6a4227;
+  background: rgb(255 240 190 / 55%);
+  color: #402718;
+  font-family: "Cascadia Mono", "Lucida Console", "Courier New", monospace;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  clip-path: polygon(4px 0, calc(100% - 4px) 0, 100% 4px, 100% calc(100% - 4px), calc(100% - 4px) 100%, 4px 100%, 0 calc(100% - 4px), 0 4px);
+}
+
+@keyframes quest-rank-glow {
+  50% {
+    text-shadow: 0 0 10px rgb(243 185 79 / 92%);
+  }
+}
+
+@media (max-width: 639px) {
+  .quest-board-inner {
+    padding-top: clamp(4rem, 12vh, 5.5rem);
+  }
+
+  .quest-board-list {
+    grid-template-columns: 1fr;
+  }
+
+  .quest-card-wrap .quest-card {
+    rotate: 0deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quest-card,
+  .quest-rank--s .quest-rank__value {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}

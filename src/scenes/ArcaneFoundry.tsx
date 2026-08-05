@@ -22,7 +22,7 @@ import {
   type TechGroup,
   type Technology,
 } from "../data/sceneFourTechnologyData";
-import "../styles/scene-four.css";
+import "../styles/arcane-foundry.css";
 
 const foundryEase = [0.22, 1, 0.36, 1] as const;
 
@@ -112,7 +112,7 @@ const stationChildVariants = (reducedMotion: boolean): Variants => ({
   },
 });
 
-export default function SceneFour() {
+export default function ArcaneFoundry() {
   const scrollContainerRef = useRef<HTMLElement>(null);
   const activeGroupRef = useRef(0);
   const [activeGroup, setActiveGroup] = useState(0);
