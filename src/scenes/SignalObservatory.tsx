@@ -545,7 +545,7 @@ function ObservatoryEntrance({ reducedMotion }: { reducedMotion: boolean }) {
         }}
       >
         <PixelPanelCorners />
-        <p className="observatory-chapter-index">Scene Five</p>
+        <p className="observatory-chapter-index">Scene Six</p>
         <div aria-hidden="true" className="observatory-chapter-rule">
           <span /><SignalGlyph /><span />
         </div>

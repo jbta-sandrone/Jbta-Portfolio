@@ -967,7 +967,7 @@ function HallExit({
       </div>
       <p className="hall-exit-label">The journey continues</p>
       <h2 id="hall-exit-title" className="hall-exit-copy">
-        The Craft Wing waits beyond the guild corridor.
+        The Adventurer's Guild waits beyond the guild corridor.
       </h2>
       <div className="exhibit-actions">
         <button

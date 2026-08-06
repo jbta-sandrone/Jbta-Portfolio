@@ -18,9 +18,10 @@ const sceneDestinations = [
   { label: "Arrival", sceneIndex: 0 },
   { label: "Behind the Work", sceneIndex: 1 },
   { label: "Featured Work", sceneIndex: 2 },
-  { label: "Crafts", sceneIndex: 3 },
-  { label: "Connections", sceneIndex: 4 },
-  { label: "Journey’s Horizon", sceneIndex: 5 },
+  { label: "Quest Board", sceneIndex: 3 },
+  { label: "Crafts", sceneIndex: 4 },
+  { label: "Connections", sceneIndex: 5 },
+  { label: "Journey’s Horizon", sceneIndex: 6 },
 ] as const;
 
 type ConnectionLink = {
@@ -160,7 +161,7 @@ export default function JourneysHorizon() {
           reducedMotion={reducedMotion}
           disabled={isTransitioning}
           onReturn={() => navigateToScene(0)}
-          onConnect={() => navigateToScene(4)}
+          onConnect={() => navigateToScene(5)}
         />
       </main>
 
@@ -329,7 +330,7 @@ function DawnThreshold({ reducedMotion }: { reducedMotion: boolean }) {
         className="horizon-chapter"
       >
         <motion.div variants={childVariants(reducedMotion)} className="horizon-chapter__eyebrow">
-          <span>Scene Six</span>
+          <span>Scene Seven</span>
           <i aria-hidden="true" />
           <span>End</span>
         </motion.div>
@@ -439,7 +440,7 @@ function HorizonOverlook({
             className="horizon-button horizon-button--secondary"
           >
             <JourneyGlyph type="signal" />
-            <span>Start a Conversation</span>
+            <span>Let's Build Together</span>
           </button>
         </motion.div>
       </motion.article>

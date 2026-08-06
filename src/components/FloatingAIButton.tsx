@@ -271,6 +271,7 @@ export default function FloatingAIButton() {
         }
         aria-expanded={panelOpen}
         aria-controls="jbta-assistant-panel"
+        aria-haspopup="dialog"
         data-cursor-label={panelOpen ? "Close Chat" : "Ask JBTA"}
         onClick={togglePanel}
         whileHover={
@@ -279,14 +280,14 @@ export default function FloatingAIButton() {
             : {
                 y: -3,
                 scale: 1.04,
-                borderColor: "rgba(253,230,138,0.52)",
-                boxShadow:
-                  "0 16px 38px rgba(0,0,0,0.4), 0 0 24px rgba(245,158,11,0.28)",
+                
               }
         }
         whileTap={reducedMotion ? undefined : { scale: 0.97 }}
         transition={{ duration: 0.24, ease: "easeInOut" }}
-        className="neli-summon-button portfolio-focus group relative flex size-12 items-center justify-center overflow-hidden sm:size-14"
+        className={`neli-summon-button portfolio-focus group relative flex items-center justify-center ${
+          panelOpen ? "neli-summon-button--open" : ""
+        }`}
       >
         <motion.span
           aria-hidden="true"
@@ -296,15 +297,18 @@ export default function FloatingAIButton() {
             repeat: reducedMotion ? 0 : Infinity,
             ease: "easeInOut",
           }}
-          className="neli-summon-aura pointer-events-none absolute inset-1"
+          className="neli-summon-aura pointer-events-none absolute"
         />
         <img
           src={chatbotAvatar}
           alt=""
           aria-hidden="true"
           draggable={false}
-          className="neli-summon-portrait relative z-10 size-10 select-none object-cover transition-[filter] duration-300 group-hover:brightness-110 sm:size-12"
+          className="neli-summon-portrait relative z-10 select-none object-contain transition-[filter] duration-300 group-hover:brightness-110"
         />
+        <span aria-hidden="true" className="neli-summon-sparkle" />
+        <span aria-hidden="true" className="neli-summon-particle neli-summon-particle--one" />
+        <span aria-hidden="true" className="neli-summon-particle neli-summon-particle--two" />
       </motion.button>
 
       <AnimatePresence>

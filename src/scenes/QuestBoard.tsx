@@ -1,4 +1,4 @@
-import {
+﻿import {
   useEffect,
   useRef,
   useState,
@@ -678,7 +678,7 @@ function FoundryPassage({ reducedMotion, disabled, onContinue }: FoundryPassageP
       <div className="qb-exit-copy">
         <p>Deeper Within the Guild</p>
         <h2 id="quest-foundry-title">The forge lies beyond the contract hall.</h2>
-        <span>Continue downward to discover the tools behind every creation.</span>
+        <span>Continue downward to discover the craft wings behind every creation.</span>
         <button
           type="button"
           className="qb-continue portfolio-focus"

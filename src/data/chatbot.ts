@@ -12,7 +12,7 @@ export const chatbotFallbackMessage =
   "I can only answer questions about Jonel, his work, skills, projects, and contact information.";
 
 export type ChatbotSuggestionGroup = {
-  id: "about" | "skills" | "projects" | "contact";
+  id: "about" | "skills" | "services" | "projects" | "contact";
   label: string;
   questions: readonly string[];
 };
@@ -29,6 +29,17 @@ export const chatbotSuggestionGroups: readonly ChatbotSuggestionGroup[] = [
     questions: [
       "What technologies does Jonel use?",
       "What AI experience does Jonel have?",
+    ],
+  },
+  {
+    id: "services",
+    label: "Quest Board",
+    questions: [
+      "What can Jonel build?",
+      "Explore the Quest Board",
+      "Can Jonel integrate AI?",
+      "Tell me about his full-stack skills",
+      "How can I work with Jonel?",
     ],
   },
   {
@@ -68,7 +79,102 @@ export const chatbotRules: readonly ChatbotRule[] = [
       /what do you know/i,
     ],
     answer:
-      "JBTA Assistant can answer questions about Jonel’s background, education, development skills, projects, career goal, availability, and the contact options in this portfolio.",
+      "JBTA Assistant can answer questions about Jonel's background, education, development skills, projects, career direction, software services on the Quest Board, and portfolio contact options.",
+  },
+  {
+    id: "quest-board-overview",
+    keywords: [
+      "services",
+      "quest board",
+      "adventurer's guild",
+      "what can jonel build",
+      "software work",
+    ],
+    patterns: [
+      /what services does (jonel|he) offer/i,
+      /what can (jonel|he) build/i,
+      /tell me about (the )?quest board/i,
+      /explore (the )?quest board/i,
+      /adventurer'?s guild/i,
+      /software (services|work) (does|can) (jonel|he)/i,
+    ],
+    answer:
+      "According to the Adventurer's Guild Quest Board, Jonel's main software quests include full-stack web development, frontend development, backend and API development, practical AI feature integration, database and authentication systems, and deployment and optimization. His portfolio projects demonstrate hands-on experience across these areas. You can explore the complete registry in Scene Four — Quest Board.",
+  },
+  {
+    id: "quest-full-stack",
+    keywords: ["full-stack", "full stack", "complete application"],
+    patterns: [
+      /can (jonel|he) (build|develop|create) (a )?(complete|full[- ]stack) (application|app|website)/i,
+      /tell me about (jonel'?s|his) full[- ]stack skills/i,
+      /full[- ]stack (service|development|skills)/i,
+    ],
+    answer:
+      "Yes. Jonel's full-stack projects demonstrate hands-on experience connecting responsive React and TypeScript interfaces with Node.js, Express, FastAPI or Python services, databases such as PostgreSQL, Prisma, Firebase, and Upstash, authentication flows, cloud media, AI features, and deployment. The exact architecture would depend on the project's requirements.",
+  },
+  {
+    id: "quest-frontend",
+    keywords: ["build a frontend", "develop a frontend", "frontend service"],
+    patterns: [
+      /can (jonel|he) (build|develop|create) (a |an )?(frontend|front-end|interface)/i,
+      /frontend (service|development) on the quest board/i,
+    ],
+    answer:
+      "Yes. Jonel can help build responsive and accessible interfaces using HTML, CSS, JavaScript, React, TypeScript, Tailwind CSS, and Motion. His projects demonstrate component-driven development, responsive design, keyboard accessibility, and thoughtful visual interaction.",
+  },
+  {
+    id: "quest-backend-api",
+    keywords: ["build APIs", "build an api", "backend service"],
+    patterns: [
+      /can (jonel|he) (build|develop|create) (an? )?(apis?|backend|back-end)/i,
+      /backend (and |& )?api (service|development)/i,
+    ],
+    answer:
+      "Yes. Jonel has hands-on project experience with application logic, REST APIs, database-connected services, and JWT authentication flows using Node.js, Express, Python, FastAPI, Firebase, PostgreSQL, and Prisma.",
+  },
+  {
+    id: "quest-ai-integration",
+    keywords: ["integrate ai", "ai features", "ai integration"],
+    patterns: [
+      /can (jonel|he) (integrate|add|build) (an? )?ai/i,
+      /ai feature integration/i,
+      /what ai (features|services) can (jonel|he)/i,
+    ],
+    answer:
+      "Yes. Jonel has integrated practical AI features into his projects, including memory search, resume evaluation, product recommendations, structured AI output, and chatbot guidance using Google Gemini and prompt-engineered workflows. His focus is on adding AI where it provides a clear product benefit, not on training foundation models.",
+  },
+  {
+    id: "quest-database-auth",
+    keywords: ["create authentication", "work with databases", "database and authentication"],
+    patterns: [
+      /can (jonel|he) (create|build|implement|work with) (an? )?(authentication|databases?|database system|user accounts?)/i,
+      /database (and |& )?authentication (service|systems?)/i,
+    ],
+    answer:
+      "Yes. Jonel's projects demonstrate experience with user accounts, permissions, JWT authentication, Firebase Authentication, Firebase Realtime Database, PostgreSQL, Prisma, and Upstash. He can help connect application data and access flows to a project's interface and backend requirements.",
+  },
+  {
+    id: "quest-deployment-maintenance",
+    keywords: ["deploy a website", "fix a project", "improve a project", "maintenance"],
+    patterns: [
+      /can (jonel|he) deploy (a |an )?(website|application|app|project)/i,
+      /can (jonel|he) (fix|debug|improve|optimi[sz]e|maintain) (an? |my )?(existing )?(project|application|app|website)/i,
+      /can (jonel|he) (fix or improve|improve or fix) (an? |my )?(existing )?(project|application|app|website)/i,
+      /deployment (and |& )?optimization/i,
+    ],
+    answer:
+      "Jonel has hands-on project experience deploying frontend and backend applications with Vercel and Render, managing code with Git and GitHub, troubleshooting build and runtime issues, improving performance, and maintaining working project builds.",
+  },
+  {
+    id: "quest-opportunities",
+    keywords: ["work with jonel", "new opportunities", "interested in"],
+    patterns: [
+      /how can i work with (jonel|him)/i,
+      /what kinds? of projects? (is|would) (jonel|he) (interested in|like)/i,
+      /is (jonel|he) open to (new )?(opportunities|projects|collaboration)/i,
+    ],
+    answer:
+      "The Quest Board highlights the kinds of opportunities Jonel is interested in discussing: full-stack applications, polished interfaces, backend and API work, practical AI features, database and authentication systems, and deployment or project improvements. For current availability or a specific project, the best next step is to visit the Connections scene and contact him directly.",
   },
   {
     id: "i-nelory",
@@ -100,7 +206,7 @@ export const chatbotRules: readonly ChatbotRule[] = [
       /(hire|collaborate with) (jonel|him)/i,
     ],
     answer:
-      "Jonel is currently marked as available for work. He is open to opportunities and collaboration related to thoughtful web products and continued software-engineering growth.",
+      "The Quest Board represents the kinds of opportunities Jonel is interested in discussing. For current availability, collaboration, or a specific project, the best next step is to visit the Connections scene and contact him directly.",
   },
   {
     id: "email",
@@ -212,10 +318,10 @@ export const chatbotRules: readonly ChatbotRule[] = [
   },
   {
     id: "database",
-    keywords: ["database", "postgresql", "postgres", "prisma", "firebase"],
-    patterns: [/databases?/i, /\b(postgresql|postgres|prisma|firebase)\b/i],
+    keywords: ["database", "postgresql", "postgres", "prisma", "firebase", "upstash"],
+    patterns: [/databases?/i, /\b(postgresql|postgres|prisma|firebase|upstash)\b/i],
     answer:
-      "Jonel’s database experience includes PostgreSQL, Prisma, and Firebase. I-Nelory uses PostgreSQL with Prisma, while CLIQ uses Firebase.",
+      "Jonel's database experience includes PostgreSQL, Prisma, Firebase, and Upstash. His projects demonstrate relational data modeling, realtime application data, serverless cloud storage, user accounts, and authentication-connected workflows.",
   },
   {
     id: "ai-integration",
@@ -225,7 +331,7 @@ export const chatbotRules: readonly ChatbotRule[] = [
       /gemini|prompt engineering|artificial intelligence/i,
     ],
     answer:
-      "Jonel has integrated Google Gemini into I-Nelory, CLIQ, and Nelume. His portfolio highlights experience with LLM integration, prompt engineering, structured AI workflows, recommendations, memory search, and résumé evaluation.",
+      "Jonel has integrated Google Gemini into I-Nelory, CLIQ, and Nelume. His portfolio demonstrates practical experience with prompt engineering, structured AI output, recommendations, memory search, resume evaluation, and chatbot guidance. It does not claim foundation-model training or machine-learning research.",
   },
   {
     id: "portfolio",
@@ -241,13 +347,13 @@ export const chatbotRules: readonly ChatbotRule[] = [
   },
   {
     id: "deployment",
-    keywords: ["deployment", "deploy", "vercel", "render", "hosting"],
+    keywords: ["deployment", "deploy", "vercel", "render", "hosting", "debugging", "maintenance"],
     patterns: [
       /deploy(ment|ed|ing)?|hosting/i,
       /\b(vercel|render)\b/i,
     ],
     answer:
-      "Jonel’s deployment toolkit includes GitHub, Vercel, and Render. His portfolio presents these as the delivery layer used to version projects and publish frontend and backend experiences.",
+      "Jonel's deployment toolkit includes Git, GitHub, Vercel, and Render. His projects demonstrate experience with deployment configuration, build and runtime debugging, performance improvements, and maintaining working frontend and backend builds.",
   },
   {
     id: "projects",
@@ -304,7 +410,7 @@ const explicitOwnerContextPattern =
 const namedProjectPattern = /\b(i[-\s]?nelory|cliq|intellicliq|nelume)\b/i;
 
 const directPortfolioTopicPattern =
-  /\b(i[-\s]?nelory|cliq|intellicliq|nelume|frontend|backend|database|gemini|github|linkedin|facebook|resume|résumé|education|degree|career|available|availability|contact|deployment|vercel|render|skills|technologies|experience|background|projects?|portfolio)\b/i;
+  /\b(i[-\s]?nelory|cliq|intellicliq|nelume|quest board|adventurer'?s guild|services?|full[- ]stack|frontend|backend|apis?|authentication|database|upstash|gemini|ai integration|github|linkedin|facebook|resume|résumé|education|degree|career|available|availability|opportunities|collaboration|contact|deployment|debugging|maintenance|vercel|render|skills|technologies|experience|background|projects?|portfolio)\b/i;
 
 const unrelatedCodingRequestPattern =
   /\b(how (do|can) i|how to|write|code|program|debug|fix (my|this)|error|tutorial|implement|generate|create (a|an|me)|build (a|an|me)|what is)\b/i;

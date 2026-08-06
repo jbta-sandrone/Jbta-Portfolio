@@ -371,7 +371,7 @@ function FoundryEntrance({ reducedMotion }: { reducedMotion: boolean }) {
         <span aria-hidden="true" className="foundry-panel-corner foundry-panel-corner--tr" />
         <span aria-hidden="true" className="foundry-panel-corner foundry-panel-corner--bl" />
         <span aria-hidden="true" className="foundry-panel-corner foundry-panel-corner--br" />
-        <p className="foundry-chapter-index">Scene Four</p>
+        <p className="foundry-chapter-index">Scene Five</p>
         <div aria-hidden="true" className="foundry-chapter-rule">
           <span /><FoundryMark /><span />
         </div>
