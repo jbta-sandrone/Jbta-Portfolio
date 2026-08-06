@@ -3,6 +3,7 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type KeyboardEvent as ReactKeyboardEvent,
   type PointerEvent as ReactPointerEvent,
   type RefObject,
 } from "react";
@@ -468,6 +469,7 @@ function WorkshopProfileBook({
       <WorkshopRecordPage
         buttonRef={options.buttonRef}
         isActive={options.active}
+        reducedMotion={reducedMotion}
         onClose={() => beginTurn("backward")}
       />
     );
@@ -604,50 +606,159 @@ function CharacterProfilePage({
 type WorkshopRecordPageProps = {
   buttonRef?: RefObject<HTMLButtonElement | null>;
   isActive: boolean;
+  reducedMotion: boolean;
   onClose: () => void;
 };
 
-function WorkshopRecordPage({ buttonRef, isActive, onClose }: WorkshopRecordPageProps) {
+function WorkshopRecordPage({
+  buttonRef,
+  isActive,
+  reducedMotion,
+  onClose,
+}: WorkshopRecordPageProps) {
+  const handleDossierKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    const scrollArea = event.currentTarget;
+    const lineDistance = 44;
+    const pageDistance = scrollArea.clientHeight * 0.82;
+    let nextTop: number | null = null;
+
+    if (event.key === "ArrowDown") nextTop = scrollArea.scrollTop + lineDistance;
+    else if (event.key === "ArrowUp") nextTop = scrollArea.scrollTop - lineDistance;
+    else if (event.key === "PageDown") nextTop = scrollArea.scrollTop + pageDistance;
+    else if (event.key === "PageUp") nextTop = scrollArea.scrollTop - pageDistance;
+    else if (event.key === "Home") nextTop = 0;
+    else if (event.key === "End") nextTop = scrollArea.scrollHeight;
+
+    if (nextTop === null) return;
+    event.preventDefault();
+    event.stopPropagation();
+    scrollArea.scrollTo({
+      top: nextTop,
+      behavior: reducedMotion ? "auto" : "smooth",
+    });
+  };
+
   return (
-    <div className="scene-two-record-page relative flex h-full flex-col overflow-hidden p-6 sm:p-7">
+    <div className="scene-two-record-page relative flex h-full flex-col overflow-hidden">
       <div aria-hidden="true" className="scene-two-record-page__grid absolute inset-0" />
-      <div className="relative flex flex-1 flex-col justify-center gap-6 pl-2 sm:gap-8">
-        <section className="scene-two-record-block" aria-labelledby="academy-record-title">
-          <div className="scene-two-record-block__label">
-            <WorkshopGlyph type="academy" />
-            <p id="academy-record-title">Academy Record</p>
-          </div>
-          <p className="scene-two-record-block__value mt-3">
-            Bachelor of Science in Information Technology
-          </p>
-          <p className="scene-two-record-block__detail mt-2">2022–2026</p>
-        </section>
 
-        <div aria-hidden="true" className="scene-two-record-divider" />
+      <header className="scene-two-dossier-header relative z-10">
+        <span>Page Two</span>
+        <h2>Character Dossier</h2>
+        <i aria-hidden="true" />
+      </header>
 
-        <section className="scene-two-record-block" aria-labelledby="career-destination-title">
-          <div className="scene-two-record-block__label">
-            <WorkshopGlyph type="compass" />
-            <p id="career-destination-title">Destination</p>
-          </div>
-          <p className="scene-two-record-block__value mt-3">Software Engineer</p>
-          <p className="scene-two-record-block__detail mt-2 leading-5">
-            Building thoughtful digital experiences.
-          </p>
-        </section>
+      <div
+        className="scene-two-dossier-scroll relative z-10 min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain"
+        role="region"
+        aria-label="Character folio details"
+        tabIndex={isActive ? 0 : -1}
+        data-scene-scroll
+        onKeyDown={handleDossierKeyDown}
+      >
+        <div className="scene-two-dossier-flow">
+          <section className="scene-two-dossier-section" aria-labelledby="academy-record-title">
+            <div className="scene-two-dossier-section__label">
+              <WorkshopGlyph type="academy" />
+              <h3 id="academy-record-title">Academy Record</h3>
+            </div>
+            <p className="scene-two-dossier-primary">University of Northern Philippines</p>
+            <p className="scene-two-dossier-secondary">
+              Bachelor of Science in Information Technology
+            </p>
+            <p className="scene-two-dossier-honor">Cum Laude Graduate</p>
+            <p className="scene-two-dossier-copy">
+              Focused on software engineering, database systems, web development, and building
+              practical applications through hands-on projects.
+            </p>
+          </section>
+
+          <div aria-hidden="true" className="scene-two-dossier-divider"><i /></div>
+
+          <section className="scene-two-dossier-section" aria-labelledby="career-destination-title">
+            <div className="scene-two-dossier-section__label">
+              <WorkshopGlyph type="compass" />
+              <h3 id="career-destination-title">Destination</h3>
+            </div>
+            <p className="scene-two-dossier-primary">Software Engineer</p>
+            <p className="scene-two-dossier-copy">
+              To become a software engineer who creates thoughtful, reliable, and user-centered
+              software while continuously learning modern technologies and building meaningful
+              digital experiences.
+            </p>
+          </section>
+
+          <div aria-hidden="true" className="scene-two-dossier-divider"><i /></div>
+
+          <section className="scene-two-dossier-section" aria-labelledby="adventurer-traits-title">
+            <div className="scene-two-dossier-section__label">
+              <span aria-hidden="true" className="scene-two-dossier-glyph scene-two-dossier-glyph--traits" />
+              <h3 id="adventurer-traits-title">Adventurer Traits</h3>
+            </div>
+            <ul className="scene-two-trait-list">
+              {[
+                "Problem Solving",
+                "Adaptability",
+                "Continuous Learning",
+                "Attention to Detail",
+                "Team Collaboration",
+                "Curiosity & Initiative",
+              ].map((trait) => (
+                <li key={trait}><i aria-hidden="true" />{trait}</li>
+              ))}
+            </ul>
+          </section>
+
+          <div aria-hidden="true" className="scene-two-dossier-divider"><i /></div>
+
+          <section className="scene-two-dossier-section" aria-labelledby="current-quest-title">
+            <div className="scene-two-dossier-section__label">
+              <span aria-hidden="true" className="scene-two-dossier-glyph scene-two-dossier-glyph--quest" />
+              <h3 id="current-quest-title">Current Quest</h3>
+            </div>
+            <p className="scene-two-dossier-copy">
+              Currently seeking opportunities as a Software Engineer where I can contribute to
+              real-world projects, expand my technical expertise, and continue crafting modern
+              full-stack and AI-powered applications.
+            </p>
+          </section>
+
+          <div aria-hidden="true" className="scene-two-dossier-divider"><i /></div>
+
+          <section className="scene-two-dossier-section" aria-labelledby="guild-values-title">
+            <div className="scene-two-dossier-section__label">
+              <span aria-hidden="true" className="scene-two-dossier-glyph scene-two-dossier-glyph--values" />
+              <h3 id="guild-values-title">Guild Values</h3>
+            </div>
+            <ul className="scene-two-value-list">
+              {[
+                "Build with Purpose",
+                "Keep Learning",
+                "Quality over Quantity",
+                "Collaborate with Respect",
+                "Never Stop Improving",
+              ].map((value) => (
+                <li key={value}><i aria-hidden="true" />{value}</li>
+              ))}
+            </ul>
+          </section>
+        </div>
       </div>
 
-      <button
-        ref={buttonRef}
-        type="button"
-        aria-label="Turn to the previous character folio page"
-        tabIndex={isActive ? 0 : -1}
-        disabled={!isActive}
-        onClick={onClose}
-        className="scene-two-page-button portfolio-focus relative mt-4 min-h-10 self-start px-3 text-xs font-semibold disabled:pointer-events-none"
-      >
-        <span aria-hidden="true">←</span> Previous Page
-      </button>
+      <footer className="scene-two-dossier-footer relative z-10">
+        <button
+          ref={buttonRef}
+          type="button"
+          aria-label="Turn to the previous character folio page"
+          tabIndex={isActive ? 0 : -1}
+          disabled={!isActive}
+          onClick={onClose}
+          className="scene-two-page-button portfolio-focus min-h-10 px-3 text-xs font-semibold disabled:pointer-events-none"
+        >
+          <span aria-hidden="true">←</span> Previous Page
+        </button>
+        <span aria-hidden="true">02 / 02</span>
+      </footer>
     </div>
   );
 }
