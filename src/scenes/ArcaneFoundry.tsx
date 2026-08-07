@@ -796,7 +796,7 @@ function FoundryExit({
         data-cursor-label="Scene Five"
         className="foundry-exit-button portfolio-focus"
       >
-        Continue to Scene Five
+        Continue to the Celestial Signal Observatory
         <span aria-hidden="true" />
       </button>
     </section>
