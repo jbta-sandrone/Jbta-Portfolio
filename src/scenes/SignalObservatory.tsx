@@ -283,7 +283,7 @@ export default function SignalObservatory() {
   return (
     <section
       ref={sectionRef}
-      data-cinematic-scene={5}
+      data-cinematic-scene={6}
       data-scene-scroll
       aria-labelledby="scene-five-title"
       className="celestial-observatory portfolio-scene relative h-full overflow-y-auto overflow-x-hidden overscroll-contain"
@@ -354,7 +354,7 @@ export default function SignalObservatory() {
 
         <ObservatoryFinale
           disabled={isTransitioning}
-          onContinue={() => navigateToScene(5)}
+          onContinue={() => navigateToScene(6)}
         />
       </main>
 
@@ -853,7 +853,7 @@ function ObservatoryFinale({
         type="button"
         disabled={disabled}
         onClick={onContinue}
-        data-cursor-label="Scene Six"
+        data-cursor-label="Scene Seven"
         className="observatory-button observatory-button--primary observatory-finale-button portfolio-focus"
       >
         Continue the Journey

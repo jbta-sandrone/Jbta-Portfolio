@@ -1,275 +1,124 @@
-import type { CSSProperties } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { hero } from "../data/hero";
+import { useSceneNavigation } from "../components/SceneNavigationContext";
+import "../styles/arrival-hero.css";
 
-const easeOut = [0.22, 1, 0.36, 1] as const;
-
-const trees = [
-  { left: "3%", bottom: "19%", scale: 0.82, delay: "-1.7s" },
-  { left: "10%", bottom: "17%", scale: 1.08, delay: "-3.2s" },
-  { left: "18%", bottom: "20%", scale: 0.68, delay: "-0.8s" },
-  { left: "78%", bottom: "19%", scale: 0.76, delay: "-2.4s" },
-  { left: "86%", bottom: "16%", scale: 1.16, delay: "-4.1s" },
-  { left: "95%", bottom: "20%", scale: 0.72, delay: "-1.2s" },
-] as const;
-
-const flowers = [
-  { left: "7%", bottom: "11%", color: "#ffe08a", delay: "-1.4s" },
-  { left: "16%", bottom: "7%", color: "#f9a8d4", delay: "-2.7s" },
-  { left: "27%", bottom: "13%", color: "#c4b5fd", delay: "-0.6s" },
-  { left: "68%", bottom: "9%", color: "#fde68a", delay: "-3.1s" },
-  { left: "79%", bottom: "12%", color: "#f9a8d4", delay: "-1.9s" },
-  { left: "92%", bottom: "7%", color: "#c4b5fd", delay: "-3.8s" },
-] as const;
-
-const motes = Array.from({ length: 14 }, (_, index) => ({
-  left: `${5 + ((index * 17) % 90)}%`,
-  top: `${17 + ((index * 29) % 60)}%`,
-  delay: `${(index % 7) * -1.15}s`,
-  duration: `${6.8 + (index % 5) * 0.9}s`,
-}));
-
-function PixelTree({
-  left,
-  bottom,
-  scale,
-  delay,
-}: (typeof trees)[number]) {
+function SystemDiagram() {
   return (
-    <div
-      className="scene-one-tree"
-      style={{ left, bottom, scale: String(scale), "--wind-delay": delay } as CSSProperties}
-    >
-      <span className="scene-one-tree__trunk" />
-      <span className="scene-one-tree__crown scene-one-tree__crown--back" />
-      <span className="scene-one-tree__crown scene-one-tree__crown--front" />
-      <span className="scene-one-tree__highlight" />
-    </div>
-  );
-}
+    <div className="arrival-hero__diagram" aria-hidden="true">
+      <svg viewBox="0 0 540 540" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g className="arrival-hero__diagram-construction" stroke="currentColor" strokeWidth="1">
+          <path d="M34 270H506M270 34V506" />
+          <path d="M87 87H453V453H87z" strokeDasharray="2 8" />
+          <circle cx="270" cy="270" r="206" />
+          <circle cx="270" cy="270" r="149" />
+          <circle cx="270" cy="270" r="84" />
+          <path d="M270 64a206 206 0 0 1 201 160M64 270a206 206 0 0 1 104-178M367 441a206 206 0 0 1-175 20" stroke="#2458c6" strokeWidth="1.5" />
+          <path d="M270 121v65M354 270h65M270 354v65M121 270h65" strokeDasharray="3 5" />
+          <path d="M90 81v12m-6-6h12M450 81v12m-6-6h12M90 447v12m-6-6h12M450 447v12m-6-6h12" />
+          <path d="M202 201 138 138M338 202l64-64M338 338l64 64M202 338l-64 64" strokeDasharray="3 5" />
+        </g>
 
-function PixelFlower({
-  left,
-  bottom,
-  color,
-  delay,
-}: (typeof flowers)[number]) {
-  return (
-    <span
-      className="scene-one-flower"
-      style={
-        {
-          left,
-          bottom,
-          "--flower-color": color,
-          "--wind-delay": delay,
-        } as CSSProperties
-      }
-    />
-  );
-}
+        <g stroke="#9daab7" strokeWidth="1.25">
+          <path d="M270 270 168 168M270 270l103-103M270 270l103 103M270 270 168 373" />
+          <path d="M168 168h-66M373 167h65M373 373h65M168 373h-66" />
+        </g>
 
-function PixelLandscape() {
-  return (
-    <div aria-hidden="true" className="scene-one-world pointer-events-none absolute inset-0">
-      <div className="scene-one-sky absolute inset-0" />
-      <div className="scene-one-dither absolute inset-0 opacity-20" />
+        <g className="arrival-hero__diagram-core">
+          <rect x="234" y="234" width="72" height="72" fill="#f8f8f5" stroke="#15191f" strokeWidth="1.5" />
+          <path d="M248 270h44m-22-22v44" stroke="#2458c6" strokeWidth="1.5" />
+          <circle cx="270" cy="270" r="5" fill="#2458c6" />
+        </g>
 
-      <div className="scene-one-sun">
-        <span />
-      </div>
+        <g fill="#f8f8f5" stroke="#15191f" strokeWidth="1.5">
+          <circle cx="168" cy="168" r="5" />
+          <circle cx="373" cy="167" r="5" />
+          <circle cx="373" cy="373" r="5" />
+          <circle cx="168" cy="373" r="5" />
+        </g>
+        <circle className="arrival-hero__diagram-signal" cx="373" cy="167" r="8" fill="#2458c6" />
+        <circle cx="168" cy="373" r="5" fill="#15191f" />
 
-      <div className="scene-one-cloud scene-one-cloud--one" />
-      <div className="scene-one-cloud scene-one-cloud--two" />
-      <div className="scene-one-cloud scene-one-cloud--three" />
-
-      <svg
-        className="absolute inset-0 h-full w-full"
-        viewBox="0 0 1440 900"
-        preserveAspectRatio="xMidYMid slice"
-        shapeRendering="crispEdges"
-      >
-        <path
-          fill="#617da0"
-          d="M0 520 120 420l68 45 138-153 89 99 114-170 121 170 95-110 126 143 100-98 154 164 115-74 120 99v365H0Z"
-        />
-        <path
-          fill="#496983"
-          d="m174 465 14 0 138-153 89 99 114-170 121 170 95-110 126 143 100-98 154 164 115-74 120 99v365H0V520l120-100Z"
-          opacity=".56"
-        />
-        <path fill="#c9d8d7" d="m326 312-52 58 34-12 18 21 28-28 30 10Zm203-71-61 91 37-22 24 32 30-38 43 25Zm216 60-48 56 31-13 17 20 30-25 30 17Z" />
-        <path
-          fill="#284e52"
-          d="M0 588c142-57 236-71 354-18 114 51 204-19 326-23 134-4 202 68 338 38 167-37 274-16 422 50v265H0Z"
-        />
-        <path
-          fill="#1c3d3b"
-          d="M0 653c151-63 273-22 391-5 137 21 219-54 361-31 155 26 240 70 388 25 109-33 207-10 300 31v227H0Z"
-        />
-        <path
-          fill="#17362f"
-          d="M0 710c189-71 353-8 506-15 158-8 265-48 438-8 199 47 340-22 496 34v179H0Z"
-        />
-        <path
-          fill="#d8ad73"
-          d="M641 900c-9-77 18-137 77-173 39-24 41-49 10-76h69c35 38 20 76-30 104-54 30-58 83-44 145Z"
-          opacity=".92"
-        />
-        <path fill="#f3cf91" d="M677 900c-5-70 17-113 68-144 46-28 54-61 24-105h28c35 38 20 76-30 104-54 30-58 83-44 145Z" opacity=".38" />
+        <g className="arrival-hero__diagram-labels" fill="#46515d">
+          <text x="100" y="131">FRONTEND</text>
+          <text x="382" y="131">BACKEND</text>
+          <text x="382" y="414">AI</text>
+          <text x="100" y="414">DATA</text>
+          <text x="44" y="37">SYSTEM / 01</text>
+          <text x="447" y="505">JBA—26</text>
+        </g>
       </svg>
-
-      <div className="scene-one-grassline scene-one-grassline--back" />
-      <div className="scene-one-grassline scene-one-grassline--front" />
-
-      {trees.map((tree) => (
-        <PixelTree key={`${tree.left}-${tree.bottom}`} {...tree} />
-      ))}
-
-      {flowers.map((flower) => (
-        <PixelFlower key={`${flower.left}-${flower.bottom}`} {...flower} />
-      ))}
-
-      {motes.map((mote, index) => (
-        <span
-          key={index}
-          className="scene-one-mote"
-          style={
-            {
-              left: mote.left,
-              top: mote.top,
-              animationDelay: mote.delay,
-              animationDuration: mote.duration,
-            } as CSSProperties
-          }
-        />
-      ))}
-
-      <div className="scene-one-birds">
-        <span />
-        <span />
-        <span />
-      </div>
-
-      <div className="scene-one-vignette absolute inset-0" />
+      <span className="arrival-hero__diagram-caption">INTERCONNECTED SYSTEMS <span>—</span> HUMAN-CENTERED OUTPUT</span>
     </div>
   );
 }
 
 export default function Arrival() {
-  const prefersReducedMotion = useReducedMotion();
-  const reducedMotion = prefersReducedMotion !== false;
+  const { navigateToScene, isTransitioning } = useSceneNavigation();
 
   return (
     <section
       data-cinematic-scene={1}
       data-scene-scroll
       aria-labelledby="arrival-title"
-      className="scene-one-pixel portfolio-scene relative h-full overflow-y-auto overflow-x-hidden overscroll-contain bg-[#172c42]"
+      className="arrival-hero professional-theme portfolio-scene relative h-full overflow-y-auto overflow-x-hidden overscroll-contain"
     >
-      <PixelLandscape />
+      <div className="professional-grid professional-grid--fade arrival-hero__grid" aria-hidden="true" />
 
-      <div className="relative z-10 flex min-h-full items-center justify-center px-5 pb-32 pt-24 sm:px-8 sm:pb-28 sm:pt-24 lg:justify-start lg:px-16 xl:px-24">
-        <motion.div
-          className="scene-one-dialogue relative mx-auto w-full max-w-3xl lg:mx-0"
-          initial="hidden"
-          animate="visible"
-          variants={{
-            hidden: {},
-            visible: {
-              transition: {
-                staggerChildren: reducedMotion ? 0.03 : 0.13,
-                delayChildren: reducedMotion ? 0 : 0.16,
-              },
-            },
-          }}
-        >
-          <span aria-hidden="true" className="scene-one-dialogue__corner scene-one-dialogue__corner--tl" />
-          <span aria-hidden="true" className="scene-one-dialogue__corner scene-one-dialogue__corner--tr" />
-          <span aria-hidden="true" className="scene-one-dialogue__corner scene-one-dialogue__corner--bl" />
-          <span aria-hidden="true" className="scene-one-dialogue__corner scene-one-dialogue__corner--br" />
+      <div className="arrival-hero__inner professional-container professional-container--wide">
+        <div className="arrival-hero__metadata professional-enter">
+          <span className="arrival-hero__eyebrow professional-label"><span className="arrival-hero__eyebrow-dot" />SOFTWARE + AI ENGINEERING</span>
+          <span className="arrival-hero__index professional-mono">01 / INTRODUCTION</span>
+        </div>
 
-          <motion.div
-            variants={{
-              hidden: reducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 },
-              visible: {
-                opacity: 1,
-                y: 0,
-                transition: { duration: reducedMotion ? 0.15 : 0.48, ease: easeOut },
-              },
-            }}
-            className="flex flex-wrap items-center gap-3"
-          >
-            <span className="scene-one-pixel-label">Scene 01</span>
-            <span className="scene-one-pixel-rule" />
-            <span className="scene-one-pixel-kicker">Arrival</span>
-          </motion.div>
-
-          <motion.p
-            variants={{
-              hidden: reducedMotion ? { opacity: 0 } : { opacity: 0, x: -12 },
-              visible: {
-                opacity: 1,
-                x: 0,
-                transition: { duration: reducedMotion ? 0.15 : 0.52, ease: easeOut },
-              },
-            }}
-            className="scene-one-character-name mt-6"
-          >
-            {hero.name}
-          </motion.p>
-
-          <motion.h1
-            id="arrival-title"
-            variants={{
-              hidden: reducedMotion
-                ? { opacity: 0 }
-                : { opacity: 0, y: 20, filter: "blur(4px)" },
-              visible: {
-                opacity: 1,
-                y: 0,
-                filter: "blur(0px)",
-                transition: { duration: reducedMotion ? 0.16 : 0.72, ease: easeOut },
-              },
-            }}
-            className="scene-one-title mt-3 max-w-2xl text-3xl leading-[1.14] sm:text-5xl sm:leading-[1.12] lg:text-6xl"
-          >
-            {hero.headline}
-          </motion.h1>
-
-          <motion.p
-            variants={{
-              hidden: reducedMotion ? { opacity: 0 } : { opacity: 0, y: 12 },
-              visible: {
-                opacity: 1,
-                y: 0,
-                transition: { duration: reducedMotion ? 0.15 : 0.58, ease: easeOut },
-              },
-            }}
-            className="scene-one-copy mt-5 max-w-xl text-sm leading-6 sm:text-base sm:leading-7"
-          >
-            {hero.subheadline}
-          </motion.p>
-
-          <motion.div
-            variants={{
-              hidden: { opacity: 0 },
-              visible: {
-                opacity: 1,
-                transition: { duration: reducedMotion ? 0.15 : 0.55, ease: easeOut },
-              },
-            }}
-            className="mt-8 flex items-center gap-4"
-          >
-            <span className="scene-one-scroll-icon" aria-hidden="true">
-              <span />
-            </span>
-            <div>
-              <p className="scene-one-scroll-label">New adventure</p>
-              <p className="mt-1 text-xs text-[#dce7db] sm:text-sm">{hero.scrollText}</p>
+        <div className="arrival-hero__composition">
+          <div className="arrival-hero__content">
+            <p className="arrival-hero__name professional-label professional-enter">{hero.name}</p>
+            <h1 id="arrival-title" className="arrival-hero__headline professional-display professional-enter">
+              Building thoughtful <em>digital experiences.</em>
+            </h1>
+            <p className="arrival-hero__copy professional-body professional-enter">
+              {hero.subheadline}. I build responsive full-stack applications and practical AI-powered features with a focus on useful, human-centered experiences.
+            </p>
+            <div className="arrival-hero__actions professional-enter">
+              <button
+                type="button"
+                className="professional-button professional-button--primary"
+                onClick={() => navigateToScene(2)}
+                disabled={isTransitioning}
+              >
+                View Selected Work <ArrowUpRight aria-hidden="true" size={17} />
+              </button>
+              <button
+                type="button"
+                className="professional-button professional-button--secondary"
+                onClick={() => navigateToScene(1)}
+                disabled={isTransitioning}
+              >
+                About Me <ArrowUpRight aria-hidden="true" size={17} />
+              </button>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+
+          <SystemDiagram />
+        </div>
+
+        <div className="arrival-hero__footer professional-enter">
+          <ul className="arrival-hero__capabilities" aria-label="Areas of work">
+            <li>FULL-STACK DEVELOPMENT</li>
+            <li>AI FEATURE INTEGRATION</li>
+            <li>RESPONSIVE INTERFACES</li>
+          </ul>
+          <button
+            type="button"
+            className="arrival-hero__explore professional-link"
+            onClick={() => navigateToScene(1)}
+            disabled={isTransitioning}
+            aria-label="Explore Behind the Work"
+          >
+            Explore <ArrowDownRight aria-hidden="true" size={18} />
+          </button>
+        </div>
       </div>
     </section>
   );

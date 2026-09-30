@@ -156,7 +156,7 @@ export default function ArcaneFoundry() {
   return (
     <section
       ref={scrollContainerRef}
-      data-cinematic-scene={4}
+      data-cinematic-scene={5}
       data-scene-scroll
       aria-labelledby="craft-title"
       className="arcane-foundry portfolio-scene relative h-full overflow-y-auto overflow-x-hidden overscroll-contain"
@@ -198,7 +198,7 @@ export default function ArcaneFoundry() {
         <FoundryAssembly reducedMotion={reducedMotion} />
         <FoundryExit
           disabled={isTransitioning}
-          onContinue={() => navigateToScene(4)}
+          onContinue={() => navigateToScene(5)}
         />
       </main>
 
@@ -793,7 +793,7 @@ function FoundryExit({
         type="button"
         disabled={disabled}
         onClick={onContinue}
-        data-cursor-label="Scene Five"
+        data-cursor-label="Scene Six"
         className="foundry-exit-button portfolio-focus"
       >
         Continue to the Celestial Signal Observatory

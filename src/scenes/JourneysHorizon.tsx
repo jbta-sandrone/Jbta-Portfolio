@@ -143,7 +143,7 @@ export default function JourneysHorizon() {
   return (
     <section
       ref={sceneRef}
-      data-cinematic-scene={6}
+      data-cinematic-scene={7}
       data-scene-scroll
       aria-labelledby="scene-six-title"
       className="journey-horizon portfolio-scene relative h-full overflow-y-auto overflow-x-hidden overscroll-contain"

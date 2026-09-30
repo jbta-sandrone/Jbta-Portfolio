@@ -1,0 +1,330 @@
+/* Opt-in foundation for the professional sections introduced in later phases.
+   Keep the current scene theme intact until each section adopts this scope. */
+.professional-theme {
+  --portfolio-bg: #f8f8f5;
+  --portfolio-surface: #ffffff;
+  --portfolio-surface-muted: #f1f3f5;
+  --portfolio-text: #15191f;
+  --portfolio-text-secondary: #46515d;
+  --portfolio-text-muted: #606d7a;
+  --portfolio-line: #dce2e7;
+  --portfolio-line-strong: #b6c1ca;
+  --portfolio-accent: #2458c6;
+  --portfolio-accent-soft: #e8eefc;
+  --portfolio-focus: #174bb5;
+
+  --portfolio-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --portfolio-font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --portfolio-type-display: clamp(3rem, 7.5vw, 6.75rem);
+  --portfolio-type-heading: clamp(2.125rem, 4.5vw, 4.25rem);
+  --portfolio-type-body: clamp(1rem, 0.97rem + 0.15vw, 1.125rem);
+  --portfolio-type-label: 0.75rem;
+
+  --portfolio-content-width: 72rem;
+  --portfolio-wide-width: 88rem;
+  --portfolio-gutter: clamp(1rem, 4vw, 3rem);
+  --portfolio-section-space: clamp(4rem, 8vw, 8rem);
+  --portfolio-content-gap: clamp(1.5rem, 3vw, 3rem);
+  --portfolio-small-gap: 0.75rem;
+  --portfolio-grid-step: 4rem;
+  --portfolio-radius: 0.5rem;
+
+  --portfolio-motion-fast: 160ms;
+  --portfolio-motion-standard: 320ms;
+  --portfolio-motion-entrance: 460ms;
+  --portfolio-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  color: var(--portfolio-text);
+  background-color: var(--portfolio-bg);
+  font-family: var(--portfolio-font-sans);
+  font-size: var(--portfolio-type-body);
+  line-height: 1.6;
+}
+
+.professional-theme,
+.professional-theme *,
+.professional-theme *::before,
+.professional-theme *::after {
+  box-sizing: border-box;
+}
+
+.professional-theme .professional-container {
+  width: 100%;
+  max-width: var(--portfolio-content-width);
+  margin-inline: auto;
+  padding-left: max(var(--portfolio-gutter), calc(env(safe-area-inset-left) + 1rem));
+  padding-right: max(var(--portfolio-gutter), calc(env(safe-area-inset-right) + 1rem));
+}
+
+.professional-theme .professional-container--wide {
+  max-width: var(--portfolio-wide-width);
+}
+
+.professional-theme .professional-section {
+  padding-block: var(--portfolio-section-space);
+}
+
+.professional-theme .professional-stack {
+  display: grid;
+  gap: var(--portfolio-content-gap);
+}
+
+.professional-theme .professional-split {
+  display: grid;
+  gap: var(--portfolio-content-gap);
+  align-items: start;
+  min-width: 0;
+}
+
+.professional-theme .professional-display,
+.professional-theme .professional-heading {
+  margin: 0;
+  color: var(--portfolio-text);
+  font-family: var(--portfolio-font-sans);
+  font-weight: 650;
+  letter-spacing: -0.055em;
+  text-wrap: balance;
+}
+
+.professional-theme .professional-display {
+  max-width: 14ch;
+  font-size: var(--portfolio-type-display);
+  line-height: 1.04;
+}
+
+.professional-theme .professional-heading {
+  max-width: 18ch;
+  font-size: var(--portfolio-type-heading);
+  line-height: 1.1;
+}
+
+.professional-theme .professional-body {
+  max-width: 66ch;
+  color: var(--portfolio-text-secondary);
+  font-size: var(--portfolio-type-body);
+  line-height: 1.65;
+}
+
+.professional-theme .professional-label,
+.professional-theme .professional-mono {
+  font-size: var(--portfolio-type-label);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+}
+
+.professional-theme .professional-label {
+  color: var(--portfolio-text-muted);
+  text-transform: uppercase;
+}
+
+.professional-theme .professional-mono {
+  font-family: var(--portfolio-font-mono);
+  letter-spacing: 0.02em;
+}
+
+.professional-theme .professional-grid {
+  background-color: var(--portfolio-bg);
+  background-image:
+    linear-gradient(to right, rgb(91 110 130 / 7%) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(91 110 130 / 7%) 1px, transparent 1px);
+  background-size: var(--portfolio-grid-step) var(--portfolio-grid-step);
+}
+
+.professional-theme .professional-grid--fade {
+  background-image:
+    linear-gradient(to bottom, var(--portfolio-bg), transparent 22% 78%, var(--portfolio-bg)),
+    linear-gradient(to right, rgb(91 110 130 / 7%) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(91 110 130 / 7%) 1px, transparent 1px);
+  background-size: 100% 100%, var(--portfolio-grid-step) var(--portfolio-grid-step), var(--portfolio-grid-step) var(--portfolio-grid-step);
+}
+
+.professional-theme .professional-panel,
+.professional-theme .professional-card,
+.professional-theme .professional-media-frame {
+  min-width: 0;
+  border: 1px solid var(--portfolio-line);
+  border-radius: var(--portfolio-radius);
+  background-color: var(--portfolio-surface);
+}
+
+.professional-theme .professional-panel,
+.professional-theme .professional-card {
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+}
+
+.professional-theme .professional-panel--featured {
+  border-color: var(--portfolio-line-strong);
+  box-shadow: 0 12px 30px rgb(23 35 50 / 5%);
+}
+
+.professional-theme .professional-info-block {
+  padding: 1rem 1.25rem;
+  border-left: 2px solid var(--portfolio-accent);
+  background-color: var(--portfolio-surface-muted);
+}
+
+.professional-theme .professional-media-frame {
+  overflow: hidden;
+  background-color: var(--portfolio-surface-muted);
+}
+
+.professional-theme .professional-media-frame > :is(img, video) {
+  display: block;
+  max-width: 100%;
+}
+
+.professional-theme .professional-rule {
+  width: 100%;
+  height: 1px;
+  background-color: var(--portfolio-line);
+  transform-origin: left center;
+}
+
+.professional-theme .professional-diagram-node {
+  display: inline-block;
+  width: 0.5rem;
+  aspect-ratio: 1;
+  border: 1px solid var(--portfolio-accent);
+  border-radius: 50%;
+  background-color: var(--portfolio-bg);
+}
+
+.professional-theme :is(.professional-button, .professional-icon-button) {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  border: 1px solid transparent;
+  border-radius: 0.375rem;
+  padding: 0.75rem 1.125rem;
+  font: 600 0.875rem/1.25 var(--portfolio-font-sans);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--portfolio-motion-fast) ease,
+    border-color var(--portfolio-motion-fast) ease,
+    color var(--portfolio-motion-fast) ease,
+    transform var(--portfolio-motion-fast) var(--portfolio-ease);
+}
+
+.professional-theme .professional-button--primary {
+  background-color: var(--portfolio-accent);
+  color: #ffffff;
+}
+
+.professional-theme .professional-button--secondary,
+.professional-theme .professional-icon-button {
+  border-color: var(--portfolio-line-strong);
+  background-color: var(--portfolio-surface);
+  color: var(--portfolio-text);
+}
+
+.professional-theme .professional-icon-button {
+  width: 44px;
+  flex: 0 0 44px;
+  padding: 0;
+}
+
+.professional-theme .professional-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid currentColor;
+  color: var(--portfolio-accent);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color var(--portfolio-motion-fast) ease;
+}
+
+.professional-theme .professional-icon {
+  display: inline-grid;
+  width: 1.125rem;
+  height: 1.125rem;
+  flex: 0 0 auto;
+  place-items: center;
+}
+
+.professional-theme .professional-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke-width: 1.75;
+}
+
+.professional-theme :is(.professional-button, .professional-icon-button, .professional-link, input, textarea, select):focus-visible {
+  outline: 3px solid var(--portfolio-focus);
+  outline-offset: 3px;
+}
+
+.professional-theme :is(.professional-button, .professional-icon-button):is(:disabled, [aria-disabled="true"]) {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.professional-theme .professional-enter {
+  animation: professional-enter var(--portfolio-motion-entrance) var(--portfolio-ease) both;
+}
+
+.professional-theme .professional-rule--reveal {
+  animation: professional-line-reveal var(--portfolio-motion-standard) var(--portfolio-ease) both;
+}
+
+@keyframes professional-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes professional-line-reveal {
+  from { opacity: 0; transform: scaleX(0); }
+  to { opacity: 1; transform: scaleX(1); }
+}
+
+@media (hover: hover) {
+  .professional-theme :is(.professional-button, .professional-icon-button):hover:not(:disabled) {
+    transform: translateY(-2px);
+  }
+
+  .professional-theme .professional-button--primary:hover:not(:disabled) {
+    background-color: #194bad;
+  }
+
+  .professional-theme :is(.professional-button--secondary, .professional-icon-button):hover:not(:disabled) {
+    border-color: var(--portfolio-accent);
+    color: var(--portfolio-accent);
+  }
+
+  .professional-theme .professional-link:hover {
+    color: #143f96;
+  }
+}
+
+.professional-theme :is(.professional-button, .professional-icon-button):active:not(:disabled) {
+  transform: translateY(0);
+}
+
+@media (min-width: 768px) {
+  .professional-theme .professional-split {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 639.98px) {
+  .professional-theme {
+    --portfolio-grid-step: 3rem;
+    --portfolio-gutter: 1rem;
+    --portfolio-section-space: clamp(3.5rem, 12vw, 5rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .professional-theme .professional-enter,
+  .professional-theme .professional-rule--reveal {
+    animation: none;
+  }
+
+  .professional-theme :is(.professional-button, .professional-icon-button, .professional-link) {
+    transition-duration: 0.01ms;
+  }
+}
