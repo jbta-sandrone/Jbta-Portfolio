@@ -212,7 +212,7 @@ export const techGroups: readonly TechGroup[] = [
         brandColor: "#00e9a3",
         orbit: { radius: 40, angleOffset: -4, duration: 25 },
         description:
-          "Upstash serves as the cloud database, securely storing memories, folders, user information, and AI Search quota usage while providing fast, scalable data access.",
+          "Upstash Redis supports Nelume's AI request allowance by storing privacy-conscious usage keys for rate limiting.",
         projects: ["Nelume"],
       },
     ],

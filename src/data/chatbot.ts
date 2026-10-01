@@ -33,10 +33,10 @@ export const chatbotSuggestionGroups: readonly ChatbotSuggestionGroup[] = [
   },
   {
     id: "services",
-    label: "Quest Board",
+    label: "Services",
     questions: [
       "What can Jonel build?",
-      "Explore the Quest Board",
+      "What services does Jonel offer?",
       "Can Jonel integrate AI?",
       "Tell me about his full-stack skills",
       "How can I work with Jonel?",
@@ -68,7 +68,7 @@ export const chatbotRules: readonly ChatbotRule[] = [
     keywords: ["hello", "hi", "hey"],
     patterns: [/^(hi|hello|hey|good (morning|afternoon|evening))[!.?\s]*$/i],
     answer:
-      "Hi! JBTA Assistant can share information about Jonel’s background, skills, projects, career direction, availability, and portfolio contact options.",
+      "Hi! NELI can share information about Jonel’s background, skills, projects, career direction, availability, and portfolio contact options.",
   },
   {
     id: "capabilities",
@@ -79,7 +79,7 @@ export const chatbotRules: readonly ChatbotRule[] = [
       /what do you know/i,
     ],
     answer:
-      "JBTA Assistant can answer questions about Jonel's background, education, development skills, projects, career direction, software services on the Quest Board, and portfolio contact options.",
+      "NELI can answer questions about Jonel's background, education, development skills, projects, career direction, services, and portfolio contact options.",
   },
   {
     id: "quest-board-overview",
@@ -99,7 +99,7 @@ export const chatbotRules: readonly ChatbotRule[] = [
       /software (services|work) (does|can) (jonel|he)/i,
     ],
     answer:
-      "According to the Adventurer's Guild Quest Board, Jonel's main software quests include full-stack web development, frontend development, backend and API development, practical AI feature integration, database and authentication systems, and deployment and optimization. His portfolio projects demonstrate hands-on experience across these areas. You can explore the complete registry in Scene Four — Quest Board.",
+      "Jonel's Services section covers full-stack web development, frontend development, backend and API development, practical AI feature integration, database and authentication systems, and deployment and optimization. His portfolio projects demonstrate hands-on experience across these areas.",
   },
   {
     id: "quest-full-stack",
@@ -174,7 +174,7 @@ export const chatbotRules: readonly ChatbotRule[] = [
       /is (jonel|he) open to (new )?(opportunities|projects|collaboration)/i,
     ],
     answer:
-      "The Quest Board highlights the kinds of opportunities Jonel is interested in discussing: full-stack applications, polished interfaces, backend and API work, practical AI features, database and authentication systems, and deployment or project improvements. For current availability or a specific project, the best next step is to visit the Connections scene and contact him directly.",
+      "The Services section shows the kinds of work Jonel can build or contribute to: full-stack applications, polished interfaces, backend and API work, practical AI features, database and authentication systems, and deployment or project improvements. For current availability or a specific project, visit the Contact section.",
   },
   {
     id: "i-nelory",
@@ -195,7 +195,7 @@ export const chatbotRules: readonly ChatbotRule[] = [
     keywords: ["nelume", "resume viewer", "resume analysis"],
     patterns: [/\bnelume\b/i, /ai (resume|résumé) viewer/i],
     answer:
-      "Nelume is Jonel’s AI Resume Viewer. It extracts résumé content, presents it in a structured interface, and uses Google Gemini for intelligent evaluation and insights. It is built with React, TypeScript, Vite, FastAPI, Python, Google Gemini, pdfplumber, Vercel, and Render.",
+      "Nelume is Jonel's AI-powered career platform for résumé analysis and rewriting, cover letters, interview preparation, and learning resources. It uses React, TypeScript, FastAPI, Python, Google Gemini, and Upstash Redis for AI usage enforcement.",
   },
   {
     id: "availability",
@@ -206,42 +206,42 @@ export const chatbotRules: readonly ChatbotRule[] = [
       /(hire|collaborate with) (jonel|him)/i,
     ],
     answer:
-      "The Quest Board represents the kinds of opportunities Jonel is interested in discussing. For current availability, collaboration, or a specific project, the best next step is to visit the Connections scene and contact him directly.",
+      "The Services section describes the work Jonel can build or contribute to. For current availability, collaboration, or a specific project, visit the Contact section and reach out directly.",
   },
   {
     id: "email",
     keywords: ["email", "mail"],
     patterns: [/e-?mail/i, /send (jonel|him) a message/i],
     answer:
-      "Jonel’s Connections scene includes an email option, but its current destination is a placeholder and is not a verified address yet.",
+      "You can email Jonel at ablogjonelbryan@gmail.com from the Contact section. If your device has no email app configured, you can copy the address there instead.",
   },
   {
     id: "github",
     keywords: ["github", "source code", "repositories"],
     patterns: [/git\s?hub/i, /source code/i, /repositories?/i],
     answer:
-      "Jonel’s Connections scene includes a GitHub option for his code and projects, but the current profile URL is still a placeholder and should not be treated as a verified link.",
+      "Jonel’s portfolio links to his GitHub profile at https://github.com/jbta-sandrone, where you can explore his code and projects.",
   },
   {
     id: "linkedin",
     keywords: ["linkedin", "professional profile"],
     patterns: [/linked\s?in/i, /professional profile/i],
     answer:
-      "Jonel’s Connections scene includes LinkedIn for professional networking, but the current profile URL is still a placeholder and is not verified yet.",
+      "Jonel’s portfolio links to his LinkedIn profile at https://www.linkedin.com/in/jbtablog for professional networking.",
   },
   {
     id: "facebook",
     keywords: ["facebook", "social profile"],
     patterns: [/face\s?book/i, /social profile/i],
     answer:
-      "Jonel’s Connections scene includes a Facebook option, but its current profile URL is still a placeholder and is not verified yet.",
+      "Jonel’s portfolio links to his Facebook profile at https://www.facebook.com/ablogjonel.21/.",
   },
   {
     id: "resume",
     keywords: ["resume", "résumé", "cv"],
     patterns: [/\b(resume|résumé|cv)\b/i],
     answer:
-      "You can view or download Jonel's latest professional resume from the Connections section of this portfolio. It includes his technical skills, featured projects, education, and contact information, giving you a complete overview of his background and experience.",
+      "You can view or download Jonel's professional résumé from the Contact section of this portfolio. It includes his technical skills, featured projects, education, and contact information.",
   },
   {
     id: "contact",
@@ -252,7 +252,7 @@ export const chatbotRules: readonly ChatbotRule[] = [
       /get in touch/i,
     ],
     answer:
-      "You can contact Jonel through the Connections section of this portfolio, where you'll find his email, LinkedIn, GitHub, and Facebook. Whether you're reaching out for a job opportunity, collaboration, freelance project, or simply want to connect, feel free to use whichever platform is most convenient for you.",
+      "You can contact Jonel through the Contact section of this portfolio, where you'll find his email, LinkedIn, GitHub, and Facebook. Whether you're reaching out for a job opportunity, collaboration, freelance project, or simply want to connect, feel free to use whichever platform is most convenient for you.",
   },
   {
     id: "education",
@@ -321,7 +321,7 @@ export const chatbotRules: readonly ChatbotRule[] = [
     keywords: ["database", "postgresql", "postgres", "prisma", "firebase", "upstash"],
     patterns: [/databases?/i, /\b(postgresql|postgres|prisma|firebase|upstash)\b/i],
     answer:
-      "Jonel's database experience includes PostgreSQL, Prisma, Firebase, and Upstash. His projects demonstrate relational data modeling, realtime application data, serverless cloud storage, user accounts, and authentication-connected workflows.",
+      "Jonel's data experience includes PostgreSQL, Prisma, Firebase, and Upstash Redis. His projects demonstrate relational data modeling, realtime application data, authentication-connected workflows, and AI usage enforcement.",
   },
   {
     id: "ai-integration",
@@ -343,7 +343,7 @@ export const chatbotRules: readonly ChatbotRule[] = [
       /portfolio (site|website|project)/i,
     ],
     answer:
-      "Jonel’s portfolio is a pixelated game, scene-based React experience built around one pixel visual world. It uses React, TypeScript, Tailwind CSS, and Motion for responsive interfaces, scene transitions, and interactive project storytelling.",
+      "Jonel's portfolio is a seven-scene software engineering showcase built with React, TypeScript, Tailwind CSS, and Motion. It presents his projects, services, technology, and contact options through a responsive editorial interface.",
   },
   {
     id: "deployment",
@@ -365,7 +365,7 @@ export const chatbotRules: readonly ChatbotRule[] = [
       /featured work/i,
     ],
     answer:
-      "Jonel’s featured projects are I-Nelory, a personal memory journal; CLIQ, a café mobile-ordering system; and Nelume, an AI résumé viewer. This pixelated portfolio is also part of his interface and motion work.",
+      "Jonel's featured projects are I-Nelory, a personal memory journal; IntelliCLIQ, an AI-powered café ordering application; and Nelume, an AI-powered career platform. This portfolio also demonstrates his interface and motion work.",
   },
   {
     id: "journey",
@@ -400,7 +400,7 @@ export const chatbotRules: readonly ChatbotRule[] = [
       /(jonel'?s|his) (skills|tech stack|technologies)/i,
     ],
     answer:
-      "Jonel works with HTML, CSS, JavaScript, React, TypeScript, Tailwind CSS, Motion, Node.js, Express, Python, FastAPI, REST APIs, PostgreSQL, Prisma, Firebase, Google Gemini, GitHub, Vercel, and Render.",
+      "Jonel works with HTML, CSS, JavaScript, React, TypeScript, Tailwind CSS, Motion, Node.js, Express, Python, FastAPI, REST APIs, PostgreSQL, Prisma, Firebase, Upstash Redis, Google Gemini, GitHub, Vercel, and Render.",
   },
 ] as const;
 

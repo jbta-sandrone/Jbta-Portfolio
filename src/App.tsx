@@ -27,13 +27,13 @@ import SignalObservatory from "./scenes/SignalObservatory";
 import JourneysHorizon from "./scenes/JourneysHorizon";
 
 const SCENES = [
-  { id: "arrival", label: "Arrival", Component: Arrival },
-  { id: "behind-the-work", label: "Behind the Work", Component: BehindTheWork },
-  { id: "featured-work", label: "Featured Work", Component: HallOfCreations },
-  { id: "quest-board", label: "Quest Board", Component: QuestBoard },
-  { id: "craft", label: "Crafts", Component: ArcaneFoundry },
-  { id: "connect", label: "Connections", Component: SignalObservatory },
-  { id: "ending", label: "Journey's Horizon", Component: JourneysHorizon },
+  { id: "arrival", label: "Introduction", Component: Arrival },
+  { id: "behind-the-work", label: "About", Component: BehindTheWork },
+  { id: "featured-work", label: "Selected Work", Component: HallOfCreations },
+  { id: "quest-board", label: "Services", Component: QuestBoard },
+  { id: "craft", label: "Technology", Component: ArcaneFoundry },
+  { id: "connect", label: "Contact", Component: SignalObservatory },
+  { id: "ending", label: "Closing", Component: JourneysHorizon },
 ] as const;
 
 type HistoryMode = "push" | "none";
@@ -77,6 +77,7 @@ function App() {
   const activeSceneRef = useRef(activeScene);
   const transitionLockedRef = useRef(false);
   const pendingHistorySceneRef = useRef<number | null>(null);
+  const focusNewSceneRef = useRef(false);
   const wheelDeltaRef = useRef(0);
   const wheelResetTimerRef = useRef<number | null>(null);
   const touchStartRef = useRef<TouchStart | null>(null);
@@ -86,6 +87,13 @@ function App() {
     const currentScene = activeSceneRef.current;
     if (boundedScene === currentScene) return;
 
+    // Keyboard and history navigation need an announced destination; pointer
+    // navigation keeps its current focus to avoid unexpected focus stealing.
+    focusNewSceneRef.current =
+      focusNewSceneRef.current ||
+      historyMode === "none" ||
+      (document.activeElement instanceof HTMLElement &&
+        document.activeElement.matches(":focus-visible"));
     transitionLockedRef.current = true;
     setIsTransitioning(true);
     setDirection(boundedScene > currentScene ? 1 : -1);
@@ -133,6 +141,19 @@ function App() {
 
       if (pendingScene !== null && pendingScene !== activeSceneRef.current) {
         commitScene(pendingScene, "none");
+        return;
+      }
+
+      if (focusNewSceneRef.current) {
+        focusNewSceneRef.current = false;
+        window.requestAnimationFrame(() => {
+          const heading = document.querySelector<HTMLElement>(
+            `#${SCENES[renderedScene].id} h1`,
+          );
+          if (!heading) return;
+          heading.tabIndex = -1;
+          heading.focus({ preventScroll: true });
+        });
       }
     },
     [commitScene],
@@ -217,6 +238,9 @@ function App() {
           });
           return;
         }
+        if (!transitionLockedRef.current && activeSceneRef.current < SCENES.length - 1) {
+          focusNewSceneRef.current = true;
+        }
         moveBy(1);
       } else if (event.key === "ArrowUp" || event.key === "PageUp") {
         event.preventDefault();
@@ -229,6 +253,9 @@ function App() {
             behavior: prefersReducedMotion ? "auto" : "smooth",
           });
           return;
+        }
+        if (!transitionLockedRef.current && activeSceneRef.current > 0) {
+          focusNewSceneRef.current = true;
         }
         moveBy(-1);
       }

@@ -266,13 +266,13 @@ export default function FloatingAIButton() {
         type="button"
         aria-label={
           panelOpen
-            ? "Close Neli, Pixel Oracle Companion"
-            : "Open Neli, Pixel Oracle Companion"
+            ? "Close Neli, portfolio assistant"
+            : "Open Neli, portfolio assistant"
         }
         aria-expanded={panelOpen}
         aria-controls="jbta-assistant-panel"
         aria-haspopup="dialog"
-        data-cursor-label={panelOpen ? "Close Chat" : "Ask JBTA"}
+        data-cursor-label={panelOpen ? "Close assistant" : "Ask Neli"}
         onClick={togglePanel}
         whileHover={
           reducedMotion
@@ -355,7 +355,8 @@ export default function FloatingAIButton() {
             <header className="neli-header flex shrink-0 items-center gap-3 px-4 py-3">
               <img
                 src={chatbotAvatar}
-                alt="Neli, Pixel Oracle Companion"
+                alt=""
+                aria-hidden="true"
                 className="neli-header-portrait size-10 object-cover"
               />
               <div className="min-w-0 flex-1">
@@ -366,13 +367,13 @@ export default function FloatingAIButton() {
                   NELI
                 </h2>
                 <p className="neli-subtitle mt-0.5">
-                  Pixel Oracle Companion
+                  Portfolio Assistant
                 </p>
               </div>
               <span aria-hidden="true" className="neli-minimize-mark" />
               <button
                 type="button"
-                aria-label="Close Neli, Pixel Oracle Companion"
+                aria-label="Close Neli, portfolio assistant"
                 data-cursor-label="Close"
                 onClick={() => closePanel()}
                 className="neli-titlebar-button portfolio-focus flex size-9 shrink-0 items-center justify-center"
@@ -386,7 +387,7 @@ export default function FloatingAIButton() {
               role="log"
               aria-live="polite"
               aria-relevant="additions"
-              aria-label="Conversation with Neli, Pixel Oracle Companion"
+              aria-label="Conversation with Neli, portfolio assistant"
               className="neli-message-scroll min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-3.5 py-4"
             >
               {messages.map((message) => (
@@ -420,7 +421,7 @@ export default function FloatingAIButton() {
                 >
                   <PixelGlyph type="spark" />
                   <span className="hidden min-[350px]:inline">
-                    Guild prompts
+                    Suggested questions
                   </span>
                 </button>
 

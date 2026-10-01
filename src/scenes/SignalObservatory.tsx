@@ -1,23 +1,6 @@
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type CSSProperties,
-  type FocusEvent as ReactFocusEvent,
-  type RefObject,
-} from "react";
+import { useEffect, useRef, useState } from "react";
 import type { LucideIcon } from "lucide-react";
-import { ArrowUpRight, Check, Copy, FileText, Mail } from "lucide-react";
-import {
-  AnimatePresence,
-  motion,
-  useReducedMotion,
-  useScroll,
-  useTransform,
-  type MotionValue,
-  type Variants,
-} from "motion/react";
+import { ArrowRight, ArrowUpRight, Check, Copy, FileText, Mail } from "lucide-react";
 import type { IconType } from "react-icons";
 import { FaFacebookF, FaGithub, FaLinkedinIn } from "react-icons/fa";
 import { useSceneNavigation } from "../components/SceneNavigationContext";
@@ -133,112 +116,36 @@ const connectionItems: readonly ConnectionItem[] = [
   },
 ] as const;
 
-const observatoryEase = [0.22, 1, 0.36, 1] as const;
-const AUTO_CYCLE_MS = 5200;
+const primaryEmail = connectionItems.find((item) => item.type === "email")!;
+const secondaryConnections = connectionItems.filter((item) => item.type !== "email");
 
-const stars = Array.from({ length: 28 }, (_, index) => ({
-  left: `${3 + ((index * 37) % 94)}%`,
-  top: `${4 + ((index * 23) % 58)}%`,
-  size: index % 7 === 0 ? 5 : index % 3 === 0 ? 3 : 2,
-  delay: `${(index % 9) * -0.7}s`,
-  duration: `${4.8 + (index % 5) * 0.8}s`,
-}));
+function copyWithSelection(value: string) {
+  const previousFocus = document.activeElement;
+  const field = document.createElement("textarea");
+  field.value = value;
+  field.readOnly = true;
+  field.style.position = "fixed";
+  field.style.opacity = "0";
+  field.style.pointerEvents = "none";
+  document.body.appendChild(field);
 
-const signalMotes = Array.from({ length: 9 }, (_, index) => ({
-  left: `${18 + ((index * 31) % 65)}%`,
-  delay: `${(index % 6) * -1.15}s`,
-  duration: `${7 + (index % 4) * 0.85}s`,
-}));
-
-const revealVariants = (reducedMotion: boolean): Variants => ({
-  hidden: reducedMotion ? { opacity: 0 } : { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: reducedMotion ? 0.15 : 0.68,
-      ease: observatoryEase,
-      staggerChildren: reducedMotion ? 0.02 : 0.08,
-    },
-  },
-});
-
-const childVariants = (reducedMotion: boolean): Variants => ({
-  hidden: reducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: reducedMotion ? 0.12 : 0.46, ease: observatoryEase },
-  },
-});
+  try {
+    field.focus();
+    field.select();
+    return document.execCommand("copy");
+  } finally {
+    field.remove();
+    if (previousFocus instanceof HTMLElement) previousFocus.focus({ preventScroll: true });
+  }
+}
 
 export default function SignalObservatory() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const activeIndexRef = useRef(0);
-  const [activeIndex, setActiveIndex] = useState(0);
   const [copyResult, setCopyResult] = useState<{
     id: string;
     status: CopyStatus;
   } | null>(null);
-  const [interactionPaused, setInteractionPaused] = useState(false);
-  const [sceneVisible, setSceneVisible] = useState(true);
-  const [documentVisible, setDocumentVisible] = useState(true);
   const copyTimerRef = useRef<number | null>(null);
-  const prefersReducedMotion = useReducedMotion();
-  const reducedMotion = prefersReducedMotion !== false;
   const { navigateToScene, isTransitioning } = useSceneNavigation();
-  const { scrollYProgress } = useScroll({ container: sectionRef });
-  const skyY = useTransform(scrollYProgress, [0, 1], [0, -38]);
-  const mountainY = useTransform(scrollYProgress, [0, 1], [0, -72]);
-  const platformY = useTransform(scrollYProgress, [0, 1], [0, -108]);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => setSceneVisible(Boolean(entry?.isIntersecting)),
-      { threshold: [0, 0.2] },
-    );
-
-    observer.observe(section);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    const syncVisibility = () => {
-      const visible = document.visibilityState === "visible";
-      setDocumentVisible(visible);
-      section?.classList.toggle("observatory-animation-paused", !visible);
-    };
-
-    syncVisibility();
-    document.addEventListener("visibilitychange", syncVisibility);
-    return () => document.removeEventListener("visibilitychange", syncVisibility);
-  }, []);
-
-  useEffect(() => {
-    if (
-      reducedMotion ||
-      interactionPaused ||
-      !sceneVisible ||
-      !documentVisible
-    ) {
-      return;
-    }
-
-    const cycleTimer = window.setInterval(() => {
-      setActiveIndex((current) => {
-        const next = (current + 1) % connectionItems.length;
-        activeIndexRef.current = next;
-        return next;
-      });
-      setCopyResult(null);
-    }, AUTO_CYCLE_MS);
-
-    return () => window.clearInterval(cycleTimer);
-  }, [documentVisible, interactionPaused, reducedMotion, sceneVisible]);
 
   useEffect(
     () => () => {
@@ -247,19 +154,20 @@ export default function SignalObservatory() {
     [],
   );
 
-  const selectConnection = useCallback((index: number) => {
-    activeIndexRef.current = index;
-    setActiveIndex(index);
-    setCopyResult(null);
-  }, []);
-
   const copyConnectionValue = async (item: ConnectionItem) => {
     if (!item.copyValue) return;
     if (copyTimerRef.current !== null) window.clearTimeout(copyTimerRef.current);
 
     try {
-      if (!navigator.clipboard) throw new Error("Clipboard unavailable");
-      await navigator.clipboard.writeText(item.copyValue);
+      if (navigator.clipboard?.writeText) {
+        try {
+          await navigator.clipboard.writeText(item.copyValue);
+        } catch {
+          if (!copyWithSelection(item.copyValue)) throw new Error("Copy unavailable");
+        }
+      } else if (!copyWithSelection(item.copyValue)) {
+        throw new Error("Copy unavailable");
+      }
       setCopyResult({ id: item.id, status: "copied" });
     } catch {
       setCopyResult({ id: item.id, status: "failed" });
@@ -268,648 +176,217 @@ export default function SignalObservatory() {
     copyTimerRef.current = window.setTimeout(() => setCopyResult(null), 1800);
   };
 
-  const handleInteractionBlur = (event: ReactFocusEvent<HTMLElement>) => {
-    if (
-      event.relatedTarget instanceof Node &&
-      event.currentTarget.contains(event.relatedTarget)
-    ) {
-      return;
-    }
-    setInteractionPaused(false);
-  };
-
-  const activeItem = connectionItems[activeIndex];
+  const emailCopyStatus =
+    copyResult?.id === primaryEmail.id ? copyResult.status : null;
 
   return (
     <section
-      ref={sectionRef}
+      className="connection-endpoint professional-theme portfolio-scene relative h-full overflow-hidden"
       data-cinematic-scene={6}
-      data-scene-scroll
-      aria-labelledby="scene-five-title"
-      className="celestial-observatory portfolio-scene relative h-full overflow-y-auto overflow-x-hidden overscroll-contain"
+      aria-labelledby="connect-title"
+      onKeyDown={(event) => {
+        if (
+          event.target instanceof HTMLElement &&
+          event.target.closest("button, a") &&
+          ["ArrowUp", "ArrowDown", "PageUp", "PageDown"].includes(event.key)
+        ) {
+          event.stopPropagation();
+        }
+      }}
     >
-      <ObservatoryEnvironment
-        reducedMotion={reducedMotion}
-        skyY={skyY}
-        mountainY={mountainY}
-        platformY={platformY}
-      />
+      <div className="connection-endpoint__scroll" data-scene-scroll>
+        <div className="connection-endpoint__layout professional-container professional-container--wide">
+          <header className="connection-endpoint__intro">
+            <div>
+              <p className="connection-endpoint__marker professional-label">
+                <span>06 / CONTACT</span>
+                <span aria-hidden="true" />
+                LET'S CONNECT
+              </p>
+              <h1 id="connect-title" className="connection-endpoint__heading professional-heading">
+                Let's build
+                <span> something useful.</span>
+              </h1>
+            </div>
+            <div className="connection-endpoint__intro-aside">
+              <p className="professional-body">
+                If you’d like to discuss software work, AI features, or a
+                project, email me directly or use one of the routes below.
+              </p>
+              <p className="connection-endpoint__route-count professional-mono">
+                {String(connectionItems.length).padStart(2, "0")} EXISTING DESTINATIONS
+              </p>
+            </div>
+          </header>
 
-      <main className="observatory-content relative z-10">
-        <ObservatoryEntrance reducedMotion={reducedMotion} />
-
-        <section
-          className="observatory-signal-section"
-          aria-labelledby="communication-channel-title"
-        >
-          <motion.div
-            className="observatory-beacon-column"
-            variants={revealVariants(reducedMotion)}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ root: sectionRef, amount: 0.3, once: false }}
+          <section
+            className="connection-endpoint__primary"
+            aria-labelledby="primary-email-title"
           >
-            <motion.div variants={childVariants(reducedMotion)}>
-              <SignalBeacon activeItem={activeItem} />
-            </motion.div>
-            <motion.div variants={childVariants(reducedMotion)} className="beacon-copy">
-              <p>Central signal beacon</p>
-              <h2>Messages begin their journey here.</h2>
-              <span>
-                The observatory routes each open channel toward the horizon.
+            <div className="connection-endpoint__primary-heading">
+              <p className="professional-mono">01 / PRIMARY CHANNEL</p>
+              <h2 id="primary-email-title">Email</h2>
+              <p>{primaryEmail.description}</p>
+            </div>
+            <div className="connection-endpoint__email-route">
+              <span className="connection-endpoint__route-kicker professional-label">
+                DIRECT / EMAIL
               </span>
-            </motion.div>
-          </motion.div>
+              <p className="connection-endpoint__email-value">{primaryEmail.value}</p>
+              <div className="connection-endpoint__email-actions">
+                <a
+                  className="professional-button professional-button--primary"
+                  href={primaryEmail.href}
+                  data-cursor-label="Send Email"
+                >
+                  Send Email <ArrowUpRight size={17} aria-hidden="true" />
+                </a>
+                <button
+                  type="button"
+                  className="professional-button professional-button--secondary"
+                  onClick={() => copyConnectionValue(primaryEmail)}
+                  data-cursor-label="Copy Email"
+                >
+                  {emailCopyStatus === "copied" ? (
+                    <Check size={17} aria-hidden="true" />
+                  ) : (
+                    <Copy size={17} aria-hidden="true" />
+                  )}
+                  {emailCopyStatus === "copied"
+                    ? "Copied"
+                    : emailCopyStatus === "failed"
+                      ? "Copy unavailable"
+                      : "Copy Email"}
+                </button>
+              </div>
+              <p
+                className="connection-endpoint__feedback"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+              >
+                {emailCopyStatus === "copied"
+                  ? "Email copied."
+                  : emailCopyStatus === "failed"
+                    ? "Copying is unavailable. Use Send Email instead."
+                    : ""}
+              </p>
+            </div>
+          </section>
 
-          <motion.div
-            variants={revealVariants(reducedMotion)}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ root: sectionRef, amount: 0.28, once: false }}
-            onPointerEnter={(event) => {
-              if (event.pointerType === "mouse") setInteractionPaused(true);
-            }}
-            onPointerLeave={(event) => {
-              if (event.pointerType === "mouse") setInteractionPaused(false);
-            }}
-            onFocusCapture={() => setInteractionPaused(true)}
-            onBlurCapture={handleInteractionBlur}
+          <section
+            className="connection-endpoint__directory"
+            aria-labelledby="connection-directory-title"
           >
-            <CommunicationChannel
-              item={activeItem}
-              copyResult={copyResult}
-              reducedMotion={reducedMotion}
-              onCopy={copyConnectionValue}
-            />
-          </motion.div>
-        </section>
+            <header className="connection-endpoint__directory-heading">
+              <div>
+                <p className="professional-mono">02 / DIRECTORY</p>
+                <h2 id="connection-directory-title">Profiles and résumé</h2>
+              </div>
+              <span className="professional-mono" aria-hidden="true">
+                {String(secondaryConnections.length).padStart(2, "0")} ROUTES
+              </span>
+            </header>
+            <ul className="connection-endpoint__routes">
+              {secondaryConnections.map((item) => (
+                <ConnectionRoute
+                  key={item.id}
+                  item={item}
+                  copyStatus={copyResult?.id === item.id ? copyResult.status : null}
+                  onCopy={() => copyConnectionValue(item)}
+                />
+              ))}
+            </ul>
+          </section>
 
-        <ConnectionStations
-          activeIndex={activeIndex}
-          reducedMotion={reducedMotion}
-          scrollRoot={sectionRef}
-          onSelect={selectConnection}
-          onPauseChange={setInteractionPaused}
-        />
-
-        <ObservatoryFinale
-          disabled={isTransitioning}
-          onContinue={() => navigateToScene(6)}
-        />
-      </main>
-
-      <ConnectionProgress activeIndex={activeIndex} />
+          <footer className="connection-endpoint__next">
+            <div>
+              <p className="professional-label">07 / NEXT</p>
+              <h2>Continue through the portfolio.</h2>
+            </div>
+            <button
+              type="button"
+              className="connection-endpoint__continue"
+              disabled={isTransitioning}
+              onClick={() => navigateToScene(6)}
+              data-cursor-label="Continue"
+            >
+              Continue <ArrowRight size={17} aria-hidden="true" />
+            </button>
+          </footer>
+        </div>
+      </div>
     </section>
   );
 }
 
-type EnvironmentProps = {
-  reducedMotion: boolean;
-  skyY: MotionValue<number>;
-  mountainY: MotionValue<number>;
-  platformY: MotionValue<number>;
-};
-
-function ObservatoryEnvironment({
-  reducedMotion,
-  skyY,
-  mountainY,
-  platformY,
-}: EnvironmentProps) {
-  const depthStyle = (y: MotionValue<number>) =>
-    reducedMotion ? undefined : { y };
-
-  return (
-    <div
-      aria-hidden="true"
-      className="observatory-environment pointer-events-none"
-    >
-      <motion.div
-        className="observatory-depth observatory-depth--sky"
-        style={depthStyle(skyY)}
-      >
-        <div className="observatory-night-sky" />
-        {stars.map((star, index) => (
-          <span
-            key={index}
-            className={`observatory-star ${
-              star.size >= 5 ? "observatory-star--large" : ""
-            }`}
-            style={
-              {
-                left: star.left,
-                top: star.top,
-                width: `${star.size}px`,
-                height: `${star.size}px`,
-                animationDelay: star.delay,
-                animationDuration: star.duration,
-              } as CSSProperties
-            }
-          />
-        ))}
-        <PixelConstellation />
-        <span className="observatory-shooting-star" />
-        <div className="observatory-moon"><span /></div>
-      </motion.div>
-
-      <motion.div
-        className="observatory-depth observatory-depth--mountains"
-        style={depthStyle(mountainY)}
-      >
-        <div className="observatory-mountain observatory-mountain--far" />
-        <div className="observatory-village-lights">
-          {Array.from({ length: 9 }, (_, index) => <i key={index} />)}
-        </div>
-        <div className="observatory-cloud observatory-cloud--one" />
-        <div className="observatory-cloud observatory-cloud--two" />
-        <div className="observatory-cloud observatory-cloud--three" />
-        <div className="observatory-mountain observatory-mountain--near" />
-      </motion.div>
-
-      <motion.div
-        className="observatory-depth observatory-depth--platform"
-        style={depthStyle(platformY)}
-      >
-        <div className="observatory-tower">
-          <span className="observatory-dome"><i /><i /></span>
-          <span className="observatory-tower-window"><i /></span>
-          <span className="observatory-tower-door" />
-        </div>
-        <div className="observatory-telescope">
-          <span /><i /><i />
-        </div>
-        <div className="observatory-dish observatory-dish--left">
-          <span /><i />
-        </div>
-        <div className="observatory-dish observatory-dish--right">
-          <span /><i />
-        </div>
-        <div className="observatory-railing observatory-railing--left">
-          {Array.from({ length: 7 }, (_, index) => <i key={index} />)}
-        </div>
-        <div className="observatory-railing observatory-railing--right">
-          {Array.from({ length: 7 }, (_, index) => <i key={index} />)}
-        </div>
-        <div className="observatory-lantern observatory-lantern--left"><span /></div>
-        <div className="observatory-lantern observatory-lantern--right"><span /></div>
-        <div className="observatory-flag observatory-flag--left"><span /></div>
-        <div className="observatory-flag observatory-flag--right"><span /></div>
-        <div className="observatory-cable observatory-cable--one" />
-        <div className="observatory-cable observatory-cable--two" />
-        <div className="observatory-stone-platform" />
-      </motion.div>
-
-      {signalMotes.map((mote, index) => (
-        <span
-          key={index}
-          className={`observatory-signal-mote ${
-            index > 5 ? "observatory-signal-mote--desktop" : ""
-          }`}
-          style={
-            {
-              left: mote.left,
-              animationDelay: mote.delay,
-              animationDuration: mote.duration,
-            } as CSSProperties
-          }
-        />
-      ))}
-      <div className="observatory-readability" />
-    </div>
-  );
-}
-
-function PixelConstellation() {
-  return (
-    <svg
-      className="observatory-constellation"
-      viewBox="0 0 1000 420"
-      preserveAspectRatio="none"
-      shapeRendering="crispEdges"
-    >
-      <g className="constellation-path constellation-path--one">
-        <path d="M80 165 176 92 268 138 358 63 447 119" />
-        <circle cx="80" cy="165" r="4" />
-        <circle cx="176" cy="92" r="5" />
-        <circle cx="268" cy="138" r="3" />
-        <circle cx="358" cy="63" r="5" />
-        <circle cx="447" cy="119" r="4" />
-      </g>
-      <g className="constellation-path constellation-path--two">
-        <path d="M604 91 674 151 754 104 831 185 922 126" />
-        <circle cx="604" cy="91" r="4" />
-        <circle cx="674" cy="151" r="3" />
-        <circle cx="754" cy="104" r="5" />
-        <circle cx="831" cy="185" r="4" />
-        <circle cx="922" cy="126" r="5" />
-      </g>
-      <path
-        className="constellation-signal"
-        d="M80 165 176 92 268 138 358 63 447 119"
-      />
-    </svg>
-  );
-}
-
-function ObservatoryEntrance({ reducedMotion }: { reducedMotion: boolean }) {
-  return (
-    <section className="observatory-entrance" aria-labelledby="scene-five-title">
-      <div aria-hidden="true" className="observatory-elevator">
-        <div className="observatory-elevator__forge" />
-        <span className="observatory-elevator__chain observatory-elevator__chain--left" />
-        <span className="observatory-elevator__chain observatory-elevator__chain--right" />
-        <motion.div
-          className="observatory-elevator__car"
-          initial={reducedMotion ? { opacity: 0.7 } : { y: "42%" }}
-          animate={reducedMotion ? { opacity: 1 } : { y: "0%" }}
-          transition={{
-            duration: reducedMotion ? 0.15 : 1.15,
-            delay: reducedMotion ? 0 : 0.12,
-            ease: observatoryEase,
-          }}
-        >
-          <span /><i /><i />
-        </motion.div>
-        <div className="observatory-elevator__night" />
-        <div className="observatory-elevator__gate" />
-      </div>
-
-      <motion.header
-        className="observatory-chapter-panel"
-        initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 18 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{
-          duration: reducedMotion ? 0.16 : 0.7,
-          delay: reducedMotion ? 0 : 0.55,
-          ease: observatoryEase,
-        }}
-      >
-        <PixelPanelCorners />
-        <p className="observatory-chapter-index">Scene Six</p>
-        <div aria-hidden="true" className="observatory-chapter-rule">
-          <span /><SignalGlyph /><span />
-        </div>
-        <p className="observatory-chapter-kicker">Connections</p>
-        <h1 id="scene-five-title">The Celestial Signal Observatory</h1>
-        <p className="observatory-chapter-copy">
-          Every great journey begins with a connection.
-        </p>
-        <p className="observatory-arrival-prompt">
-          Step onto the observation deck <i aria-hidden="true" />
-        </p>
-      </motion.header>
-    </section>
-  );
-}
-
-function SignalBeacon({ activeItem }: { activeItem: ConnectionItem }) {
-  const Icon = activeItem.icon;
-
-  return (
-    <div
-      className={`signal-beacon signal-beacon--${activeItem.stationKind}`}
-      aria-hidden="true"
-    >
-      <div className="signal-beacon__sky-path signal-beacon__sky-path--left"><i /></div>
-      <div className="signal-beacon__sky-path signal-beacon__sky-path--right"><i /></div>
-      <span className="signal-beacon__ring signal-beacon__ring--outer"><i /></span>
-      <span className="signal-beacon__ring signal-beacon__ring--middle"><i /></span>
-      <span className="signal-beacon__ring signal-beacon__ring--inner"><i /></span>
-      <div className="signal-beacon__crystal">
-        <Icon style={{ color: activeItem.brandColor }} />
-      </div>
-      <div className="signal-beacon__support signal-beacon__support--left" />
-      <div className="signal-beacon__support signal-beacon__support--right" />
-      <div className="signal-beacon__console">
-        <span /><span /><span /><i />
-      </div>
-      <div className="signal-beacon__base">
-        <span /><i /><i />
-      </div>
-    </div>
-  );
-}
-
-function CommunicationChannel({
+function ConnectionRoute({
   item,
-  copyResult,
-  reducedMotion,
+  copyStatus,
   onCopy,
 }: {
   item: ConnectionItem;
-  copyResult: { id: string; status: CopyStatus } | null;
-  reducedMotion: boolean;
-  onCopy: (item: ConnectionItem) => void;
+  copyStatus: CopyStatus | null;
+  onCopy: () => void;
 }) {
   const Icon = item.icon;
-  const itemCopyResult = copyResult?.id === item.id ? copyResult.status : null;
-  const copyLabel =
-    itemCopyResult === "copied"
-      ? "Copied"
-      : itemCopyResult === "failed"
-        ? "Copy unavailable"
-        : item.type === "email"
-          ? "Copy Email"
-          : "Copy Link";
 
   return (
-    <section
-      className="communication-channel"
-      aria-labelledby="communication-channel-title"
-    >
-      <PixelPanelCorners />
-      <header className="communication-channel__header">
-        <div>
-          <p>Open Signal</p>
-          <h2 id="communication-channel-title">Communication Channel</h2>
-        </div>
-        <span className="communication-channel__status">
-          <i aria-hidden="true" />
-          Channel online
+    <li className="connection-endpoint__route">
+      <span className="connection-endpoint__route-icon" aria-hidden="true">
+        <Icon />
+      </span>
+      <div className="connection-endpoint__route-copy">
+        <h3>{item.shortLabel}</h3>
+        <p>{item.description}</p>
+        <span className="connection-endpoint__route-value">
+          {item.type === "resume" ? "PDF document" : item.value}
         </span>
-      </header>
-
-      <div className="communication-channel__screen">
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={item.id}
-            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -6 }}
-            transition={{
-              duration: reducedMotion ? 0.13 : 0.3,
-              ease: observatoryEase,
-            }}
+        <span
+          className="connection-endpoint__feedback"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          {copyStatus === "copied"
+            ? item.shortLabel + " link copied."
+            : copyStatus === "failed"
+              ? "Copying is unavailable. Use the open link instead."
+              : ""}
+        </span>
+      </div>
+      <div className="connection-endpoint__route-actions">
+        {item.copyValue && (
+          <button
+            type="button"
+            className="connection-endpoint__copy-link"
+            onClick={onCopy}
+            aria-label={`Copy ${item.shortLabel} link`}
+            data-cursor-label="Copy Link"
           >
-            <div className="communication-channel__identity">
-              <span className="communication-channel__icon">
-                <Icon aria-hidden="true" style={{ color: item.brandColor }} />
-              </span>
-              <div>
-                <p>{item.stationLabel}</p>
-                <h3>{item.label}</h3>
-              </div>
-            </div>
-            <p className="communication-channel__description">
-              {item.description}
-            </p>
-            <p className="communication-channel__value">{item.value}</p>
-
-            <div className="communication-channel__actions">
-              {item.copyValue && (
-                <button
-                  type="button"
-                  onClick={() => onCopy(item)}
-                  data-cursor-label="Copy"
-                  className="observatory-button observatory-button--secondary portfolio-focus"
-                >
-                  {itemCopyResult === "copied" ? (
-                    <Check aria-hidden="true" />
-                  ) : (
-                    <Copy aria-hidden="true" />
-                  )}
-                  {copyLabel}
-                </button>
-              )}
-              <a
-                href={item.href}
-                target={item.external ? "_blank" : undefined}
-                rel={item.external ? "noreferrer" : undefined}
-                aria-label={`${item.actionLabel}${
-                  item.external ? " (opens in a new tab)" : ""
-                }`}
-                data-cursor-label={
-                  item.type === "resume"
-                    ? "View"
-                    : item.type === "email"
-                      ? "Send"
-                      : "Open"
-                }
-                className="observatory-button observatory-button--primary portfolio-focus"
-              >
-                {item.actionLabel}
-                <ArrowUpRight aria-hidden="true" />
-              </a>
-            </div>
-
-            <p className="communication-channel__feedback" aria-live="polite">
-              {itemCopyResult === "copied"
-                ? `${item.shortLabel} address copied.`
-                : itemCopyResult === "failed"
-                  ? "Copying is unavailable. Use the open action instead."
-                  : ""}
-            </p>
-          </motion.div>
-        </AnimatePresence>
+            {copyStatus === "copied" ? (
+              <Check size={16} aria-hidden="true" />
+            ) : (
+              <Copy size={16} aria-hidden="true" />
+            )}
+            {copyStatus === "copied"
+              ? "Copied"
+              : copyStatus === "failed"
+                ? "Copy unavailable"
+                : "Copy link"}
+          </button>
+        )}
+        <a
+          href={item.href}
+          target={item.external ? "_blank" : undefined}
+          rel={item.external ? "noopener noreferrer" : undefined}
+          aria-label={`${item.actionLabel}${item.external ? " (opens in a new tab)" : ""}`}
+          className="connection-endpoint__open-link"
+          data-cursor-label={item.actionLabel}
+        >
+          {item.actionLabel} <ArrowUpRight size={16} aria-hidden="true" />
+        </a>
       </div>
-    </section>
-  );
-}
-
-function ConnectionStations({
-  activeIndex,
-  reducedMotion,
-  scrollRoot,
-  onSelect,
-  onPauseChange,
-}: {
-  activeIndex: number;
-  reducedMotion: boolean;
-  scrollRoot: RefObject<HTMLElement | null>;
-  onSelect: (index: number) => void;
-  onPauseChange: (paused: boolean) => void;
-}) {
-  const handleBlur = (event: ReactFocusEvent<HTMLElement>) => {
-    if (
-      event.relatedTarget instanceof Node &&
-      event.currentTarget.contains(event.relatedTarget)
-    ) {
-      return;
-    }
-    onPauseChange(false);
-  };
-
-  return (
-    <motion.section
-      className="connection-stations-section"
-      aria-labelledby="connection-stations-title"
-      variants={revealVariants(reducedMotion)}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ root: scrollRoot, amount: 0.18, once: false }}
-      onPointerEnter={(event) => {
-        if (event.pointerType === "mouse") onPauseChange(true);
-      }}
-      onPointerLeave={(event) => {
-        if (event.pointerType === "mouse") onPauseChange(false);
-      }}
-      onFocusCapture={() => onPauseChange(true)}
-      onBlurCapture={handleBlur}
-    >
-      <motion.header
-        variants={childVariants(reducedMotion)}
-        className="connection-stations-header"
-      >
-        <p>Observatory array</p>
-        <h2 id="connection-stations-title">Choose a signal station.</h2>
-        <span>
-          Each station opens a real channel for conversation, collaboration, or
-          learning more about the work.
-        </span>
-      </motion.header>
-
-      <div className="connection-stations-grid">
-        {connectionItems.map((item, index) => (
-          <motion.div key={item.id} variants={childVariants(reducedMotion)}>
-            <ConnectionStation
-              item={item}
-              index={index}
-              active={activeIndex === index}
-              onSelect={onSelect}
-            />
-          </motion.div>
-        ))}
-      </div>
-      <div aria-hidden="true" className="connection-stations-signal">
-        <span><i /></span>
-        <span><i /></span>
-        <span><i /></span>
-        <span><i /></span>
-        <span><i /></span>
-      </div>
-    </motion.section>
-  );
-}
-
-function ConnectionStation({
-  item,
-  index,
-  active,
-  onSelect,
-}: {
-  item: ConnectionItem;
-  index: number;
-  active: boolean;
-  onSelect: (index: number) => void;
-}) {
-  const Icon = item.icon;
-
-  return (
-    <button
-      type="button"
-      aria-label={`Tune to ${item.shortLabel}: ${item.label}`}
-      aria-pressed={active}
-      aria-controls="communication-channel-title"
-      data-cursor-label={item.shortLabel}
-      onClick={() => onSelect(index)}
-      className={`connection-station connection-station--${item.stationKind} portfolio-focus ${
-        active ? "is-active" : ""
-      }`}
-    >
-      <span className="connection-station__mast" aria-hidden="true">
-        <i /><i /><i />
-      </span>
-      <span className="connection-station__icon">
-        <Icon aria-hidden="true" style={{ color: item.brandColor }} />
-      </span>
-      <span className="connection-station__copy">
-        <small>{item.stationLabel}</small>
-        <strong>{item.stationName}</strong>
-        <span>{item.actionLabel}</span>
-      </span>
-      <span className="connection-station__signal" aria-hidden="true"><i /></span>
-      <span className="connection-station__light" aria-hidden="true" />
-    </button>
-  );
-}
-
-function ObservatoryFinale({
-  disabled,
-  onContinue,
-}: {
-  disabled: boolean;
-  onContinue: () => void;
-}) {
-  return (
-    <section className="observatory-finale" aria-labelledby="observatory-finale-title">
-      <div aria-hidden="true" className="observatory-final-platform">
-        <div className="observatory-final-telescope"><span /><i /><i /></div>
-        <div className="observatory-final-bench"><span /><i /><i /></div>
-        <div className="observatory-final-path">
-          <span /><span /><span /><span />
-        </div>
-        <div className="observatory-next-gate">
-          <span /><i /><i />
-        </div>
-      </div>
-      <p className="observatory-finale-label">The journey continues</p>
-      <h2 id="observatory-finale-title">
-        The next horizon waits beyond the mountain path.
-      </h2>
-      <p className="observatory-finale-copy">
-        Thank you for visiting the observatory. One final destination remains.
-      </p>
-      <button
-        type="button"
-        disabled={disabled}
-        onClick={onContinue}
-        data-cursor-label="Scene Seven"
-        className="observatory-button observatory-button--primary observatory-finale-button portfolio-focus"
-      >
-        Continue the Journey
-        <span aria-hidden="true" />
-      </button>
-    </section>
-  );
-}
-
-function ConnectionProgress({ activeIndex }: { activeIndex: number }) {
-  return (
-    <div
-      className="observatory-progress"
-      role="status"
-      aria-live="polite"
-      aria-atomic="true"
-    >
-      <span className="observatory-progress__count">
-        {String(activeIndex + 1).padStart(2, "0")} /{" "}
-        {String(connectionItems.length).padStart(2, "0")}
-      </span>
-      <span className="observatory-progress__track" aria-hidden="true">
-        {connectionItems.map((item, index) => (
-          <i key={item.id} className={index === activeIndex ? "is-active" : ""} />
-        ))}
-      </span>
-      <span className="observatory-progress__name">
-        {connectionItems[activeIndex].shortLabel}
-      </span>
-    </div>
-  );
-}
-
-function PixelPanelCorners() {
-  return (
-    <span aria-hidden="true">
-      <i className="observatory-panel-corner observatory-panel-corner--tl" />
-      <i className="observatory-panel-corner observatory-panel-corner--tr" />
-      <i className="observatory-panel-corner observatory-panel-corner--bl" />
-      <i className="observatory-panel-corner observatory-panel-corner--br" />
-    </span>
-  );
-}
-
-function SignalGlyph() {
-  return (
-    <svg
-      viewBox="0 0 32 32"
-      aria-hidden="true"
-      shapeRendering="crispEdges"
-      className="observatory-signal-glyph"
-    >
-      <path
-        fill="currentColor"
-        d="M14 2h4v12h4v4h-4v12h-4V18h-4v-4h4ZM6 7h4v4H6v10h4v4H6v-4H2V11h4Zm16 0h4v4h4v10h-4v4h-4v-4h4V11h-4Z"
-      />
-    </svg>
+    </li>
   );
 }

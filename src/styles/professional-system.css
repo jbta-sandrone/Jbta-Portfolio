@@ -41,6 +41,11 @@
   line-height: 1.6;
 }
 
+/* Scene headings receive programmatic focus for announcement, not tab navigation. */
+#portfolio-world [data-active-scene] h1[tabindex="-1"]:focus {
+  outline: none;
+}
+
 .professional-theme,
 .professional-theme *,
 .professional-theme *::before,
