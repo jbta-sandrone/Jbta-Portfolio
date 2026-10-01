@@ -9,7 +9,6 @@ import "../styles/signal-observatory.css";
 type ConnectionType = "email" | "profile" | "resume";
 type ConnectionIcon = LucideIcon | IconType;
 type CopyStatus = "copied" | "failed";
-type StationKind = "message" | "archive" | "network" | "messenger" | "record";
 
 type ConnectionItem = {
   id: string;
@@ -23,10 +22,6 @@ type ConnectionItem = {
   copyValue?: string;
   description: string;
   actionLabel: string;
-  brandColor: string;
-  stationLabel: string;
-  stationName: string;
-  stationKind: StationKind;
 };
 
 const connectionItems: readonly ConnectionItem[] = [
@@ -42,10 +37,6 @@ const connectionItems: readonly ConnectionItem[] = [
     copyValue: "ablogjonelbryan@gmail.com",
     description: "Share what you are building, exploring, or imagining, and let us begin there.",
     actionLabel: "Send Email",
-    brandColor: "#fcd34d",
-    stationLabel: "Direct Message",
-    stationName: "Email Channel",
-    stationKind: "message",
   },
   {
     id: "github",
@@ -59,10 +50,6 @@ const connectionItems: readonly ConnectionItem[] = [
     copyValue: "https://github.com/jbta-sandrone",
     description: "Browse the systems, experiments, and product work behind this portfolio.",
     actionLabel: "Open GitHub",
-    brandColor: "#f5f5f5",
-    stationLabel: "Code Archive",
-    stationName: "GitHub",
-    stationKind: "archive",
   },
   {
     id: "linkedin",
@@ -76,10 +63,6 @@ const connectionItems: readonly ConnectionItem[] = [
     copyValue: "https://www.linkedin.com/in/jbtablog",
     description: "Connect professionally and follow the next chapter of my work and growth.",
     actionLabel: "Open LinkedIn",
-    brandColor: "#0a66c2",
-    stationLabel: "Guild Network",
-    stationName: "LinkedIn",
-    stationKind: "network",
   },
   {
     id: "facebook",
@@ -93,10 +76,6 @@ const connectionItems: readonly ConnectionItem[] = [
     copyValue: "https://www.facebook.com/ablogjonel.21/",
     description: "A more personal place to stay connected beyond projects and professional updates.",
     actionLabel: "Open Facebook",
-    brandColor: "#1877f2",
-    stationLabel: "Messenger Post",
-    stationName: "Facebook",
-    stationKind: "messenger",
   },
   {
     id: "resume",
@@ -109,10 +88,6 @@ const connectionItems: readonly ConnectionItem[] = [
     external: true,
     description: "View my experience, education, projects, and technical background.",
     actionLabel: "View Resume",
-    brandColor: "#fde68a",
-    stationLabel: "Traveler Record",
-    stationName: "Résumé",
-    stationKind: "record",
   },
 ] as const;
 

@@ -61,7 +61,7 @@ const projects: readonly Project[] = [
   },
 ];
 
-function useManagedVideoPlayback(videoRef: RefObject<HTMLVideoElement | null>, reducedMotion: boolean, paused: boolean) {
+function useManagedVideoPlayback(videoRef: RefObject<HTMLVideoElement | null>, source: string, reducedMotion: boolean, paused: boolean) {
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -80,6 +80,11 @@ function useManagedVideoPlayback(videoRef: RefObject<HTMLVideoElement | null>, r
     const observer = new IntersectionObserver(
       ([entry]) => {
         inView = entry.isIntersecting;
+        if (inView && !video.getAttribute("src")) {
+          // Keep off-screen MP4s out of the network queue until their case study approaches.
+          video.src = source;
+          video.load();
+        }
         syncPlayback();
       },
       { root: video.closest<HTMLElement>("[data-scene-scroll]"), rootMargin: "20% 0px", threshold: 0.15 },
@@ -92,12 +97,12 @@ function useManagedVideoPlayback(videoRef: RefObject<HTMLVideoElement | null>, r
       document.removeEventListener("visibilitychange", syncPlayback);
       video.pause();
     };
-  }, [videoRef, reducedMotion, paused]);
+  }, [videoRef, source, reducedMotion, paused]);
 }
 
 function ProjectVideo({ project, number, reducedMotion, notesOpen }: { project: Project; number: number; reducedMotion: boolean; notesOpen: boolean }) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  useManagedVideoPlayback(videoRef, reducedMotion, notesOpen);
+  useManagedVideoPlayback(videoRef, project.video, reducedMotion, notesOpen);
 
   return (
     <figure className="work-case__media">
@@ -108,7 +113,6 @@ function ProjectVideo({ project, number, reducedMotion, notesOpen }: { project: 
       <div className="work-case__video-frame professional-media-frame">
         <video
           ref={videoRef}
-          src={project.video}
           muted
           loop
           playsInline

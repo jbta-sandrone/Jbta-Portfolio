@@ -17,14 +17,12 @@ const readinessLabels = [
 const normalTiming = {
   // Readiness still gates reveal; this floor gives first-session visitors time to read.
   minimum: 3100,
-  maximum: 9500,
   readyHold: 550,
   exit: 320,
   skipReveal: 4500,
 } as const;
 const reducedTiming = {
   minimum: 180,
-  maximum: 900,
   readyHold: 90,
   exit: 160,
   skipReveal: 700,
@@ -87,6 +85,8 @@ export default function PortfolioIntro({ onRevealStart, onComplete }: PortfolioI
   const phaseRef = useRef<IntroPhase>("building");
   const completedRef = useRef(false);
   const revealStartedRef = useRef(false);
+  const essentialReadyRef = useRef(false);
+  const skipRequestedRef = useRef(false);
   const timersRef = useRef<number[]>([]);
 
   const clearTimers = useCallback(() => {
@@ -123,14 +123,24 @@ export default function PortfolioIntro({ onRevealStart, onComplete }: PortfolioI
     schedule(beginExit, timing.readyHold);
   }, [beginExit, revealArrival, schedule, timing.readyHold]);
 
+  const skipIntro = () => {
+    skipRequestedRef.current = true;
+    if (essentialReadyRef.current) beginExit();
+  };
+
   useEffect(() => {
     let cancelled = false;
+    const essentialTasks = [waitForStylesReady(), waitForDocumentReady()];
     const readinessTasks = [
-      waitForStylesReady(),
-      waitForDocumentReady(),
+      ...essentialTasks,
       waitForFontsReady(),
       Promise.all(criticalImages.map(preloadImage)).then(() => undefined),
     ];
+    Promise.allSettled(essentialTasks).then(() => {
+      if (cancelled) return;
+      essentialReadyRef.current = true;
+      if (skipRequestedRef.current) beginExit();
+    });
     readinessTasks.forEach((task, index) => {
       task.then(() => {
         if (!cancelled) {
@@ -146,13 +156,12 @@ export default function PortfolioIntro({ onRevealStart, onComplete }: PortfolioI
     ]).then(() => {
       if (!cancelled) beginReady();
     });
-    schedule(beginReady, timing.maximum);
     if (!reducedMotion) schedule(() => setShowSkip(true), timing.skipReveal);
     return () => {
       cancelled = true;
       clearTimers();
     };
-  }, [beginReady, clearTimers, reducedMotion, schedule, timing.maximum, timing.minimum, timing.skipReveal]);
+  }, [beginExit, beginReady, clearTimers, reducedMotion, schedule, timing.minimum, timing.skipReveal]);
 
   const finish = () => {
     if (phaseRef.current !== "exiting" || completedRef.current) return;
@@ -205,7 +214,7 @@ export default function PortfolioIntro({ onRevealStart, onComplete }: PortfolioI
           type="button"
           aria-label="Skip portfolio introduction"
           data-cursor-label="Skip intro"
-          onClick={beginExit}
+          onClick={skipIntro}
           className="portfolio-intro__skip"
         >Skip intro <span aria-hidden="true">→</span></button>
       )}

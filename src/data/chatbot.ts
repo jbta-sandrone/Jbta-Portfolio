@@ -110,7 +110,7 @@ export const chatbotRules: readonly ChatbotRule[] = [
       /full[- ]stack (service|development|skills)/i,
     ],
     answer:
-      "Yes. Jonel's full-stack projects demonstrate hands-on experience connecting responsive React and TypeScript interfaces with Node.js, Express, FastAPI or Python services, databases such as PostgreSQL, Prisma, Firebase, and Upstash, authentication flows, cloud media, AI features, and deployment. The exact architecture would depend on the project's requirements.",
+      "Yes. Jonel's full-stack projects demonstrate hands-on experience connecting responsive React and TypeScript interfaces with Node.js, Express, FastAPI or Python services, PostgreSQL and Firebase data services, Prisma ORM, authentication flows, cloud media, AI features, and deployment. Nelume also uses Upstash Redis for AI usage enforcement. The exact architecture would depend on the project's requirements.",
   },
   {
     id: "quest-frontend",
@@ -151,7 +151,7 @@ export const chatbotRules: readonly ChatbotRule[] = [
       /database (and |& )?authentication (service|systems?)/i,
     ],
     answer:
-      "Yes. Jonel's projects demonstrate experience with user accounts, permissions, JWT authentication, Firebase Authentication, Firebase Realtime Database, PostgreSQL, Prisma, and Upstash. He can help connect application data and access flows to a project's interface and backend requirements.",
+      "Yes. Jonel's projects demonstrate experience with user accounts, permissions, JWT authentication, Firebase Authentication, Firebase Realtime Database, PostgreSQL, and Prisma. Nelume also uses Upstash Redis for AI usage enforcement. He can help connect application data and access flows to a project's interface and backend requirements.",
   },
   {
     id: "quest-deployment-maintenance",
