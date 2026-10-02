@@ -5,6 +5,24 @@
     <link rel="icon" type="image/png" href="/jbta-logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#f8f8f5" />
+    <script>
+      // Resolve the canvas before React, stylesheets, or the intro can paint.
+      (function () {
+        var theme = "light";
+        var saved = null;
+        try { saved = localStorage.getItem("jbta-portfolio-theme"); } catch (_) {}
+        if (saved === "light" || saved === "dark") theme = saved;
+        else {
+          try { if (window.matchMedia("(prefers-color-scheme: dark)").matches) theme = "dark"; } catch (_) {}
+        }
+        var root = document.documentElement;
+        var canvas = theme === "dark" ? "#090a0c" : "#f8f8f5";
+        root.dataset.theme = theme;
+        root.style.colorScheme = theme;
+        root.style.backgroundColor = canvas;
+        document.querySelector('meta[name="theme-color"]').setAttribute("content", canvas);
+      })();
+    </script>
     <meta name="description" content="Explore Jonel Bryan Ablog's software engineering portfolio: full-stack web applications, practical AI-powered features, and selected projects." />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Jonel Bryan Ablog | Software Engineering Portfolio" />

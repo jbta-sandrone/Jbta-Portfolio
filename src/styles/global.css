@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
   --portfolio-bg: #000000;
   --portfolio-bg-secondary: #17130f;
   --portfolio-surface: rgba(0, 0, 0, 0.3);
@@ -19,7 +19,7 @@
   --portfolio-border-subtle: rgba(255, 255, 255, 0.15);
   --portfolio-glow: rgba(245, 158, 11, 0.18);
   --portfolio-shadow: rgba(0, 0, 0, 0.38);
-  --portfolio-world-fallback: #172638;
+  --portfolio-world-fallback: #f8f8f5;
   --portfolio-status: #34d399;
   --portfolio-status-soft: rgba(167, 243, 208, 0.9);
 }
@@ -27,15 +27,17 @@
 html,
 body,
 #root {
-  height: 100%;
-  overflow: hidden;
+  min-height: 100%;
   background: var(--portfolio-world-fallback);
-  color: var(--portfolio-text-soft);
+  color: var(--portfolio-text);
+}
+
+html {
+  scrollbar-gutter: stable;
 }
 
 .portfolio-world-shell,
-.portfolio-world,
-.portfolio-scene-frame {
+.portfolio-world {
   background: var(--portfolio-world-fallback);
 }
 
@@ -44,11 +46,8 @@ body,
   isolation: isolate;
 }
 
-.portfolio-scene-frame {
-  inset: -1px;
-  min-width: calc(100% + 2px);
-  min-height: calc(100% + 2px);
-  contain: paint;
+.portfolio-section {
+  overflow-x: clip;
 }
 
 @media (hover: hover) and (pointer: fine) {

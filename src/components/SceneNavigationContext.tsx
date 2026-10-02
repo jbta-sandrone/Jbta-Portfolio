@@ -1,8 +1,9 @@
 import { createContext, useContext } from "react";
 
+export type SectionNavigationOptions = { focus?: boolean };
+
 type SceneNavigationContextValue = {
-  navigateToScene: (sceneIndex: number) => void;
-  isTransitioning: boolean;
+  navigateToScene: (sceneIndex: number, options?: SectionNavigationOptions) => void;
 };
 
 export const SceneNavigationContext =

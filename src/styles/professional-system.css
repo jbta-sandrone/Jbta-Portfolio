@@ -1,6 +1,7 @@
-/* Opt-in foundation for the professional sections introduced in later phases.
-   Keep the current scene theme intact until each section adopts this scope. */
-.professional-theme {
+/* Document-level colors also reach portalled documentation, cursor and global UI.
+   Light values are the approved palette; component geometry remains opt-in. */
+:root {
+  color-scheme: light;
   --portfolio-bg: #f8f8f5;
   --portfolio-surface: #ffffff;
   --portfolio-surface-muted: #f1f3f5;
@@ -12,6 +13,100 @@
   --portfolio-accent: #2458c6;
   --portfolio-accent-soft: #e8eefc;
   --portfolio-focus: #174bb5;
+  --portfolio-world-fallback: var(--portfolio-bg);
+  --portfolio-document-surface: var(--portfolio-bg);
+  --portfolio-text-emphasis: #4e5965;
+  --portfolio-accent-solid: #2458c6;
+  --portfolio-accent-hover: #194bad;
+  --portfolio-link-hover: #143f96;
+  --portfolio-on-accent: #ffffff;
+  --portfolio-diagram-line: #d5dde4;
+  --portfolio-diagram-connector: #9daab7;
+  --portfolio-grid-rgb: 91 110 130;
+  --portfolio-shadow-rgb: 18 27 40;
+  --portfolio-panel-shadow-rgb: 23 35 50;
+  --portfolio-document-shadow-rgb: 13 20 30;
+  --portfolio-intro-shadow-rgb: 20 31 42;
+  --portfolio-overlay: rgb(18 27 40 / 62%);
+  --portfolio-control-border: #b7c2cc;
+  --portfolio-control-line: #cbd3da;
+  --portfolio-control-muted: #596675;
+  --portfolio-control-hover: #edf1f5;
+  --portfolio-control-disabled: #9aa5af;
+  --portfolio-control-icon: #687684;
+  --portfolio-scrollbar: #aeb9c4;
+  --portfolio-nav-scrollbar: #b8c3cd;
+  --portfolio-message-canvas: #f7f8f7;
+  --portfolio-avatar-border: #c4cdd5;
+  --portfolio-bubble-hover: #879db8;
+  --portfolio-placeholder: #687684;
+  --portfolio-send-hover: #174bb5;
+  --portfolio-cursor-stroke: #18222e;
+  --portfolio-cursor-fill: rgb(248 248 245 / 44%);
+  --portfolio-tooltip-border: #c6ced5;
+  --portfolio-tooltip-text: #26323d;
+  --portfolio-intro-grid: #dde3e8;
+  --portfolio-intro-border: #cad3db;
+  --portfolio-intro-muted: #62707e;
+  --portfolio-intro-copy: #52606d;
+  --portfolio-intro-status: #4d5a68;
+  --portfolio-intro-progress: #dbe2e8;
+  --portfolio-intro-button-border: #bcc7d1;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --portfolio-bg: #090a0c;
+  --portfolio-surface: #0e1014;
+  --portfolio-surface-muted: #13161b;
+  --portfolio-document-surface: var(--portfolio-surface);
+  --portfolio-text: #f3f1ec;
+  --portfolio-text-secondary: #a7adb7;
+  --portfolio-text-muted: #929ba8;
+  --portfolio-line: #252a32;
+  --portfolio-line-strong: #343b46;
+  --portfolio-accent: #5591ff;
+  --portfolio-accent-soft: #15233c;
+  --portfolio-focus: #5591ff;
+  --portfolio-text-emphasis: #a7adb7;
+  --portfolio-accent-solid: #2865d2;
+  --portfolio-accent-hover: #2f70e5;
+  --portfolio-link-hover: #85b0ff;
+  --portfolio-diagram-line: #343b46;
+  --portfolio-diagram-connector: #657184;
+  --portfolio-grid-rgb: 110 128 151;
+  --portfolio-shadow-rgb: 0 0 0;
+  --portfolio-panel-shadow-rgb: 0 0 0;
+  --portfolio-document-shadow-rgb: 0 0 0;
+  --portfolio-intro-shadow-rgb: 0 0 0;
+  --portfolio-overlay: rgb(3 5 8 / 78%);
+  --portfolio-control-border: #343b46;
+  --portfolio-control-line: #343b46;
+  --portfolio-control-muted: #a7adb7;
+  --portfolio-control-hover: #1a202a;
+  --portfolio-control-disabled: #737e8e;
+  --portfolio-control-icon: #a7adb7;
+  --portfolio-scrollbar: #4b5666;
+  --portfolio-nav-scrollbar: #4b5666;
+  --portfolio-message-canvas: #090a0c;
+  --portfolio-avatar-border: #343b46;
+  --portfolio-bubble-hover: #657184;
+  --portfolio-placeholder: #929ba8;
+  --portfolio-send-hover: #2f70e5;
+  --portfolio-cursor-stroke: #f3f1ec;
+  --portfolio-cursor-fill: rgb(14 16 20 / 44%);
+  --portfolio-tooltip-border: #343b46;
+  --portfolio-tooltip-text: #f3f1ec;
+  --portfolio-intro-grid: #343b46;
+  --portfolio-intro-border: #343b46;
+  --portfolio-intro-muted: #929ba8;
+  --portfolio-intro-copy: #a7adb7;
+  --portfolio-intro-status: #a7adb7;
+  --portfolio-intro-progress: #252a32;
+  --portfolio-intro-button-border: #657184;
+}
+
+.professional-theme {
 
   --portfolio-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
   --portfolio-font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
@@ -41,8 +136,8 @@
   line-height: 1.6;
 }
 
-/* Scene headings receive programmatic focus for announcement, not tab navigation. */
-#portfolio-world [data-active-scene] h1[tabindex="-1"]:focus {
+/* Explicit keyboard section navigation announces this non-interactive target. */
+#portfolio-world [data-section-heading]:focus {
   outline: none;
 }
 
@@ -131,16 +226,16 @@
 .professional-theme .professional-grid {
   background-color: var(--portfolio-bg);
   background-image:
-    linear-gradient(to right, rgb(91 110 130 / 7%) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(91 110 130 / 7%) 1px, transparent 1px);
+    linear-gradient(to right, rgb(var(--portfolio-grid-rgb) / 7%) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(var(--portfolio-grid-rgb) / 7%) 1px, transparent 1px);
   background-size: var(--portfolio-grid-step) var(--portfolio-grid-step);
 }
 
 .professional-theme .professional-grid--fade {
   background-image:
     linear-gradient(to bottom, var(--portfolio-bg), transparent 22% 78%, var(--portfolio-bg)),
-    linear-gradient(to right, rgb(91 110 130 / 7%) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(91 110 130 / 7%) 1px, transparent 1px);
+    linear-gradient(to right, rgb(var(--portfolio-grid-rgb) / 7%) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(var(--portfolio-grid-rgb) / 7%) 1px, transparent 1px);
   background-size: 100% 100%, var(--portfolio-grid-step) var(--portfolio-grid-step), var(--portfolio-grid-step) var(--portfolio-grid-step);
 }
 
@@ -160,7 +255,7 @@
 
 .professional-theme .professional-panel--featured {
   border-color: var(--portfolio-line-strong);
-  box-shadow: 0 12px 30px rgb(23 35 50 / 5%);
+  box-shadow: 0 12px 30px rgb(var(--portfolio-panel-shadow-rgb) / 5%);
 }
 
 .professional-theme .professional-info-block {
@@ -215,8 +310,8 @@
 }
 
 .professional-theme .professional-button--primary {
-  background-color: var(--portfolio-accent);
-  color: #ffffff;
+  background-color: var(--portfolio-accent-solid);
+  color: var(--portfolio-on-accent);
 }
 
 .professional-theme .professional-button--secondary,
@@ -292,7 +387,7 @@
   }
 
   .professional-theme .professional-button--primary:hover:not(:disabled) {
-    background-color: #194bad;
+    background-color: var(--portfolio-accent-hover);
   }
 
   .professional-theme :is(.professional-button--secondary, .professional-icon-button):hover:not(:disabled) {
@@ -301,7 +396,7 @@
   }
 
   .professional-theme .professional-link:hover {
-    color: #143f96;
+    color: var(--portfolio-link-hover);
   }
 }
 

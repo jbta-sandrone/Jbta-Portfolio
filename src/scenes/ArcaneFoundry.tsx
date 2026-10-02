@@ -14,15 +14,17 @@ const technologyCount = techGroups.reduce(
 );
 
 export default function ArcaneFoundry() {
-  const { navigateToScene, isTransitioning } = useSceneNavigation();
+  const { navigateToScene } = useSceneNavigation();
 
   return (
     <section
-      className="technology-architecture professional-theme portfolio-scene relative h-full overflow-hidden"
+      id="craft"
+      data-portfolio-section
+      className="technology-architecture professional-theme portfolio-section relative"
       data-cinematic-scene={5}
       aria-labelledby="craft-title"
     >
-      <div className="technology-architecture__scroll" data-scene-scroll>
+      <div className="technology-architecture__scroll">
         <div className="technology-architecture__layout professional-container professional-container--wide">
           <header className="technology-architecture__intro">
             <div>
@@ -31,13 +33,13 @@ export default function ArcaneFoundry() {
                 <span aria-hidden="true" />
                 SKILLS &amp; TOOLS
               </p>
-              <h1
-                id="craft-title"
+              <h2
+                data-section-heading tabIndex={-1} id="craft-title"
                 className="technology-architecture__heading professional-heading"
               >
                 The technologies behind
                 <span> the systems I build.</span>
-              </h1>
+              </h2>
             </div>
             <div className="technology-architecture__intro-aside">
               <p className="professional-body">
@@ -58,9 +60,9 @@ export default function ArcaneFoundry() {
             aria-labelledby="technology-architecture-title"
           >
             <div className="technology-architecture__system-heading">
-              <h2 id="technology-architecture-title" className="professional-label">
+              <h3 id="technology-architecture-title" className="professional-label">
                 Technology architecture
-              </h2>
+              </h3>
               <span className="professional-mono" aria-hidden="true">
                 CLIENT / SERVICES / DATA / INTELLIGENCE / DELIVERY
               </span>
@@ -76,14 +78,13 @@ export default function ArcaneFoundry() {
           <footer className="technology-architecture__next">
             <div>
               <p className="professional-label">06 / NEXT</p>
-              <h2>Have something in mind?</h2>
+              <h3>Have something in mind?</h3>
               <p>Let’s talk about what you want to build.</p>
             </div>
             <button
               type="button"
               className="professional-button professional-button--primary"
-              disabled={isTransitioning}
-              onClick={() => navigateToScene(5)}
+              onClick={(event) => navigateToScene(5, { focus: event.detail === 0 })}
               data-cursor-label="Contact"
             >
               Let’s connect <ArrowUpRight size={17} aria-hidden="true" />
@@ -116,7 +117,7 @@ function TechnologyLayer({
           <span className="technology-architecture__layer-number professional-mono">
             {String(index + 1).padStart(2, "0")} / {String(techGroups.length).padStart(2, "0")}
           </span>
-          <h3 id={titleId}>{group.label}</h3>
+          <h4 id={titleId}>{group.label}</h4>
           <p>{group.eyebrow}</p>
         </header>
 
@@ -168,12 +169,6 @@ function TechnologyNode({
       aria-label={`Inspect ${technology.name}`}
       onClick={onSelect}
       onFocus={onSelect}
-      onKeyDown={(event) => {
-        // Keep scene shortcuts from navigating while a technology has focus.
-        if (["ArrowUp", "ArrowDown", "PageUp", "PageDown"].includes(event.key)) {
-          event.stopPropagation();
-        }
-      }}
       data-cursor-label={technology.name}
     >
       <Icon className="technology-architecture__node-icon" aria-hidden="true" />
@@ -210,7 +205,7 @@ function TechnologyInspector({
           <span className="technology-architecture__inspector-icon" aria-hidden="true">
             <Icon />
           </span>
-          <h4>{technology.name}</h4>
+          <h5>{technology.name}</h5>
         </div>
         <p className="technology-architecture__description">
           {technology.description}

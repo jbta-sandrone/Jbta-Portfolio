@@ -1,6 +1,5 @@
 .selected-work {
   position: relative;
-  min-height: 100%;
   isolation: isolate;
   background: var(--portfolio-bg);
   color: var(--portfolio-text);
@@ -12,8 +11,8 @@
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(to right, rgb(91 110 130 / 4%) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(91 110 130 / 3%) 1px, transparent 1px);
+    linear-gradient(to right, rgb(var(--portfolio-grid-rgb) / 4%) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(var(--portfolio-grid-rgb) / 3%) 1px, transparent 1px);
   background-size: clamp(10rem, 20vw, 20rem) 100%, 100% 12rem;
   mask-image: linear-gradient(to bottom, black, transparent 48%);
 }
@@ -61,15 +60,15 @@
   margin-top: clamp(2rem, 4vw, 3rem);
 }
 
-.selected-work__intro-grid h1 {
+.selected-work__intro-grid h2 {
   max-width: 14ch !important;
   font-size: clamp(3.2rem, 5.5vw, 6rem) !important;
   line-height: 1.04 !important;
   animation-delay: 80ms !important;
 }
 
-.selected-work__intro-grid h1 span {
-  color: #4e5965;
+.selected-work__intro-grid h2 span {
+  color: var(--portfolio-text-emphasis);
   font-weight: 450;
 }
 
@@ -140,7 +139,7 @@
   color: var(--portfolio-line-strong);
 }
 
-.work-case__heading h2 {
+.work-case__heading h3 {
   margin: 0;
   color: var(--portfolio-text);
   font-size: clamp(3rem, 5.8vw, 6rem);
@@ -225,7 +224,7 @@
   border-top: 1px solid var(--portfolio-line);
 }
 
-.work-case__info-block h3 {
+.work-case__info-block h4 {
   margin: 0 0 0.85rem;
   color: var(--portfolio-text-muted);
   font-family: var(--portfolio-font-mono);
@@ -319,7 +318,7 @@
   color: var(--portfolio-accent);
 }
 
-.selected-work__exit h2 {
+.selected-work__exit h3 {
   max-width: 28ch;
   margin: 0;
   color: var(--portfolio-text);
@@ -393,7 +392,7 @@
     width: 1.5rem;
   }
 
-  .selected-work__intro-grid h1 {
+  .selected-work__intro-grid h2 {
     font-size: clamp(2.8rem, 10.5vw, 4rem) !important;
   }
 
@@ -401,7 +400,7 @@
     padding-block: 3.5rem;
   }
 
-  .work-case__heading h2 {
+  .work-case__heading h3 {
     font-size: clamp(2.9rem, 12vw, 4rem);
   }
 

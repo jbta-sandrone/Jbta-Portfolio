@@ -1,20 +1,13 @@
 /* Phase 5 — Technology Architecture. All composition stays in this scene. */
 .technology-architecture {
   isolation: isolate;
-  color-scheme: light;
+  color-scheme: inherit;
   padding-top: max(7rem, calc(env(safe-area-inset-top) + 7rem));
   padding-bottom: max(6rem, calc(env(safe-area-inset-bottom) + 5.5rem));
 }
 
 .technology-architecture__scroll {
-  height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
   background: var(--portfolio-bg);
-  scrollbar-width: thin;
-  scrollbar-color: var(--portfolio-line-strong) transparent;
-  scroll-padding-block: 1.5rem;
 }
 
 .technology-architecture__layout {
@@ -169,7 +162,7 @@
   font-size: 0.6875rem;
 }
 
-.technology-architecture__layer-heading h3 {
+.technology-architecture__layer-heading h4 {
   margin-top: 1rem;
   color: var(--portfolio-text);
   font-size: clamp(1.5rem, 2vw, 2rem);
@@ -301,7 +294,7 @@
   height: 1.375rem;
 }
 
-.technology-architecture__inspector-heading h4 {
+.technology-architecture__inspector-heading h5 {
   min-width: 0;
   color: var(--portfolio-text);
   font-size: 1.25rem;
@@ -357,7 +350,7 @@
   border-top: 1px solid var(--portfolio-line-strong);
 }
 
-.technology-architecture__next h2 {
+.technology-architecture__next h3 {
   margin-top: 0.75rem;
   color: var(--portfolio-text);
   font-size: clamp(1.5rem, 2.4vw, 2rem);
@@ -496,7 +489,7 @@
     padding-block: 1.75rem;
   }
 
-  .technology-architecture__layer-heading h3 {
+  .technology-architecture__layer-heading h4 {
     margin-top: 0.5rem;
     font-size: 1.625rem;
   }

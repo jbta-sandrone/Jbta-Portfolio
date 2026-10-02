@@ -5,10 +5,10 @@
   display: grid;
   place-items: center;
   padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
-  background: rgb(18 27 40 / 62%);
+  background: var(--portfolio-overlay);
 }
 
-.project-notes__panel {
+.project-notes__panel.professional-theme {
   display: flex;
   width: min(82vw, 76rem);
   max-width: 100%;
@@ -18,8 +18,8 @@
   overflow: hidden;
   border: 1px solid var(--portfolio-line-strong);
   border-radius: 0.5rem;
-  background: var(--portfolio-surface);
-  box-shadow: 0 28px 80px rgb(13 20 30 / 20%);
+  background: var(--portfolio-document-surface);
+  box-shadow: 0 28px 80px rgb(var(--portfolio-document-shadow-rgb) / 20%);
 }
 
 .project-notes__header {

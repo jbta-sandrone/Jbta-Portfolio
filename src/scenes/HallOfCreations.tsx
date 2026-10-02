@@ -68,7 +68,7 @@ function useManagedVideoPlayback(videoRef: RefObject<HTMLVideoElement | null>, s
 
     let inView = false;
     const syncPlayback = () => {
-      if (reducedMotion || paused || document.hidden || !inView) {
+      if (reducedMotion || paused || document.hidden || !inView || !video.getAttribute("src")) {
         video.pause();
         return;
       }
@@ -77,23 +77,35 @@ function useManagedVideoPlayback(videoRef: RefObject<HTMLVideoElement | null>, s
       });
     };
 
-    const observer = new IntersectionObserver(
+    const loadingObserver = new IntersectionObserver(
       ([entry]) => {
-        inView = entry.isIntersecting;
-        if (inView && !video.getAttribute("src")) {
+        if (entry.isIntersecting && !video.getAttribute("src")) {
           // Keep off-screen MP4s out of the network queue until their case study approaches.
           video.src = source;
           video.load();
+          // Loading and visibility observers can deliver in either order.
+          syncPlayback();
         }
-        syncPlayback();
+        if (video.getAttribute("src")) loadingObserver.unobserve(video);
       },
-      { root: video.closest<HTMLElement>("[data-scene-scroll]"), rootMargin: "20% 0px", threshold: 0.15 },
+      { root: null, rootMargin: "200px 0px", threshold: 0 },
     );
 
-    observer.observe(video);
+    const playbackObserver = new IntersectionObserver(
+      ([entry]) => {
+        inView = entry.isIntersecting;
+        syncPlayback();
+      },
+      { root: null, threshold: 0.15 },
+    );
+    loadingObserver.observe(video);
+    playbackObserver.observe(video);
+    video.addEventListener("canplay", syncPlayback);
     document.addEventListener("visibilitychange", syncPlayback);
     return () => {
-      observer.disconnect();
+      loadingObserver.disconnect();
+      playbackObserver.disconnect();
+      video.removeEventListener("canplay", syncPlayback);
       document.removeEventListener("visibilitychange", syncPlayback);
       video.pause();
     };
@@ -128,10 +140,9 @@ function ProjectVideo({ project, number, reducedMotion, notesOpen }: { project: 
   );
 }
 
-function ProjectCase({ project, index, scrollRoot, reducedMotion, notesOpen, onOpenNotes }: {
+function ProjectCase({ project, index, reducedMotion, notesOpen, onOpenNotes }: {
   project: Project;
   index: number;
-  scrollRoot: RefObject<HTMLElement | null>;
   reducedMotion: boolean;
   notesOpen: boolean;
   onOpenNotes: (projectId: ProjectNoteId, button: HTMLButtonElement) => void;
@@ -144,12 +155,12 @@ function ProjectCase({ project, index, scrollRoot, reducedMotion, notesOpen, onO
       className={`work-case ${index % 2 === 1 ? "work-case--reverse" : ""}`}
       initial={reducedMotion ? false : { opacity: 0, y: 14 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ root: scrollRoot, amount: 0.08, once: true }}
+      viewport={{ amount: 0.08, once: true }}
       transition={{ duration: reducedMotion ? 0.01 : 0.45, ease: [0.22, 1, 0.36, 1] }}
     >
       <header className="work-case__heading">
         <p className="work-case__index professional-mono">PROJECT / {String(number).padStart(2, "0")} <span>—</span> {project.category}</p>
-        <h2 id={`${project.id}-title`}>{project.title}</h2>
+        <h3 id={`${project.id}-title`}>{project.title}</h3>
         <p className="work-case__descriptor">{project.descriptor}</p>
       </header>
 
@@ -160,14 +171,14 @@ function ProjectCase({ project, index, scrollRoot, reducedMotion, notesOpen, onO
           <p className="work-case__description">{project.description}</p>
 
           <div className="work-case__info-block">
-            <h3>KEY CAPABILITIES</h3>
+            <h4>KEY CAPABILITIES</h4>
             <ul className="work-case__capabilities">
               {project.capabilities.map((capability) => <li key={capability}>{capability}</li>)}
             </ul>
           </div>
 
           <div className="work-case__info-block">
-            <h3>TECHNOLOGY</h3>
+            <h4>TECHNOLOGY</h4>
             <ul className="work-case__technologies" aria-label={`${project.title} technologies`}>
               {project.technologies.map((technology) => <li key={technology}>{technology}</li>)}
             </ul>
@@ -200,12 +211,11 @@ function ProjectCase({ project, index, scrollRoot, reducedMotion, notesOpen, onO
 }
 
 export default function HallOfCreations() {
-  const scrollRef = useRef<HTMLElement>(null);
   const notesTriggerRef = useRef<HTMLButtonElement>(null);
   const [activeNotes, setActiveNotes] = useState<ProjectNoteId | null>(null);
   const prefersReducedMotion = useReducedMotion();
   const reducedMotion = prefersReducedMotion !== false;
-  const { navigateToScene, isTransitioning } = useSceneNavigation();
+  const { navigateToScene } = useSceneNavigation();
 
   const openNotes = (projectId: ProjectNoteId, button: HTMLButtonElement) => {
     notesTriggerRef.current = button;
@@ -214,11 +224,11 @@ export default function HallOfCreations() {
 
   return (
     <section
-      ref={scrollRef}
+      id="featured-work"
+      data-portfolio-section
       data-cinematic-scene={3}
-      data-scene-scroll
       aria-labelledby="featured-work-title"
-      className="selected-work professional-theme portfolio-scene relative h-full overflow-y-auto overflow-x-hidden overscroll-contain"
+      className="selected-work professional-theme portfolio-section relative"
     >
       <div className="selected-work__guides" aria-hidden="true" />
       <div className="selected-work__layout professional-container professional-container--wide">
@@ -227,11 +237,11 @@ export default function HallOfCreations() {
             <span>03 / SELECTED WORK</span><i aria-hidden="true" /><span>ENGINEERING CASE STUDIES</span>
           </div>
           <div className="selected-work__intro-grid">
-            <h1 id="featured-work-title" className="professional-heading professional-enter">Selected systems, <span>built around real needs.</span></h1>
+            <h2 data-section-heading tabIndex={-1} id="featured-work-title" className="professional-heading professional-enter">Selected systems, <span>built around real needs.</span></h2>
             <p className="professional-body professional-enter">Three projects across personal memory, café ordering, and career support. Each combines interface work with the systems behind it.</p>
           </div>
           <div className="selected-work__overview-line" aria-hidden="true"><span>01</span><span>02</span><span>03</span></div>
-          <a className="selected-work__explore professional-link" href="#i-nelory-case" onClick={(event) => { event.preventDefault(); scrollRef.current?.querySelector("#i-nelory-case")?.scrollIntoView({ behavior: reducedMotion ? "instant" : "smooth", block: "start" }); }}>
+          <a className="selected-work__explore professional-link" href="#i-nelory-case" onClick={(event) => { event.preventDefault(); document.getElementById("i-nelory-case")?.scrollIntoView({ behavior: reducedMotion ? "instant" : "smooth", block: "start" }); }}>
             Explore the work <ArrowDownRight size={18} aria-hidden="true" />
           </a>
         </header>
@@ -242,7 +252,6 @@ export default function HallOfCreations() {
               <ProjectCase
                 project={project}
                 index={index}
-                scrollRoot={scrollRef}
                 reducedMotion={reducedMotion}
                 notesOpen={activeNotes !== null}
                 onOpenNotes={openNotes}
@@ -254,9 +263,9 @@ export default function HallOfCreations() {
         <footer className="selected-work__exit">
           <div>
             <p className="professional-label">NEXT / WHAT I DO</p>
-            <h2>From finished work to the services behind it.</h2>
+            <h3>From finished work to the services behind it.</h3>
           </div>
-          <button type="button" className="professional-button professional-button--secondary" disabled={isTransitioning} onClick={() => navigateToScene(3)}>
+          <button type="button" className="professional-button professional-button--secondary" onClick={(event) => navigateToScene(3, { focus: event.detail === 0 })}>
             Continue to Services <ArrowUpRight size={17} aria-hidden="true" />
           </button>
         </footer>

@@ -120,7 +120,7 @@ export default function SignalObservatory() {
     status: CopyStatus;
   } | null>(null);
   const copyTimerRef = useRef<number | null>(null);
-  const { navigateToScene, isTransitioning } = useSceneNavigation();
+  const { navigateToScene } = useSceneNavigation();
 
   useEffect(
     () => () => {
@@ -156,20 +156,13 @@ export default function SignalObservatory() {
 
   return (
     <section
-      className="connection-endpoint professional-theme portfolio-scene relative h-full overflow-hidden"
+      id="connect"
+      data-portfolio-section
+      className="connection-endpoint professional-theme portfolio-section relative"
       data-cinematic-scene={6}
       aria-labelledby="connect-title"
-      onKeyDown={(event) => {
-        if (
-          event.target instanceof HTMLElement &&
-          event.target.closest("button, a") &&
-          ["ArrowUp", "ArrowDown", "PageUp", "PageDown"].includes(event.key)
-        ) {
-          event.stopPropagation();
-        }
-      }}
     >
-      <div className="connection-endpoint__scroll" data-scene-scroll>
+      <div className="connection-endpoint__scroll">
         <div className="connection-endpoint__layout professional-container professional-container--wide">
           <header className="connection-endpoint__intro">
             <div>
@@ -178,10 +171,10 @@ export default function SignalObservatory() {
                 <span aria-hidden="true" />
                 LET'S CONNECT
               </p>
-              <h1 id="connect-title" className="connection-endpoint__heading professional-heading">
+              <h2 data-section-heading tabIndex={-1} id="connect-title" className="connection-endpoint__heading professional-heading">
                 Let's build
                 <span> something useful.</span>
-              </h1>
+              </h2>
             </div>
             <div className="connection-endpoint__intro-aside">
               <p className="professional-body">
@@ -200,7 +193,7 @@ export default function SignalObservatory() {
           >
             <div className="connection-endpoint__primary-heading">
               <p className="professional-mono">01 / PRIMARY CHANNEL</p>
-              <h2 id="primary-email-title">Email</h2>
+              <h3 id="primary-email-title">Email</h3>
               <p>{primaryEmail.description}</p>
             </div>
             <div className="connection-endpoint__email-route">
@@ -256,7 +249,7 @@ export default function SignalObservatory() {
             <header className="connection-endpoint__directory-heading">
               <div>
                 <p className="professional-mono">02 / DIRECTORY</p>
-                <h2 id="connection-directory-title">Profiles and résumé</h2>
+                <h3 id="connection-directory-title">Profiles and résumé</h3>
               </div>
               <span className="professional-mono" aria-hidden="true">
                 {String(secondaryConnections.length).padStart(2, "0")} ROUTES
@@ -277,13 +270,12 @@ export default function SignalObservatory() {
           <footer className="connection-endpoint__next">
             <div>
               <p className="professional-label">07 / NEXT</p>
-              <h2>Continue through the portfolio.</h2>
+              <h3>Continue through the portfolio.</h3>
             </div>
             <button
               type="button"
               className="connection-endpoint__continue"
-              disabled={isTransitioning}
-              onClick={() => navigateToScene(6)}
+              onClick={(event) => navigateToScene(6, { focus: event.detail === 0 })}
               data-cursor-label="Continue"
             >
               Continue <ArrowRight size={17} aria-hidden="true" />
@@ -312,7 +304,7 @@ function ConnectionRoute({
         <Icon />
       </span>
       <div className="connection-endpoint__route-copy">
-        <h3>{item.shortLabel}</h3>
+        <h4>{item.shortLabel}</h4>
         <p>{item.description}</p>
         <span className="connection-endpoint__route-value">
           {item.type === "resume" ? "PDF document" : item.value}

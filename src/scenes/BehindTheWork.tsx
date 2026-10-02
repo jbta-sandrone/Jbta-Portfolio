@@ -21,14 +21,15 @@ const principles = [
 ];
 
 export default function BehindTheWork() {
-  const { navigateToScene, isTransitioning } = useSceneNavigation();
+  const { navigateToScene } = useSceneNavigation();
 
   return (
     <section
+      id="behind-the-work"
+      data-portfolio-section
       data-cinematic-scene={2}
-      data-scene-scroll
       aria-labelledby="behind-the-work-title"
-      className="about-profile professional-theme portfolio-scene relative h-full overflow-y-auto overflow-x-hidden overscroll-contain"
+      className="about-profile professional-theme portfolio-section relative"
     >
       <div className="about-profile__guides" aria-hidden="true" />
 
@@ -40,9 +41,9 @@ export default function BehindTheWork() {
             <span>BEHIND THE WORK</span>
           </div>
 
-          <h1 id="behind-the-work-title" className="about-profile__headline professional-heading professional-enter">
+          <h2 data-section-heading tabIndex={-1} id="behind-the-work-title" className="about-profile__headline professional-heading professional-enter">
             A developer focused on <span>useful, thoughtful software.</span>
-          </h1>
+          </h2>
 
           <div className="about-profile__intro-copy professional-body professional-enter">
             <p>
@@ -64,6 +65,7 @@ export default function BehindTheWork() {
               <img
                 src={profilePortrait}
                 alt="Graduation portrait of Jonel Bryan Ablog"
+                loading="lazy"
                 decoding="async"
               />
             </div>
@@ -85,7 +87,7 @@ export default function BehindTheWork() {
           <section className="about-profile__record about-profile__record--education" aria-labelledby="about-education-title">
             <div className="about-profile__section-heading">
               <span className="about-profile__section-number" aria-hidden="true">01</span>
-              <h2 id="about-education-title">Education</h2>
+              <h3 id="about-education-title">Education</h3>
             </div>
             <div className="about-profile__section-body">
               <p className="about-profile__record-name">University of Northern Philippines</p>
@@ -101,7 +103,7 @@ export default function BehindTheWork() {
           <section className="about-profile__record" aria-labelledby="about-direction-title">
             <div className="about-profile__section-heading">
               <span className="about-profile__section-number" aria-hidden="true">02</span>
-              <h2 id="about-direction-title">Career Direction</h2>
+              <h3 id="about-direction-title">Career Direction</h3>
             </div>
             <div className="about-profile__section-body">
               <p className="about-profile__record-name">Software Engineer</p>
@@ -116,7 +118,7 @@ export default function BehindTheWork() {
           <section className="about-profile__record" aria-labelledby="about-strengths-title">
             <div className="about-profile__section-heading">
               <span className="about-profile__section-number" aria-hidden="true">03</span>
-              <h2 id="about-strengths-title">Professional Strengths</h2>
+              <h3 id="about-strengths-title">Professional Strengths</h3>
             </div>
             <ol className="about-profile__indexed-list about-profile__indexed-list--strengths">
               {strengths.map((strength) => <li key={strength}>{strength}</li>)}
@@ -126,7 +128,7 @@ export default function BehindTheWork() {
           <section className="about-profile__record about-profile__record--focus" aria-labelledby="about-focus-title">
             <div className="about-profile__section-heading">
               <span className="about-profile__section-number" aria-hidden="true">04</span>
-              <h2 id="about-focus-title">Current Focus</h2>
+              <h3 id="about-focus-title">Current Focus</h3>
             </div>
             <p className="about-profile__body-copy">
               Currently seeking opportunities as a Software Engineer where I can contribute to
@@ -138,7 +140,7 @@ export default function BehindTheWork() {
           <section className="about-profile__record" aria-labelledby="about-principles-title">
             <div className="about-profile__section-heading">
               <span className="about-profile__section-number" aria-hidden="true">05</span>
-              <h2 id="about-principles-title">Working Principles</h2>
+              <h3 id="about-principles-title">Working Principles</h3>
             </div>
             <ol className="about-profile__indexed-list about-profile__indexed-list--principles">
               {principles.map((principle) => <li key={principle}>{principle}</li>)}
@@ -149,16 +151,14 @@ export default function BehindTheWork() {
             <button
               type="button"
               className="professional-button professional-button--primary"
-              disabled={isTransitioning}
-              onClick={() => navigateToScene(2)}
+              onClick={(event) => navigateToScene(2, { focus: event.detail === 0 })}
             >
               Explore My Projects <ArrowUpRight aria-hidden="true" size={17} />
             </button>
             <button
               type="button"
               className="professional-button professional-button--secondary"
-              disabled={isTransitioning}
-              onClick={() => navigateToScene(5)}
+              onClick={(event) => navigateToScene(5, { focus: event.detail === 0 })}
             >
               Contact Me <ArrowUpRight aria-hidden="true" size={17} />
             </button>

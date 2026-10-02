@@ -4,6 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { X } from "lucide-react";
 import type { ProjectNote, ProjectNoteSection } from "../data/projectNotes";
 import "../styles/project-notes.css";
+import { useDocumentScrollLock } from "./useDocumentScrollLock";
 
 type ProjectNotesDialogProps = {
   note: ProjectNote | null;
@@ -76,6 +77,7 @@ function ProjectNotesSurface({ note, projectNumber, onClose, returnFocusRef }: P
   const scrollRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const reducedMotion = prefersReducedMotion !== false;
+  useDocumentScrollLock(true);
 
   useEffect(() => {
     const root = document.getElementById("root");
@@ -92,7 +94,7 @@ function ProjectNotesSurface({ note, projectNumber, onClose, returnFocusRef }: P
   }, [returnFocusRef]);
 
   const handleKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
-    // The app's scene-navigation listener is on window; dialog keys must not reach it.
+    // Keep modal keyboard interactions within the documentation surface.
     event.stopPropagation();
 
     if (event.key === "Escape") {

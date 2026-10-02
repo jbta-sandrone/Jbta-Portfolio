@@ -1,20 +1,13 @@
 /* Phase 6 — Communication Endpoint. All composition is scoped to Contact. */
 .connection-endpoint {
   isolation: isolate;
-  color-scheme: light;
+  color-scheme: inherit;
   padding-top: max(7rem, calc(env(safe-area-inset-top) + 7rem));
   padding-bottom: max(6rem, calc(env(safe-area-inset-bottom) + 5.5rem));
 }
 
 .connection-endpoint__scroll {
-  height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
   background: var(--portfolio-bg);
-  scrollbar-width: thin;
-  scrollbar-color: var(--portfolio-line-strong) transparent;
-  scroll-padding-block: 1.5rem;
 }
 
 .connection-endpoint__layout {
@@ -90,7 +83,7 @@
   font-size: 0.6875rem;
 }
 
-.connection-endpoint__primary-heading h2 {
+.connection-endpoint__primary-heading h3 {
   margin-top: 0.875rem;
   color: var(--portfolio-text);
   font-size: clamp(1.5rem, 2vw, 2rem);
@@ -176,7 +169,7 @@
   font-size: 0.6875rem;
 }
 
-.connection-endpoint__directory-heading h2 {
+.connection-endpoint__directory-heading h3 {
   margin-top: 0.65rem;
   color: var(--portfolio-text);
   font-size: clamp(1.75rem, 2.8vw, 2.5rem);
@@ -218,7 +211,7 @@
   min-width: 0;
 }
 
-.connection-endpoint__route-copy h3 {
+.connection-endpoint__route-copy h4 {
   color: var(--portfolio-text);
   font-size: 1.125rem;
   font-weight: 600;
@@ -304,7 +297,7 @@
   border-top: 1px solid var(--portfolio-line-strong);
 }
 
-.connection-endpoint__next h2 {
+.connection-endpoint__next h3 {
   margin-top: 0.7rem;
   color: var(--portfolio-text);
   font-size: clamp(1.5rem, 2.4vw, 2rem);

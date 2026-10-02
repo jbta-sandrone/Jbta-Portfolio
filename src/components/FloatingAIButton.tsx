@@ -304,7 +304,7 @@ export default function FloatingAIButton() {
           alt=""
           aria-hidden="true"
           draggable={false}
-          className="neli-summon-portrait relative z-10 select-none object-contain transition-[filter] duration-300 group-hover:brightness-110"
+          className="neli-summon-portrait relative z-10 select-none object-contain"
         />
         <span aria-hidden="true" className="neli-summon-sparkle" />
         <span aria-hidden="true" className="neli-summon-particle neli-summon-particle--one" />

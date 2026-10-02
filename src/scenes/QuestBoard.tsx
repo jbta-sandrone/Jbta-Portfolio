@@ -107,7 +107,7 @@ const services: readonly Service[] = [
 export default function QuestBoard() {
   const [selectedServiceId, setSelectedServiceId] = useState(services[0].id);
   const reducedMotion = useReducedMotion();
-  const { navigateToScene, isTransitioning } = useSceneNavigation();
+  const { navigateToScene } = useSceneNavigation();
 
   const selectService = (serviceId: string) => {
     setSelectedServiceId((current) => (current === serviceId ? "" : serviceId));
@@ -115,37 +115,41 @@ export default function QuestBoard() {
 
   return (
     <section
-      className="services-architecture professional-theme portfolio-scene relative h-full overflow-hidden"
+      id="quest-board"
+      data-portfolio-section
+      className="services-architecture professional-theme portfolio-section relative"
       data-cinematic-scene={4}
       aria-labelledby="quest-board-title"
       data-reduced-motion={reducedMotion ? "true" : undefined}
     >
-      <div className="services-architecture__scroll" data-scene-scroll>
+      <div className="services-architecture__scroll">
         <div className="services-architecture__layout professional-container professional-container--wide">
-          <header className="services-architecture__intro">
-            <p className="services-architecture__marker professional-label">
-              <span>04 / SERVICES</span>
-              <span aria-hidden="true" />
-              WHAT I DO
-            </p>
-            <h1 id="quest-board-title" className="services-architecture__heading professional-heading">
-              Engineering capabilities,<br />
-              <span>from interface to intelligence.</span>
-            </h1>
-            <p className="services-architecture__copy professional-body">
-              I build and contribute to web applications across interfaces, application
-              logic, data, AI features, and deployment.
-            </p>
-            <div className="services-architecture__annotation" aria-hidden="true">
-              <span className="professional-mono">PRACTICE / 04</span>
-              <span className="services-architecture__annotation-rule" />
-              <p>One connected system.<br />Six areas of contribution.</p>
-            </div>
-          </header>
+          <div className="services-architecture__intro-track">
+            <header className="services-architecture__intro">
+              <p className="services-architecture__marker professional-label">
+                <span>04 / SERVICES</span>
+                <span aria-hidden="true" />
+                WHAT I DO
+              </p>
+              <h2 data-section-heading tabIndex={-1} id="quest-board-title" className="services-architecture__heading professional-heading">
+                Engineering capabilities,<br />
+                <span>from interface to intelligence.</span>
+              </h2>
+              <p className="services-architecture__copy professional-body">
+                I build and contribute to web applications across interfaces, application
+                logic, data, AI features, and deployment.
+              </p>
+              <div className="services-architecture__annotation" aria-hidden="true">
+                <span className="professional-mono">PRACTICE / 04</span>
+                <span className="services-architecture__annotation-rule" />
+                <p>One connected system.<br />Six areas of contribution.</p>
+              </div>
+            </header>
+          </div>
 
           <section className="services-architecture__system" aria-labelledby="services-index-title">
             <header className="services-architecture__system-heading">
-              <h2 id="services-index-title" className="professional-label">Capability architecture</h2>
+              <h3 id="services-index-title" className="professional-label">Capability architecture</h3>
               <span className="professional-mono">01 — 06</span>
             </header>
             <ol className="services-architecture__index">
@@ -167,15 +171,14 @@ export default function QuestBoard() {
           <footer className="services-architecture__connection">
             <div>
               <p className="professional-label">START A CONVERSATION</p>
-              <h2>Have something in mind?</h2>
+              <h3>Have something in mind?</h3>
               <p>Let’s talk about what you want to build.</p>
             </div>
             <div className="services-architecture__actions">
               <button
                 type="button"
                 className="professional-button professional-button--primary"
-                disabled={isTransitioning}
-                onClick={() => navigateToScene(5)}
+                onClick={(event) => navigateToScene(5, { focus: event.detail === 0 })}
                 data-cursor-label="Contact"
               >
                 Contact Jonel <ArrowUpRight size={17} aria-hidden="true" />
@@ -183,8 +186,7 @@ export default function QuestBoard() {
               <button
                 type="button"
                 className="services-architecture__next"
-                disabled={isTransitioning}
-                onClick={() => navigateToScene(4)}
+                onClick={(event) => navigateToScene(4, { focus: event.detail === 0 })}
                 data-cursor-label="Technology"
               >
                 Explore Technology <ArrowRight size={17} aria-hidden="true" />
@@ -214,7 +216,7 @@ function ServiceRow({
 
   return (
     <li className={`services-architecture__row${expanded ? " is-expanded" : ""}`}>
-      <h3 className="services-architecture__row-heading">
+      <h4 className="services-architecture__row-heading">
         <button
           type="button"
           className="services-architecture__trigger"
@@ -223,12 +225,6 @@ function ServiceRow({
           aria-labelledby={titleId}
           aria-describedby={descriptionId}
           onClick={onSelect}
-          onKeyDown={(event) => {
-            // Keep scene-level shortcuts from navigating away from a focused service.
-            if (["ArrowUp", "ArrowDown", "PageUp", "PageDown"].includes(event.key)) {
-              event.stopPropagation();
-            }
-          }}
           data-cursor-label={expanded ? "Close" : "View capability"}
         >
           <span className="services-architecture__number" aria-hidden="true">
@@ -243,7 +239,7 @@ function ServiceRow({
             <span className="services-architecture__indicator" />
           </span>
         </button>
-      </h3>
+      </h4>
 
       <div
         id={detailId}
@@ -256,11 +252,11 @@ function ServiceRow({
         <div className="services-architecture__details-clip">
           <div className="services-architecture__details-inner">
             <div className="services-architecture__scope">
-              <h4 className="professional-label">Scope</h4>
+              <h5 className="professional-label">Scope</h5>
               <p>{service.detail}</p>
             </div>
             <div className="services-architecture__capabilities">
-              <h4 className="professional-label">Technologies &amp; capabilities</h4>
+              <h5 className="professional-label">Technologies &amp; capabilities</h5>
               <ul aria-label={`${service.title} technologies and capabilities`}>
                 {service.specialties.map((specialty) => (
                   <li key={specialty}>{specialty}</li>

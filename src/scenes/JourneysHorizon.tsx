@@ -49,24 +49,17 @@ const connectionLinks: readonly ConnectionLink[] = [
   },
 ] as const;
 export default function JourneysHorizon() {
-  const { navigateToScene, isTransitioning } = useSceneNavigation();
+  const { navigateToScene } = useSceneNavigation();
 
   return (
     <section
-      className="closing-frame professional-theme portfolio-scene relative h-full overflow-hidden"
+      id="ending"
+      data-portfolio-section
+      className="closing-frame professional-theme portfolio-section relative"
       data-cinematic-scene={7}
       aria-labelledby="ending-title"
-      onKeyDown={(event) => {
-        if (
-          event.target instanceof HTMLElement &&
-          event.target.closest("button, a") &&
-          ["ArrowUp", "ArrowDown", "PageUp", "PageDown"].includes(event.key)
-        ) {
-          event.stopPropagation();
-        }
-      }}
     >
-      <div className="closing-frame__scroll" data-scene-scroll>
+      <div className="closing-frame__scroll">
         <div className="closing-frame__stage professional-container professional-container--wide">
           <p className="closing-frame__marker professional-label">
             <span>07 / CLOSING</span>
@@ -76,10 +69,10 @@ export default function JourneysHorizon() {
 
           <div className="closing-frame__composition">
             <div className="closing-frame__message">
-              <h1 id="ending-title" className="closing-frame__heading professional-heading">
+              <h2 data-section-heading tabIndex={-1} id="ending-title" className="closing-frame__heading professional-heading">
                 Ideas become systems.
                 <span> Let’s build the next one.</span>
-              </h1>
+              </h2>
             </div>
             <div className="closing-frame__action">
               <p>
@@ -92,8 +85,7 @@ export default function JourneysHorizon() {
               <button
                 type="button"
                 className="professional-button professional-button--primary"
-                disabled={isTransitioning}
-                onClick={() => navigateToScene(5)}
+                onClick={(event) => navigateToScene(5, { focus: event.detail === 0 })}
                 data-cursor-label="Contact"
                 aria-label="Let's connect — return to Contact"
               >
@@ -109,26 +101,17 @@ export default function JourneysHorizon() {
           </div>
         </div>
 
-        <PortfolioFooter
-          disabled={isTransitioning}
-          onNavigate={navigateToScene}
-        />
       </div>
     </section>
   );
 }
 
-function PortfolioFooter({
-  disabled,
-  onNavigate,
-}: {
-  disabled: boolean;
-  onNavigate: (sceneIndex: number) => void;
-}) {
+export function PortfolioFooter() {
+  const { navigateToScene } = useSceneNavigation();
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="closing-footer" aria-labelledby="closing-footer-title">
+    <footer className="closing-footer professional-theme" data-portfolio-footer aria-labelledby="closing-footer-title">
       <div className="closing-footer__inner professional-container professional-container--wide">
         <div className="closing-footer__topline" aria-hidden="true">
           <span className="professional-mono">PORTFOLIO / 07</span>
@@ -149,8 +132,7 @@ function PortfolioFooter({
                 <li key={destination.sceneIndex}>
                   <button
                     type="button"
-                    disabled={disabled}
-                    onClick={() => onNavigate(destination.sceneIndex)}
+                    onClick={(event) => navigateToScene(destination.sceneIndex, { focus: event.detail === 0 })}
                     data-cursor-label={destination.label}
                     aria-label={`Go to ${destination.label}`}
                   >
@@ -208,8 +190,7 @@ function PortfolioFooter({
           <p>Designed and developed by Jonel Bryan Ablog. Built with React and TypeScript.</p>
           <button
             type="button"
-            disabled={disabled}
-            onClick={() => onNavigate(0)}
+            onClick={(event) => navigateToScene(0, { focus: event.detail === 0 })}
             className="closing-footer__return"
             data-cursor-label="Introduction"
             aria-label="Return to Introduction"

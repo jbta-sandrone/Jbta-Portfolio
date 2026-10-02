@@ -15,8 +15,8 @@
   min-height: 50px;
   border: 1px solid var(--portfolio-line-strong);
   border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 8px 26px rgb(18 27 40 / 14%);
+  background: var(--portfolio-surface);
+  box-shadow: 0 8px 26px rgb(var(--portfolio-shadow-rgb) / 14%);
   overflow: hidden;
 }
 .scene-nav__step,.scene-nav__current {
@@ -25,7 +25,7 @@
   justify-content: center;
   min-height: 48px;
   border: 0;
-  background: #fff;
+  background: var(--portfolio-surface);
   color: var(--portfolio-text);
   cursor: pointer;
 }
@@ -34,7 +34,7 @@
 .scene-nav__step:last-child { border-left: 1px solid var(--portfolio-line); }
 .scene-nav__step:hover:not(:disabled),.scene-nav__current:hover,
 .scene-nav__current.is-open { background: var(--portfolio-accent-soft); color: var(--portfolio-accent); }
-.scene-nav__step:disabled { color: #9aa5af; cursor: not-allowed; }
+.scene-nav__step:disabled { color: var(--portfolio-control-disabled); cursor: not-allowed; }
 .scene-nav__current {
   gap: 0.65rem;
   justify-content: flex-start;
@@ -55,7 +55,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.scene-nav__current svg { color: #687684; }
+.scene-nav__current svg { color: var(--portfolio-control-icon); }
 .scene-nav__step:focus-visible,.scene-nav__current:focus-visible,.scene-nav__item:focus-visible {
   position: relative;
   z-index: 2;
@@ -71,9 +71,9 @@
   overflow-y: auto;
   border: 1px solid var(--portfolio-line-strong);
   border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 15px 40px rgb(18 27 40 / 15%);
-  scrollbar-color: #b8c3cd transparent;
+  background: var(--portfolio-surface);
+  box-shadow: 0 15px 40px rgb(var(--portfolio-shadow-rgb) / 15%);
+  scrollbar-color: var(--portfolio-nav-scrollbar) transparent;
 }
 .scene-nav__menu-header {
   display: flex;
@@ -96,7 +96,7 @@
   border-left: 2px solid transparent;
   border-radius: 4px;
   padding: 0.5rem 0.7rem;
-  background: #fff;
+  background: var(--portfolio-surface);
   color: var(--portfolio-text);
   text-align: left;
   font-size: 0.8rem;

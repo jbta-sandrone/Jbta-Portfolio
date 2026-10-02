@@ -1,6 +1,5 @@
 .about-profile {
   position: relative;
-  min-height: 100%;
   isolation: isolate;
   background: var(--portfolio-bg);
   color: var(--portfolio-text);
@@ -12,8 +11,8 @@
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(to right, transparent calc(50% - 1px), rgb(91 110 130 / 4%) calc(50% - 1px), rgb(91 110 130 / 4%) 50%, transparent 50%),
-    repeating-linear-gradient(to bottom, transparent 0, transparent 159px, rgb(91 110 130 / 4%) 160px);
+    linear-gradient(to right, transparent calc(50% - 1px), rgb(var(--portfolio-grid-rgb) / 4%) calc(50% - 1px), rgb(var(--portfolio-grid-rgb) / 4%) 50%, transparent 50%),
+    repeating-linear-gradient(to bottom, transparent 0, transparent 159px, rgb(var(--portfolio-grid-rgb) / 4%) 160px);
   background-size: min(100%, 88rem) 100%, 100% 160px;
   background-position: center top;
   mask-image: linear-gradient(to bottom, transparent, black 10%, black 88%, transparent);
@@ -23,7 +22,6 @@
   position: relative;
   z-index: 1;
   display: grid;
-  min-height: 100%;
   grid-template-columns: minmax(0, 1.55fr) minmax(17rem, 0.9fr);
   grid-template-areas:
     "intro identity"
@@ -74,7 +72,7 @@
 }
 
 .about-profile__headline span {
-  color: #4e5965;
+  color: var(--portfolio-text-emphasis);
   font-weight: 450;
 }
 
@@ -243,7 +241,7 @@
   font-weight: 700;
 }
 
-.about-profile__section-heading h2 {
+.about-profile__section-heading h3 {
   margin: 0;
   color: var(--portfolio-text);
   font-size: 0.875rem;

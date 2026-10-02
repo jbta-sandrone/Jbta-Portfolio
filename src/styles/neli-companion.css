@@ -1,10 +1,10 @@
 .neli-control {
-  --neli-bg: #f8f8f5;
-  --neli-surface: #fff;
-  --neli-text: #15191f;
-  --neli-muted: #596675;
-  --neli-line: #cbd3da;
-  --neli-blue: #2458c6;
+  --neli-bg: var(--portfolio-bg);
+  --neli-surface: var(--portfolio-surface);
+  --neli-text: var(--portfolio-text);
+  --neli-muted: var(--portfolio-control-muted);
+  --neli-line: var(--portfolio-control-line);
+  --neli-blue: var(--portfolio-accent);
   color: var(--neli-text);
   font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
 }
@@ -12,10 +12,10 @@
 .neli-summon-button {
   width: 56px;
   height: 56px;
-  border: 1px solid #b7c2cc;
+  border: 1px solid var(--portfolio-control-border);
   border-radius: 16px;
   background: var(--neli-surface);
-  box-shadow: 0 8px 28px rgb(18 27 40 / 12%);
+  box-shadow: 0 8px 28px rgb(var(--portfolio-shadow-rgb) / 12%);
   overflow: hidden;
   cursor: pointer;
 }
@@ -25,8 +25,8 @@
   bottom: 0;
   width: 13px;
   height: 13px;
-  border-top: 1px solid #fff;
-  border-left: 1px solid #fff;
+  border-top: 1px solid var(--portfolio-surface);
+  border-left: 1px solid var(--portfolio-surface);
   background: var(--neli-blue);
   content: "";
 }
@@ -41,14 +41,13 @@
 .neli-summon-portrait {
   width: 48px;
   height: 48px;
-  filter: grayscale(1) contrast(1.08);
   image-rendering: auto;
 }
 .neli-panel {
-  border: 1px solid #b7c2cc;
+  border: 1px solid var(--portfolio-control-border);
   border-radius: 12px;
   background: var(--neli-surface);
-  box-shadow: 0 18px 55px rgb(18 27 40 / 18%);
+  box-shadow: 0 18px 55px rgb(var(--portfolio-shadow-rgb) / 18%);
 }
 .neli-header {
   border-bottom: 1px solid var(--neli-line);
@@ -57,7 +56,6 @@
 .neli-header-portrait {
   border: 1px solid var(--neli-line);
   border-radius: 8px;
-  filter: grayscale(1);
   image-rendering: auto;
 }
 .neli-title { color: var(--neli-text); font-size: 0.9rem; letter-spacing: 0.06em; }
@@ -67,7 +65,7 @@
   border-radius: 6px;
   color: var(--neli-text);
 }
-.neli-titlebar-button:hover { border-color: var(--neli-line); background: #edf1f5; }
+.neli-titlebar-button:hover { border-color: var(--neli-line); background: var(--portfolio-control-hover); }
 .neli-glyph--close { display: block; position: relative; width: 16px; height: 16px; }
 .neli-glyph--close::before,.neli-glyph--close::after {
   position: absolute; top: 7px; left: 0; width: 16px; height: 1.5px;
@@ -75,11 +73,10 @@
 }
 .neli-glyph--close::before { transform: rotate(45deg); }
 .neli-glyph--close::after { transform: rotate(-45deg); }
-.neli-message-scroll { background: #f7f8f7; scrollbar-color: #aeb9c4 transparent; }
+.neli-message-scroll { background: var(--portfolio-message-canvas); scrollbar-color: var(--portfolio-scrollbar) transparent; }
 .neli-message-portrait {
-  border: 1px solid #c4cdd5;
+  border: 1px solid var(--portfolio-avatar-border);
   border-radius: 7px;
-  filter: grayscale(1);
   image-rendering: auto;
 }
 .neli-message-bubble {
@@ -90,17 +87,17 @@
   line-height: 1.55;
   box-shadow: none;
 }
-.neli-message-bubble--oracle { background: #fff; }
+.neli-message-bubble--oracle { background: var(--portfolio-surface); }
 .neli-message-bubble--traveler {
-  border-color: #2458c6;
-  background: #e8eefc;
+  border-color: var(--portfolio-accent);
+  background: var(--portfolio-accent-soft);
 }
-.neli-message-bubble:hover { border-color: #879db8; }
-.neli-footer { border-top: 1px solid var(--neli-line); background: #fff; }
+.neli-message-bubble:hover { border-color: var(--portfolio-bubble-hover); }
+.neli-footer { border-top: 1px solid var(--neli-line); background: var(--portfolio-surface); }
 .neli-prompt-trigger {
   border: 1px solid var(--neli-line);
   border-radius: 6px;
-  background: #fff;
+  background: var(--portfolio-surface);
   color: var(--neli-text);
   cursor: pointer;
 }
@@ -117,9 +114,9 @@
 .neli-suggestion-panel {
   border: 1px solid var(--neli-line);
   border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 8px 24px rgb(18 27 40 / 12%);
-  scrollbar-color: #aeb9c4 transparent;
+  background: var(--portfolio-surface);
+  box-shadow: 0 8px 24px rgb(var(--portfolio-shadow-rgb) / 12%);
+  scrollbar-color: var(--portfolio-scrollbar) transparent;
 }
 .neli-suggestion-group { border-bottom: 1px solid var(--neli-line); }
 .neli-suggestion-label {
@@ -127,7 +124,7 @@
   font-family: "SFMono-Regular",Consolas,monospace;
 }
 .neli-prompt-option { border-radius: 5px; color: var(--neli-text); }
-.neli-prompt-option:hover,.neli-prompt-option:focus-visible { background: #e8eefc; color: var(--neli-blue); }
+.neli-prompt-option:hover,.neli-prompt-option:focus-visible { background: var(--portfolio-accent-soft); color: var(--neli-blue); }
 .neli-prompt-arrow {
   width: 7px;
   height: 7px;
@@ -138,20 +135,20 @@
 .neli-command-input {
   border: 1px solid var(--neli-line);
   border-radius: 6px;
-  background: #fff;
+  background: var(--portfolio-surface);
   color: var(--neli-text);
   caret-color: var(--neli-blue);
 }
-.neli-command-input::placeholder { color: #74818e; }
+.neli-command-input::placeholder { color: var(--portfolio-placeholder); }
 .neli-command-input:focus { border-color: var(--neli-blue); }
 .neli-send-button {
   border: 1px solid var(--neli-blue);
   border-radius: 6px;
-  background: var(--neli-blue);
-  color: #fff;
+  background: var(--portfolio-accent-solid);
+  color: var(--portfolio-on-accent);
   cursor: pointer;
 }
-.neli-send-button:hover:not(:disabled) { background: #174bb5; }
+.neli-send-button:hover:not(:disabled) { background: var(--portfolio-send-hover); }
 .neli-glyph--rune {
   display: block;
   width: 10px;
@@ -160,7 +157,7 @@
   border-right: 2px solid currentColor;
   transform: rotate(45deg);
 }
-.neli-typing { border: 1px solid var(--neli-line); border-radius: 8px; background: #fff; }
+.neli-typing { border: 1px solid var(--neli-line); border-radius: 8px; background: var(--portfolio-surface); }
 .neli-typing-pixel {
   width: 5px;
   height: 5px;

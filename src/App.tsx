@@ -1,30 +1,23 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type TouchEvent as ReactTouchEvent,
-} from "react";
-import {
-  AnimatePresence,
-  motion,
-  useReducedMotion,
-  type Variants,
-} from "motion/react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useReducedMotion } from "motion/react";
 import FloatingAIButton from "./components/FloatingAIButton";
 import PortfolioIntro from "./components/PortfolioIntro";
 import { shouldShowPortfolioIntro } from "./components/portfolioIntroSession";
 import PortfolioCursor from "./components/PortfolioCursor";
 import SceneNavigationControl from "./components/SceneNavigationControl";
-import { SceneNavigationContext } from "./components/SceneNavigationContext";
+import ThemeToggle from "./components/ThemeToggle";
+import {
+  SceneNavigationContext,
+  type SectionNavigationOptions,
+} from "./components/SceneNavigationContext";
+import { useDocumentScrollLock } from "./components/useDocumentScrollLock";
 import Arrival from "./scenes/Arrival";
 import BehindTheWork from "./scenes/BehindTheWork";
 import HallOfCreations from "./scenes/HallOfCreations";
 import QuestBoard from "./scenes/QuestBoard";
 import ArcaneFoundry from "./scenes/ArcaneFoundry";
 import SignalObservatory from "./scenes/SignalObservatory";
-import JourneysHorizon from "./scenes/JourneysHorizon";
+import JourneysHorizon, { PortfolioFooter } from "./scenes/JourneysHorizon";
 
 const SCENES = [
   { id: "arrival", label: "Introduction", Component: Arrival },
@@ -36,397 +29,176 @@ const SCENES = [
   { id: "ending", label: "Closing", Component: JourneysHorizon },
 ] as const;
 
-type HistoryMode = "push" | "none";
+const RELOAD_POSITION_KEY = "jbta-portfolio-reload-position";
 
-type TouchStart = {
-  x: number;
-  y: number;
-  scrollElement: HTMLElement | null;
-  scrollTop: number;
-};
-
-function getSceneIndexFromHash() {
+function getSectionIndexFromHash() {
   const hash = window.location.hash.slice(1).toLowerCase();
   const index = SCENES.findIndex((scene) => scene.id === hash);
   return index === -1 ? 0 : index;
 }
 
-function getSceneScrollElement(target: EventTarget | null) {
-  return target instanceof Element
-    ? target.closest<HTMLElement>("[data-scene-scroll]")
-    : null;
-}
-
-function canScrollInDirection(element: HTMLElement | null, direction: 1 | -1) {
-  if (!element || element.scrollHeight <= element.clientHeight + 1) return false;
-
-  return direction === 1
-    ? element.scrollTop + element.clientHeight < element.scrollHeight - 1
-    : element.scrollTop > 1;
-}
-
 function App() {
   const prefersReducedMotion = useReducedMotion();
   const [introActive, setIntroActive] = useState(shouldShowPortfolioIntro);
-  const [sceneExperienceReady, setSceneExperienceReady] = useState(
-    () => !introActive,
-  );
-  const [activeScene, setActiveScene] = useState(getSceneIndexFromHash);
-  const [direction, setDirection] = useState<1 | -1>(1);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const activeSceneRef = useRef(activeScene);
-  const transitionLockedRef = useRef(false);
-  const pendingHistorySceneRef = useRef<number | null>(null);
-  const focusNewSceneRef = useRef(false);
-  const wheelDeltaRef = useRef(0);
-  const wheelResetTimerRef = useRef<number | null>(null);
-  const touchStartRef = useRef<TouchStart | null>(null);
+  const [documentReady, setDocumentReady] = useState(() => !introActive);
+  const [activeScene, setActiveScene] = useState(getSectionIndexFromHash);
 
-  const commitScene = useCallback((nextScene: number, historyMode: HistoryMode) => {
-    const boundedScene = Math.max(0, Math.min(SCENES.length - 1, nextScene));
-    const currentScene = activeSceneRef.current;
-    if (boundedScene === currentScene) return;
+  useDocumentScrollLock(introActive);
 
-    // Keyboard and history navigation need an announced destination; pointer
-    // navigation keeps its current focus to avoid unexpected focus stealing.
-    focusNewSceneRef.current =
-      focusNewSceneRef.current ||
-      historyMode === "none" ||
-      (document.activeElement instanceof HTMLElement &&
-        document.activeElement.matches(":focus-visible"));
-    transitionLockedRef.current = true;
-    setIsTransitioning(true);
-    setDirection(boundedScene > currentScene ? 1 : -1);
-    activeSceneRef.current = boundedScene;
-    setActiveScene(boundedScene);
-
-    if (historyMode === "push") {
-      window.history.pushState(null, "", `#${SCENES[boundedScene].id}`);
-    }
+  useEffect(() => {
+    const rememberPosition = () => {
+      const body = document.body;
+      const locked = body.style.position === "fixed";
+      try {
+        // Save only on document departure, never on every passive scroll.
+        sessionStorage.setItem(RELOAD_POSITION_KEY, JSON.stringify({
+          url: window.location.href,
+          left: locked ? -parseFloat(body.style.left) || 0 : window.scrollX,
+          top: locked ? -parseFloat(body.style.top) || 0 : window.scrollY,
+        }));
+      } catch {
+        // Storage restrictions must not interfere with native navigation.
+      }
+    };
+    window.addEventListener("pagehide", rememberPosition);
+    return () => window.removeEventListener("pagehide", rememberPosition);
   }, []);
 
-  const requestScene = useCallback(
-    (
-      nextScene: number,
-      historyMode: HistoryMode = "push",
-      queueIfLocked = false,
-    ) => {
-      const boundedScene = Math.max(0, Math.min(SCENES.length - 1, nextScene));
-      if (boundedScene === activeSceneRef.current) return;
-
-      if (transitionLockedRef.current) {
-        if (queueIfLocked) pendingHistorySceneRef.current = boundedScene;
-        return;
-      }
-
-      commitScene(boundedScene, historyMode);
-    },
-    [commitScene],
-  );
-
-  const moveBy = useCallback(
-    (amount: 1 | -1) => requestScene(activeSceneRef.current + amount),
-    [requestScene],
-  );
-
-  const finishTransition = useCallback(
-    (renderedScene: number) => {
-      if (renderedScene !== activeSceneRef.current) return;
-
-      transitionLockedRef.current = false;
-      setIsTransitioning(false);
-
-      const pendingScene = pendingHistorySceneRef.current;
-      pendingHistorySceneRef.current = null;
-
-      if (pendingScene !== null && pendingScene !== activeSceneRef.current) {
-        commitScene(pendingScene, "none");
-        return;
-      }
-
-      if (focusNewSceneRef.current) {
-        focusNewSceneRef.current = false;
-        window.requestAnimationFrame(() => {
-          const heading = document.querySelector<HTMLElement>(
-            `#${SCENES[renderedScene].id} h1`,
-          );
-          if (!heading) return;
-          heading.tabIndex = -1;
-          heading.focus({ preventScroll: true });
-        });
-      }
-    },
-    [commitScene],
-  );
-
-  useEffect(() => {
-    const expectedHash = `#${SCENES[activeSceneRef.current].id}`;
-    if (window.location.hash !== expectedHash) {
-      window.history.replaceState(null, "", expectedHash);
-    }
-
-    const syncSceneFromHash = () => {
-      const hash = window.location.hash.slice(1).toLowerCase();
-      const sceneIndex = SCENES.findIndex((scene) => scene.id === hash);
-      if (sceneIndex !== -1) requestScene(sceneIndex, "none", true);
-    };
-
-    window.addEventListener("popstate", syncSceneFromHash);
-    window.addEventListener("hashchange", syncSceneFromHash);
-
-    return () => {
-      window.removeEventListener("popstate", syncSceneFromHash);
-      window.removeEventListener("hashchange", syncSceneFromHash);
-    };
-  }, [requestScene]);
-
-  useEffect(() => {
-    const handleWheel = (event: WheelEvent) => {
-      if (introActive) {
-        event.preventDefault();
-        return;
-      }
-
-      if (event.ctrlKey || Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
-
-      const wheelDirection: 1 | -1 = event.deltaY > 0 ? 1 : -1;
-      const scrollElement = getSceneScrollElement(event.target);
-      if (canScrollInDirection(scrollElement, wheelDirection)) {
-        wheelDeltaRef.current = 0;
-        return;
-      }
-
-      event.preventDefault();
-      if (transitionLockedRef.current) return;
-
-      wheelDeltaRef.current += event.deltaY;
-      if (wheelResetTimerRef.current !== null) {
-        window.clearTimeout(wheelResetTimerRef.current);
-      }
-      wheelResetTimerRef.current = window.setTimeout(() => {
-        wheelDeltaRef.current = 0;
-      }, 180);
-
-      if (Math.abs(wheelDeltaRef.current) >= 48) {
-        const directionFromWheel: 1 | -1 = wheelDeltaRef.current > 0 ? 1 : -1;
-        wheelDeltaRef.current = 0;
-        moveBy(directionFromWheel);
-      }
-    };
-
-    const handleKeyDown = (event: KeyboardEvent) => {
+  const navigateToScene = useCallback(
+    (sectionIndex: number, options: SectionNavigationOptions = {}) => {
       if (introActive) return;
-      if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+      const section = SCENES[Math.max(0, Math.min(SCENES.length - 1, sectionIndex))];
+      const target = document.getElementById(section.id);
+      if (!target) return;
 
-      const target = event.target as HTMLElement | null;
-      if (
-        target?.isContentEditable ||
-        target?.matches("input, textarea, select")
-      ) {
-        return;
+      // Explicit actions own the hash; passive scrolling only updates the navigator.
+      if (window.location.hash !== `#${section.id}`) {
+        window.history.pushState(null, "", `#${section.id}`);
       }
-
-      if (event.key === "ArrowDown" || event.key === "PageDown") {
-        event.preventDefault();
-        const scrollElement = document.querySelector<HTMLElement>(
-          "[data-active-scene] [data-scene-scroll]",
-        );
-        if (canScrollInDirection(scrollElement, 1)) {
-          scrollElement?.scrollBy({
-            top: event.key === "PageDown" ? scrollElement.clientHeight * 0.8 : 48,
-            behavior: prefersReducedMotion ? "auto" : "smooth",
-          });
-          return;
-        }
-        if (!transitionLockedRef.current && activeSceneRef.current < SCENES.length - 1) {
-          focusNewSceneRef.current = true;
-        }
-        moveBy(1);
-      } else if (event.key === "ArrowUp" || event.key === "PageUp") {
-        event.preventDefault();
-        const scrollElement = document.querySelector<HTMLElement>(
-          "[data-active-scene] [data-scene-scroll]",
-        );
-        if (canScrollInDirection(scrollElement, -1)) {
-          scrollElement?.scrollBy({
-            top: event.key === "PageUp" ? scrollElement.clientHeight * -0.8 : -48,
-            behavior: prefersReducedMotion ? "auto" : "smooth",
-          });
-          return;
-        }
-        if (!transitionLockedRef.current && activeSceneRef.current > 0) {
-          focusNewSceneRef.current = true;
-        }
-        moveBy(-1);
+      target.scrollIntoView({
+        block: "start",
+        behavior: prefersReducedMotion ? "instant" : "smooth",
+      });
+      if (options.focus) {
+        target.querySelector<HTMLElement>("[data-section-heading]")?.focus({ preventScroll: true });
       }
-    };
-
-    window.addEventListener("wheel", handleWheel, { passive: false });
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("wheel", handleWheel);
-      window.removeEventListener("keydown", handleKeyDown);
-      if (wheelResetTimerRef.current !== null) {
-        window.clearTimeout(wheelResetTimerRef.current);
-      }
-    };
-  }, [introActive, moveBy, prefersReducedMotion]);
-
-  const handleTouchStart = (event: ReactTouchEvent<HTMLDivElement>) => {
-    if (introActive) {
-      touchStartRef.current = null;
-      return;
-    }
-
-    if (event.touches.length !== 1) return;
-
-    const touch = event.touches[0];
-    const scrollElement = getSceneScrollElement(event.target);
-    touchStartRef.current = {
-      x: touch.clientX,
-      y: touch.clientY,
-      scrollElement,
-      scrollTop: scrollElement?.scrollTop ?? 0,
-    };
-  };
-
-  const handleTouchEnd = (event: ReactTouchEvent<HTMLDivElement>) => {
-    if (introActive) {
-      touchStartRef.current = null;
-      return;
-    }
-
-    const start = touchStartRef.current;
-    const touch = event.changedTouches[0];
-    touchStartRef.current = null;
-    if (!start || !touch || transitionLockedRef.current) return;
-
-    const deltaX = touch.clientX - start.x;
-    const deltaY = touch.clientY - start.y;
-    if (Math.abs(deltaY) < 52 || Math.abs(deltaY) <= Math.abs(deltaX) * 1.2) {
-      return;
-    }
-
-    const swipeDirection: 1 | -1 = deltaY < 0 ? 1 : -1;
-    const scrollElement = start.scrollElement;
-    const couldScrollAtStart = scrollElement
-      ? swipeDirection === 1
-        ? start.scrollTop + scrollElement.clientHeight < scrollElement.scrollHeight - 1
-        : start.scrollTop > 1
-      : false;
-
-    if (!couldScrollAtStart) moveBy(swipeDirection);
-  };
-
-  const CurrentScene = SCENES[activeScene].Component;
-  const sceneNavigationValue = useMemo(
-    () => ({
-      navigateToScene: (sceneIndex: number) => requestScene(sceneIndex),
-      isTransitioning,
-    }),
-    [isTransitioning, requestScene],
+    },
+    [introActive, prefersReducedMotion],
   );
-  const sceneVariants: Variants = {
-    initial: (travelDirection: 1 | -1) =>
-      prefersReducedMotion
-        ? { opacity: 0 }
-        : {
-            opacity: 0,
-            y: travelDirection * 44,
-            scale: 0.985,
-            filter: "blur(8px)",
-          },
-    animate: prefersReducedMotion
-      ? { opacity: 1, transition: { duration: 0.18 } }
-      : {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          filter: "blur(0px)",
-          transition: { duration: 0.54, ease: [0.22, 1, 0.36, 1] },
+
+  useEffect(() => {
+    if (!documentReady) return;
+    const targets = SCENES.map((scene, index) => ({
+      element: document.getElementById(scene.id),
+      index,
+    }));
+    // The page-level footer belongs to the final section's navigator state.
+    targets.push({ element: document.querySelector("[data-portfolio-footer]"), index: SCENES.length - 1 });
+    let observer: IntersectionObserver;
+    const observeSections = () => {
+      observer?.disconnect();
+      const intersecting = new Map<Element, number>();
+      const activationY = Math.round(window.innerHeight * 0.28);
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const index = targets.find((target) => target.element === entry.target)?.index;
+            if (index === undefined) return;
+            if (entry.isIntersecting) intersecting.set(entry.target, index);
+            else intersecting.delete(entry.target);
+          });
+          if (!intersecting.size) return;
+          const nextIndex = Math.max(...intersecting.values());
+          setActiveScene((current) => current === nextIndex ? current : nextIndex);
         },
-    exit: (travelDirection: 1 | -1) =>
-      prefersReducedMotion
-        ? { opacity: 0, transition: { duration: 0.14 } }
-        : {
-            opacity: 0,
-            y: travelDirection * -32,
-            scale: 0.992,
-            filter: "blur(6px)",
-            transition: { duration: 0.42, ease: [0.4, 0, 1, 1] },
-          },
-  };
+        {
+          root: null,
+          // A one-pixel activation rail works for both short and very tall sections.
+          rootMargin: `-${activationY}px 0px -${Math.max(0, window.innerHeight - activationY - 1)}px 0px`,
+          threshold: 0,
+        },
+      );
+      targets.forEach(({ element }) => { if (element) observer.observe(element); });
+    };
+    observeSections();
+    window.addEventListener("resize", observeSections, { passive: true });
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", observeSections);
+    };
+  }, [documentReady]);
 
-  const revealSceneExperience = useCallback(() => {
-    setSceneExperienceReady(true);
-  }, []);
+  useEffect(() => {
+    if (!documentReady || introActive) return;
+    let firstFrame = 0;
+    let secondFrame = 0;
+    const positionInitialHash = () => {
+      firstFrame = window.requestAnimationFrame(() => {
+        secondFrame = window.requestAnimationFrame(() => {
+          const navigation = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
+          if (navigation?.type === "reload") {
+            try {
+              const saved: unknown = JSON.parse(sessionStorage.getItem(RELOAD_POSITION_KEY) ?? "null");
+              if (saved && typeof saved === "object" && "url" in saved && saved.url === window.location.href &&
+                  "top" in saved && typeof saved.top === "number" && Number.isFinite(saved.top) && saved.top >= 0 &&
+                  "left" in saved && typeof saved.left === "number" && Number.isFinite(saved.left)) {
+                // Native restoration can run before React has mounted the tall
+                // document. Correct only a demonstrated reload-position miss.
+                if (Math.abs(window.scrollY - saved.top) > 1 || Math.abs(window.scrollX - saved.left) > 1) {
+                  window.scrollTo({ top: saved.top, left: saved.left, behavior: "instant" });
+                }
+                return;
+              }
+            } catch {
+              // Invalid/unavailable storage falls back to the native hash.
+            }
+          }
+          // Let the browser restore an exact position on refresh/history first.
+          // A first-session intro can delay mounting the native hash destination.
+          if (window.scrollY > 1) return;
+          const hash = window.location.hash.slice(1).toLowerCase();
+          if (!SCENES.some((scene) => scene.id === hash)) return;
+          document.getElementById(hash)?.scrollIntoView({ behavior: "instant", block: "start" });
+        });
+      });
+    };
+    if (document.readyState === "complete") positionInitialHash();
+    else window.addEventListener("load", positionInitialHash, { once: true });
+    return () => {
+      window.removeEventListener("load", positionInitialHash);
+      window.cancelAnimationFrame(firstFrame);
+      window.cancelAnimationFrame(secondFrame);
+    };
+  }, [documentReady, introActive]);
 
+  const navigationValue = useMemo(() => ({ navigateToScene }), [navigateToScene]);
+  const revealDocument = useCallback(() => setDocumentReady(true), []);
   const completeIntro = useCallback(() => {
-    setSceneExperienceReady(true);
+    setDocumentReady(true);
     setIntroActive(false);
   }, []);
 
   return (
-    <SceneNavigationContext.Provider value={sceneNavigationValue}>
-      <div
-        className="portfolio-world-shell portfolio-scene relative isolate h-dvh overflow-hidden"
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-        onTouchCancel={() => {
-          touchStartRef.current = null;
-        }}
-      >
+    <SceneNavigationContext.Provider value={navigationValue}>
+      <div className="portfolio-world-shell relative isolate">
         <PortfolioCursor />
-
-        {sceneExperienceReady && (
-          <>
-            <div aria-hidden={introActive || undefined} inert={introActive}>
-              <FloatingAIButton />
-            </div>
-
-            <main
-              id="portfolio-world"
-              aria-hidden={introActive || undefined}
-              inert={introActive}
-              className="portfolio-world relative z-10 h-full overflow-hidden"
-            >
-              <AnimatePresence mode="sync" custom={direction}>
-                <motion.div
-                  key={SCENES[activeScene].id}
-                  id={SCENES[activeScene].id}
-                  data-active-scene
-                  custom={direction}
-                  variants={sceneVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  onAnimationComplete={() => finishTransition(activeScene)}
-                  className="portfolio-scene-frame absolute inset-0 h-full overflow-hidden"
-                >
-                  <CurrentScene />
-                </motion.div>
-              </AnimatePresence>
+        {documentReady && (
+          <div aria-hidden={introActive || undefined} inert={introActive}>
+            <FloatingAIButton />
+            <ThemeToggle />
+            <main id="portfolio-world" className="portfolio-world relative">
+              {SCENES.map(({ id, Component }) => <Component key={id} />)}
             </main>
-
-            <div aria-hidden={introActive || undefined} inert={introActive}>
-              <SceneNavigationControl
-                scenes={SCENES}
-                activeScene={activeScene}
-                isTransitioning={isTransitioning}
-                onMove={moveBy}
-                onSelectScene={requestScene}
-              />
-            </div>
-          </>
+            <PortfolioFooter />
+            <SceneNavigationControl
+              scenes={SCENES}
+              activeScene={activeScene}
+              onMove={(amount, options) => navigateToScene(activeScene + amount, options)}
+              onSelectScene={navigateToScene}
+            />
+          </div>
         )}
-
-        {introActive && (
-          <PortfolioIntro
-            onRevealStart={revealSceneExperience}
-            onComplete={completeIntro}
-          />
-        )}
+        {introActive && <PortfolioIntro onRevealStart={revealDocument} onComplete={completeIntro} />}
       </div>
     </SceneNavigationContext.Provider>
   );

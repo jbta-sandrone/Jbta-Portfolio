@@ -1,20 +1,13 @@
 /* Phase 7 — Closing Frame. Styles remain local to Journey's Horizon. */
 .closing-frame {
   isolation: isolate;
-  color-scheme: light;
+  color-scheme: inherit;
   padding-top: max(7rem, calc(env(safe-area-inset-top) + 7rem));
-  padding-bottom: max(6rem, calc(env(safe-area-inset-bottom) + 5.5rem));
+  padding-bottom: 0;
 }
 
 .closing-frame__scroll {
-  height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
   background: var(--portfolio-bg);
-  scrollbar-width: thin;
-  scrollbar-color: var(--portfolio-line-strong) transparent;
-  scroll-padding-block: 1.5rem;
 }
 
 .closing-frame__stage {
@@ -123,6 +116,7 @@
 }
 
 .closing-footer {
+  padding-bottom: max(6rem, calc(env(safe-area-inset-bottom) + 5.5rem));
   border-top: 2px solid var(--portfolio-text);
   background: var(--portfolio-bg);
   color: var(--portfolio-text);
