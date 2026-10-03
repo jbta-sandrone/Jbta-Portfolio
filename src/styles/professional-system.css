@@ -1,5 +1,5 @@
 /* Document-level colors also reach portalled documentation, cursor and global UI.
-   Light values are the approved palette; component geometry remains opt-in. */
+   Amber identifies interactions and precision markings; surfaces stay neutral. */
 :root {
   color-scheme: light;
   --portfolio-bg: #f8f8f5;
@@ -10,15 +10,16 @@
   --portfolio-text-muted: #606d7a;
   --portfolio-line: #dce2e7;
   --portfolio-line-strong: #b6c1ca;
-  --portfolio-accent: #2458c6;
-  --portfolio-accent-soft: #e8eefc;
-  --portfolio-focus: #174bb5;
+  /* Darker text amber keeps small labels readable on every light surface. */
+  --portfolio-accent: #a15812;
+  --portfolio-accent-soft: #f8f0e6;
+  --portfolio-focus: var(--portfolio-accent);
   --portfolio-world-fallback: var(--portfolio-bg);
   --portfolio-document-surface: var(--portfolio-bg);
   --portfolio-text-emphasis: #4e5965;
-  --portfolio-accent-solid: #2458c6;
-  --portfolio-accent-hover: #194bad;
-  --portfolio-link-hover: #143f96;
+  --portfolio-accent-solid: #a95c12;
+  --portfolio-accent-hover: #95500f;
+  --portfolio-link-hover: #85470c;
   --portfolio-on-accent: #ffffff;
   --portfolio-diagram-line: #d5dde4;
   --portfolio-diagram-connector: #9daab7;
@@ -40,7 +41,7 @@
   --portfolio-avatar-border: #c4cdd5;
   --portfolio-bubble-hover: #879db8;
   --portfolio-placeholder: #687684;
-  --portfolio-send-hover: #174bb5;
+  --portfolio-send-hover: var(--portfolio-accent-hover);
   --portfolio-cursor-stroke: #18222e;
   --portfolio-cursor-fill: rgb(248 248 245 / 44%);
   --portfolio-tooltip-border: #c6ced5;
@@ -65,13 +66,14 @@
   --portfolio-text-muted: #929ba8;
   --portfolio-line: #252a32;
   --portfolio-line-strong: #343b46;
-  --portfolio-accent: #5591ff;
-  --portfolio-accent-soft: #15233c;
-  --portfolio-focus: #5591ff;
+  --portfolio-accent: #e89a3c;
+  --portfolio-accent-soft: #21180e;
+  --portfolio-focus: var(--portfolio-accent);
   --portfolio-text-emphasis: #a7adb7;
-  --portfolio-accent-solid: #2865d2;
-  --portfolio-accent-hover: #2f70e5;
-  --portfolio-link-hover: #85b0ff;
+  --portfolio-accent-solid: var(--portfolio-accent);
+  --portfolio-accent-hover: #f0a64b;
+  --portfolio-link-hover: var(--portfolio-accent-hover);
+  --portfolio-on-accent: #15191f;
   --portfolio-diagram-line: #343b46;
   --portfolio-diagram-connector: #657184;
   --portfolio-grid-rgb: 110 128 151;
@@ -92,7 +94,7 @@
   --portfolio-avatar-border: #343b46;
   --portfolio-bubble-hover: #657184;
   --portfolio-placeholder: #929ba8;
-  --portfolio-send-hover: #2f70e5;
+  --portfolio-send-hover: var(--portfolio-accent-hover);
   --portfolio-cursor-stroke: #f3f1ec;
   --portfolio-cursor-fill: rgb(14 16 20 / 44%);
   --portfolio-tooltip-border: #343b46;

@@ -38,8 +38,13 @@ async function main() {
   };
   const reload = async () => {
     const origin=await evaluate("performance.timeOrigin");
+    const position=await evaluate("({x:scrollX,y:scrollY})");
     await send("Page.reload",{ignoreCache:false});
-    await until(`performance.timeOrigin!==${origin} && document.querySelectorAll('[data-portfolio-section]').length===7`);
+    // Mounting precedes App's two-frame reload-position correction. Do not
+    // start an interaction that the pending restoration would then undo.
+    const restored=await until(`performance.timeOrigin!==${origin} && document.readyState==='complete' && !document.querySelector('.portfolio-intro') && document.querySelectorAll('[data-portfolio-section]').length===7 && Math.abs(scrollY-${position.y})<3 && Math.abs(scrollX-${position.x})<3`);
+    if(!restored)throw Error("Reload did not finish or restore the document position");
+    await evaluate("new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))");
   };
   const checks=[];
   const check=(name,pass,detail)=>checks.push({name,pass:!!pass,detail});
@@ -61,11 +66,23 @@ async function main() {
   const resize=async(width,height,touch=false)=>{
     await send("Emulation.setDeviceMetricsOverride",{width,height,deviceScaleFactor:1,mobile:touch});
     await send("Emulation.setTouchEmulationEnabled",{enabled:touch,maxTouchPoints:1});
+    if(!await until(`innerWidth===${width} && innerHeight===${height}`,2000))throw Error(`Viewport emulation failed: ${width}x${height}`);
   };
   const motion=async(value)=>send("Emulation.setEmulatedMedia",{features:[{name:"prefers-reduced-motion",value}]});
   const scrollToSection=async(id)=>{
     await evaluate(`document.getElementById(${JSON.stringify(id)}).scrollIntoView({block:"start",behavior:"instant"})`);
     await pause(140);
+  };
+  const nativeScrollKey=async(name,code,vk)=>{
+    await key(name,code,vk);
+    // Native Chromium keyboard scrolling is compositor-animated even with the
+    // application's reduced motion enabled. Finish one key before the next.
+    await pause(250);
+    let last=await evaluate("scrollY"),stable=0;
+    for(let elapsed=0;elapsed<2000&&stable<4;elapsed+=50){
+      await pause(50);const next=await evaluate("scrollY");
+      stable=Math.abs(next-last)<0.5?stable+1:0;last=next;
+    }
   };
   await send("Page.enable");await send("Runtime.enable");await send("Log.enable");await send("Network.enable");
   // Run the unchanged interaction suite against either palette.
@@ -129,19 +146,19 @@ async function main() {
 
   await scrollToSection("arrival");await evaluate("document.activeElement.blur()");
   const nativeHistory=await evaluate("history.length"), nativeHash=await evaluate("location.hash");
-  await key("ArrowDown","ArrowDown",40);await pause(200);
+  await nativeScrollKey("ArrowDown","ArrowDown",40);
   check("native ArrowDown",await evaluate("scrollY>0 && scrollY<200"));
-  await key("ArrowUp","ArrowUp",38);await pause(200);
+  await nativeScrollKey("ArrowUp","ArrowUp",38);
   check("native ArrowUp",await evaluate("scrollY<3"));
-  await key("PageDown","PageDown",34);await pause(200);
+  await nativeScrollKey("PageDown","PageDown",34);
   check("native PageDown",await evaluate("scrollY>500"));
-  await key("PageUp","PageUp",33);await pause(200);
+  await nativeScrollKey("PageUp","PageUp",33);
   check("native PageUp",await evaluate("scrollY<500"));
-  await key("End","End",35);await pause(200);
+  await nativeScrollKey("End","End",35);
   check("native End / final active section",await evaluate("Math.abs(scrollY+innerHeight-document.scrollingElement.scrollHeight)<4 && document.querySelector('.scene-nav__current-label').textContent==='Closing'"));
-  await key("Home","Home",36);await pause(200);
+  await nativeScrollKey("Home","Home",36);
   check("native Home / first boundary",await evaluate("scrollY<3 && document.querySelector('button[aria-label=\"Previous section\"]').disabled"));
-  await key(" ","Space",32);await pause(200);check("native Space",await evaluate("scrollY>300"));
+  await nativeScrollKey(" ","Space",32);check("native Space",await evaluate("scrollY>300"),await evaluate("({y:scrollY,focus:document.activeElement.tagName,locked:document.body.style.position})"));
   await send("Input.dispatchMouseEvent",{type:"mouseWheel",x:700,y:500,deltaX:0,deltaY:240});await pause(200);
   check("native wheel / no passive history pollution",await evaluate(`scrollY>500 && history.length===${nativeHistory} && location.hash===${JSON.stringify(nativeHash)}`));
 
@@ -177,8 +194,9 @@ async function main() {
     const neliY=await evaluate('scrollY');await evaluate("window.scrollBy({top:80,behavior:'instant'})");
     check('viewport '+width+'x'+height+' / page scroll around NELI',await evaluate(`Math.abs(scrollY-${neliY})>50&&!!document.querySelector('.neli-panel')`));
     await send("Input.dispatchMouseEvent",{type:"mousePressed",x:2,y:200,button:"left",clickCount:1});
-    await send("Input.dispatchMouseEvent",{type:"mouseReleased",x:2,y:200,button:"left",clickCount:1});await pause(140);
-    check('viewport '+width+'x'+height+' / NELI outside close',await evaluate("!document.querySelector('.neli-panel')"));
+    await send("Input.dispatchMouseEvent",{type:"mouseReleased",x:2,y:200,button:"left",clickCount:1});
+    await until("!document.querySelector('.neli-panel')",2000);
+    check('viewport '+width+'x'+height+' / NELI outside close',await evaluate("!document.querySelector('.neli-panel')&&document.querySelector('.neli-summon-button').getAttribute('aria-expanded')==='false'"));
     await evaluate("new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))");
     const staleHashPosition=await evaluate("({y:scrollY,hash:location.hash})");
     await reload();await pause(300);
@@ -245,12 +263,19 @@ async function main() {
   check("local resume and favicon",await evaluate("Promise.all(['/Jonel_Ablog_Resume.pdf','/jbta-logo.png'].map(async url=>(await fetch(url,{method:'HEAD'})).status)).then(status=>status.every(code=>code===200))"));
   await nativeClick(".neli-summon-button");await pause(150);
   check("NELI open / input focus",await evaluate("document.activeElement.id==='jbta-assistant-input'"));
-  await send("Input.insertText",{text:"What services does Jonel offer?"});await key("Enter","Enter",13);await pause(160);
-  check("NELI local response",await evaluate("document.querySelectorAll('.neli-message--oracle').length>=2"));
-  await click(".neli-prompt-trigger");await pause(100);await click(".neli-prompt-option");await pause(150);
-  check("NELI suggestions",await evaluate("document.querySelectorAll('.neli-message--oracle').length>=3"));
-  await key("Escape","Escape",27);await pause(180);check("NELI Escape",await evaluate("document.querySelector('.neli-summon-button').getAttribute('aria-expanded')==='false'"));
-  await scrollToSection("ending");await nativeClick(".closing-frame__action button");await pause(200);
+  await send("Input.insertText",{text:"What services does Jonel offer?"});await key("Enter","Enter",13);
+  await until("document.querySelectorAll('.neli-message-bubble--oracle').length>=2");
+  // The typing indicator also has .neli-message--oracle. Require actual answer
+  // text so it cannot accidentally satisfy either conversation assertion.
+  check("NELI local response",await evaluate("document.querySelectorAll('.neli-message-bubble--oracle').length>=2 && [...document.querySelectorAll('.neli-message-bubble--oracle')].at(-1).textContent.includes('full-stack web development')"));
+  await click(".neli-prompt-trigger");await pause(100);await click(".neli-prompt-option");
+  await until("document.querySelectorAll('.neli-message-bubble--oracle').length>=3");
+  check("NELI suggestions",await evaluate("document.querySelectorAll('.neli-message-bubble--oracle').length>=3 && [...document.querySelectorAll('.neli-message-bubble--oracle')].at(-1).textContent.includes('Jonel Bryan Ablog')"));
+  // Suggestions have an exit transition: an exiting option still handles
+  // Escape locally until it is removed. Test panel Escape from its input.
+  await until("!document.querySelector('.neli-suggestion-panel') && document.activeElement.id==='jbta-assistant-input'");
+  await key("Escape","Escape",27);await until("!document.querySelector('.neli-panel')");check("NELI Escape",await evaluate("document.querySelector('.neli-summon-button').getAttribute('aria-expanded')==='false'"));
+  await scrollToSection("ending");await nativeClick(".closing-frame__action button");await until("location.hash==='#connect'&&Math.abs(document.getElementById('connect').getBoundingClientRect().top)<3");
   check("closing CTA to Contact",await evaluate("location.hash==='#connect'&&Math.abs(document.getElementById('connect').getBoundingClientRect().top)<3"));
   await nativeClick(".closing-footer__return");await pause(250);
   check("footer Back to top",await evaluate("location.hash==='#arrival'&&scrollY<3"));

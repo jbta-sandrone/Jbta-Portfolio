@@ -16,11 +16,11 @@ async function main() {
   const until=async expression=>{for(let i=0;i<150;i++){if(await ev(expression))return;await wait(100);}throw Error('Timeout: '+expression);};
   const check=(name,pass,detail)=>checks.push({name,pass:!!pass,detail});
   const media=async scheme=>send('Emulation.setEmulatedMedia',{features:[{name:'prefers-color-scheme',value:scheme},{name:'prefers-reduced-motion',value:'reduce'}]});
-  const resize=async(w,h)=>{await send('Emulation.setDeviceMetricsOverride',{width:w,height:h,deviceScaleFactor:1,mobile:w<600});await send('Emulation.setTouchEmulationEnabled',{enabled:w<600,maxTouchPoints:1});};
+  const resize=async(w,h)=>{await send('Emulation.setDeviceMetricsOverride',{width:w,height:h,deviceScaleFactor:1,mobile:w<600});await send('Emulation.setTouchEmulationEnabled',{enabled:w<600,maxTouchPoints:1});await until(`innerWidth===${w} && innerHeight===${h}`);};
   let loadSequence=0;
   const load=async(hash='arrival')=>{const origin=await ev('performance.timeOrigin');await send('Page.navigate',{url:url+'?qa=theme-'+Date.now()+'-'+(++loadSequence)+'#'+hash});await until(`performance.timeOrigin!==${origin} && document.querySelectorAll('[data-portfolio-section]').length===7 && !document.querySelector('.portfolio-intro')`);await wait(250);};
   await send('Page.enable');await send('Runtime.enable');await media('light');
-  await send('Page.addScriptToEvaluateOnNewDocument',{source:"sessionStorage.setItem('jbta-portfolio-intro-seen','1');"});
+  await send('Page.addScriptToEvaluateOnNewDocument',{source:"sessionStorage.setItem('jbta-portfolio-intro-seen','true');"});
   await load();
   const baseline=process.env.THEME_QA_MODE==='baseline';
   const artifact=process.env.THEME_QA_ARTIFACTS || require('node:path').join(require('node:os').tmpdir(),'jbta-portfolio-theme-qa');
@@ -29,7 +29,10 @@ async function main() {
     const crypto=require('node:crypto'), cp=require('node:child_process');
     const files=cp.execSync('rg --files --hidden -g !node_modules -g !.git -g !dist -g !.theme-qa-artifacts').toString().trim().split(/\r?\n/);
     fs.writeFileSync(artifact+'/source-hashes.json',JSON.stringify(Object.fromEntries(files.map(f=>[f,crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex')]))));
-  } else { await ev("localStorage.setItem('jbta-portfolio-theme','light')");await load(); }
+  }
+  // A saved Dark preference correctly overrides the emulated Light OS. Force
+  // the reference palette explicitly in baseline mode as well as comparison.
+  await ev("localStorage.setItem('jbta-portfolio-theme','light')");await load();
   const saved=baseline?{}:fs.existsSync(artifact+'/light-baseline.json')?JSON.parse(fs.readFileSync(artifact+'/light-baseline.json')):null;
   if(!baseline&&!saved)console.log('No historical light capture found; run THEME_QA_MODE=baseline on the approved reference to enable that comparison.');
   const snapshot=()=>ev(`(() => {
@@ -93,6 +96,14 @@ async function main() {
           const valid=await ev("(() => {const a=document.querySelector('.services-architecture__intro').getBoundingClientRect(),b=document.querySelector('.services-architecture__connection').getBoundingClientRect();return a.bottom+24<=b.top && document.documentElement.scrollWidth<=innerWidth && ![...document.querySelectorAll('#quest-board *')].some(e=>getComputedStyle(e).overflowY==='auto'&&e.scrollHeight>e.clientHeight+1)})()");
           check(key+' Services '+expanded+' step '+step,valid);
         }
+      }
+      // Exercise every mutually exclusive capability, not just the last one
+      // selected by the loop above, including CTA clearance on short screens.
+      for(let index=0;index<6;index++) {
+        await ev(`(() => {const b=document.querySelectorAll('.services-architecture__trigger')[${index}];if(b.getAttribute('aria-expanded')!=='true')b.click()})()`);
+        await wait(90);
+        const detail=await ev(`(() => {const b=document.querySelectorAll('.services-architecture__trigger')[${index}],p=document.getElementById(b.getAttribute('aria-controls')),intro=document.querySelector('.services-architecture__intro').getBoundingClientRect(),system=document.querySelector('.services-architecture__system').getBoundingClientRect(),cta=document.querySelector('.services-architecture__connection').getBoundingClientRect();return {selected:b.getAttribute('aria-expanded')==='true'&&!p.inert&&p.getAttribute('aria-hidden')==='false',count:document.querySelectorAll('.services-architecture__trigger[aria-expanded="true"]').length,clear:cta.top>=Math.max(intro.bottom,system.bottom)+24,overflow:document.documentElement.scrollWidth>innerWidth};})()`);
+        check(key+' Services capability '+(index+1),detail.selected&&detail.count===1&&detail.clear&&!detail.overflow,detail);
       }
       await ev("document.querySelector('.neli-summon-button').click()");await wait(100);
       check(key+' NELI original media',await ev("[...document.querySelectorAll('.neli-summon-portrait,.neli-header-portrait,.neli-message-portrait')].length>=3&&[...document.querySelectorAll('.neli-summon-portrait,.neli-header-portrait,.neli-message-portrait')].every(e=>getComputedStyle(e).filter==='none'&&e.naturalWidth>0)&&document.documentElement.scrollWidth<=innerWidth"));
