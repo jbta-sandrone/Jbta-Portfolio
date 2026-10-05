@@ -26,6 +26,7 @@ function NoteSection({ section, number, noteId }: { section: ProjectNoteSection;
       {section.kind === "text" && (
         <div className="project-notes__prose">
           {section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+          {section.links?.map((link) => <p key={link.href}><a className="professional-link" href={link.href} target="_blank" rel="noopener noreferrer" aria-label={`${link.label} for ${noteId} (opens in a new tab)`}>{link.label}</a></p>)}
         </div>
       )}
 
@@ -173,7 +174,7 @@ function ProjectNotesSurface({ note, projectNumber, onClose, returnFocusRef }: P
 
         <div className="project-notes__scroll" ref={scrollRef} tabIndex={0} aria-label={`${note.title} project documentation`}>
           <div className="project-notes__body">
-            <nav className="project-notes__index" aria-label="Project notes sections">
+            <nav className={`project-notes__index${note.sections.length > 8 ? " project-notes__index--extended" : ""}`} aria-label="Project notes sections">
               <p>IN THIS DOCUMENT</p>
               <ol>
                 {note.sections.map((section, index) => (

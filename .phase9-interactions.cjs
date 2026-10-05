@@ -1,3 +1,7 @@
+// HISTORICAL: this suite targets the retired individually mounted scene/slideshow
+// architecture. Its three-project counts and scene-switch assertions are not active
+// regression expectations. Current continuous-scroll/four-project coverage lives
+// in .phase9-qa.cjs and .theme-qa.cjs; do not run this file for release validation.
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const fs = require("node:fs");
 async function main() {

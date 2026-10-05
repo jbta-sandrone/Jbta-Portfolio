@@ -4,11 +4,18 @@ const cdpPort = process.env.QA_CDP_PORT || "9237";
 const sections = ["arrival", "behind-the-work", "featured-work", "quest-board", "craft", "connect", "ending"];
 const labels = ["Introduction", "About", "Selected Work", "Services", "Technology", "Contact", "Closing"];
 const sizes = [[1440,1000],[1280,800],[1024,768],[768,1024],[430,932],[390,844],[360,800],[1440,600],[1024,600],[390,600],[390,480]];
+const projects = [
+  { id: 'nemissive', title: 'Nemissive', live: 'https://nemissive.vercel.app', github: 'https://github.com/jbta-sandrone/Nemissive', sections: 14 },
+  { id: 'i-nelory', title: 'I-Nelory', live: 'https://i-neloryapp.vercel.app/', github: 'https://github.com/jbta-sandrone/I-Nelory', sections: 6 },
+  { id: 'cliq', title: 'IntelliCLIQ', live: 'https://jbta-sandrone.github.io/IntelliCLIQ/', github: 'https://github.com/jbta-sandrone/IntelliCLIQ', sections: 7 },
+  { id: 'nelume', title: 'Nelume', live: 'https://nelume.vercel.app/', github: 'https://github.com/jbta-sandrone/Nelume', sections: 5 },
+];
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function main() {
-  const targets = await (await fetch(`http://127.0.0.1:${cdpPort}/json/list`)).json();
-  const ws = new WebSocket(targets.find((entry) => entry.type === "page").webSocketDebuggerUrl);
+  // Isolate injected theme/readiness scripts from other browser suites.
+  const target = await (await fetch(`http://127.0.0.1:${cdpPort}/json/new?about:blank`, { method: 'PUT' })).json();
+  const ws = new WebSocket(target.webSocketDebuggerUrl);
   await new Promise((resolve) => ws.addEventListener("open", resolve, { once:true }));
   let sequence = 0;
   const pending = new Map(), runtimeErrors = [], failedResources = [], videoRequests = new Set();
@@ -28,7 +35,7 @@ async function main() {
     const id=++sequence; pending.set(id,{resolve,reject}); ws.send(JSON.stringify({id,method,params}));
   });
   const evaluate = async (expression) => {
-    const result=await send("Runtime.evaluate",{expression,returnByValue:true,awaitPromise:true});
+    const result=await send("Runtime.evaluate",{expression,returnByValue:true,awaitPromise:true}).catch(error=>{throw Error('Evaluation failed: '+expression.slice(0,500)+' / '+JSON.stringify(error));});
     if (result.exceptionDetails) throw Error(result.exceptionDetails.text);
     return result.result?.value;
   };
@@ -43,7 +50,7 @@ async function main() {
     // Mounting precedes App's two-frame reload-position correction. Do not
     // start an interaction that the pending restoration would then undo.
     const restored=await until(`performance.timeOrigin!==${origin} && document.readyState==='complete' && !document.querySelector('.portfolio-intro') && document.querySelectorAll('[data-portfolio-section]').length===7 && Math.abs(scrollY-${position.y})<3 && Math.abs(scrollX-${position.x})<3`);
-    if(!restored)throw Error("Reload did not finish or restore the document position");
+    if(!restored)throw Error("Reload did not finish or restore the document position: "+JSON.stringify({expected:position,actual:await evaluate("({x:scrollX,y:scrollY,w:innerWidth,h:innerHeight,hash:location.hash,ready:document.readyState,intro:!!document.querySelector('.portfolio-intro'),sections:document.querySelectorAll('[data-portfolio-section]').length,locked:document.body.style.position,stored:sessionStorage.getItem('jbta-portfolio-reload-position')})"),failedChecks:checks.filter(c=>!c.pass)}));
     await evaluate("new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))");
   };
   const checks=[];
@@ -106,6 +113,9 @@ async function main() {
   check("normal intro timing",introMs>=3500&&introMs<=6500,introMs);
   check("first-session direct hash after intro",await evaluate("Math.abs(document.getElementById('connect').getBoundingClientRect().top)<3 && document.querySelector('.scene-nav__current-label')?.textContent==='Contact'"));
   check("initial project videos deferred",await evaluate("[...document.querySelectorAll('.work-case video')].every(v=>!v.getAttribute('src'))")&&videoRequests.size===0,videoRequests.size);
+  await send('Page.navigate',{url:baseUrl+'?qa=flagship-deferred#arrival'});
+  await until("!document.querySelector('.portfolio-intro')&&document.querySelectorAll('.work-case video').length===4");await pause(200);
+  check('Introduction initial network excludes all four MP4s',await evaluate("[...document.querySelectorAll('.work-case video')].every(v=>!v.getAttribute('src'))")&&videoRequests.size===0,videoRequests.size);
   await motion("reduce");
   // Motion's preference is initialized when components mount: test each real load mode.
   await reload();
@@ -113,7 +123,13 @@ async function main() {
   await evaluate("document.querySelector('.work-case video').scrollIntoView({block:'center',behavior:'instant'})");
   await until("!!document.querySelector('.work-case video').getAttribute('src')");
   await pause(180);
-  check("approach loads only nearby videos",await evaluate("[...document.querySelectorAll('.work-case video')].filter(v=>v.getAttribute('src')).every(v=>v.getBoundingClientRect().top<innerHeight+201&&v.getBoundingClientRect().bottom>-201)&&!!document.querySelector('.work-case video').getAttribute('src')&&!document.querySelectorAll('.work-case video')[2].getAttribute('src')"),videoRequests.size);
+  check("approach loads only nearby videos",await evaluate("[...document.querySelectorAll('.work-case video')].filter(v=>v.getAttribute('src')).every(v=>v.getBoundingClientRect().top<innerHeight+201&&v.getBoundingClientRect().bottom>-201)&&!!document.querySelector('.work-case video').getAttribute('src')&&[...document.querySelectorAll('.work-case video')].slice(1).every(v=>!v.getAttribute('src'))"),videoRequests.size);
+  check('four projects in exact flagship order',await evaluate(`JSON.stringify([...document.querySelectorAll('.work-case h3')].map(e=>e.textContent))===${JSON.stringify(JSON.stringify(projects.map(p=>p.title)))} && document.querySelectorAll('.work-case video').length===4 && document.querySelectorAll('.work-case__notes-action').length===4`));
+  check('overview / Explore leads to flagship',await evaluate("[...document.querySelectorAll('.selected-work__overview-line span')].map(e=>e.textContent).join('/')==='01/02/03/04'&&document.querySelector('.selected-work__explore').getAttribute('href')==='#nemissive-case'"));
+  for(let i=0;i<projects.length;i++) {
+    const project=projects[i];
+    check(project.title+' numbering/actions/video attributes',await evaluate(`(() => {const el=document.getElementById('${project.id}-case'),v=el.querySelector('video'),a=el.querySelectorAll('.work-case__actions a');return el.querySelector('.work-case__index').textContent.startsWith('PROJECT / ${String(i+1).padStart(2,'0')}')&&a.length===2&&a[0].getAttribute('href')===${JSON.stringify(project.live)}&&a[1].getAttribute('href')===${JSON.stringify(project.github)}&&v.muted&&v.loop&&v.playsInline&&v.preload==='metadata'&&!el.textContent.includes('Demo Video');})()`));
+  }
   check("one main / one page h1 / seven ordered sections",await evaluate(`document.querySelectorAll('main').length===1 && document.querySelectorAll('h1').length===1 && JSON.stringify([...document.querySelectorAll('main > [data-portfolio-section]')].map(s=>s.id))===${JSON.stringify(JSON.stringify(sections))}`));
   check("page-level footer",await evaluate("!!document.querySelector('footer[data-portfolio-footer]') && !document.querySelector('footer[data-portfolio-footer]').closest('main')"));
   check("main native document scroller",await evaluate("document.scrollingElement===document.documentElement && document.scrollingElement.scrollHeight>innerHeight*7 && getComputedStyle(document.body).overflowY!=='hidden'"));
@@ -177,10 +193,17 @@ async function main() {
       matrix.push({size:width+"x"+height,id:sections[i],...row});
       check("viewport "+width+"x"+height+" / "+sections[i],row.count===7&&row.unique===1&&row.active===labels[i]&&row.overflow<=1&&row.headingSafe&&row.nested.length===0,row);
     }
+    for(let i=0;i<projects.length;i++) {
+      const fit=await evaluate(`(() => {const e=document.getElementById('${projects[i].id}-case'),m=e.querySelector('.work-case__media').getBoundingClientRect(),info=e.querySelector('.work-case__information').getBoundingClientRect(),v=e.querySelector('video').getBoundingClientRect(),a=[...e.querySelectorAll('.work-case__actions a,.work-case__actions button')].map(b=>b.getBoundingClientRect());return {safe:[v,...a].every(r=>r.left>=-1&&r.right<=innerWidth+1),layout:innerWidth>=1024?${i%2===0?'m.left<info.left':'m.left>info.left'}:innerWidth<768?m.bottom<=info.top+1:true};})()`);
+      check('viewport '+width+'x'+height+' / '+projects[i].title+' composition',fit.safe&&fit.layout,fit);
+    }
+    check('viewport '+width+'x'+height+' / final project to Services boundary',await evaluate("document.getElementById('nelume-case').getBoundingClientRect().bottom<=document.getElementById('quest-board').getBoundingClientRect().top"));
     await point('.work-case__notes-action');
     const notesY=await evaluate('scrollY');
     await click('.work-case__notes-action');await pause(130);
     check('viewport '+width+'x'+height+' / notes fit',await evaluate("(() => {const r=document.querySelector('.project-notes__panel').getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight&&document.body.style.position==='fixed';})()"));
+    await evaluate("document.querySelector('.project-notes__index li:last-child button').scrollIntoView({block:'center',behavior:'instant'})");
+    check('viewport '+width+'x'+height+' / complete flagship Notes index reachable',await evaluate("(()=>{const b=document.querySelector('.project-notes__index li:last-child button').getBoundingClientRect(),s=document.querySelector('.project-notes__scroll').getBoundingClientRect();return b.top>=s.top&&b.bottom<=s.bottom})()"));
     if(width<600){
       await send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:4,y:190}]});
       await send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:4,y:70}]});
@@ -224,28 +247,40 @@ async function main() {
   await scrollToSection("craft");await evaluate("document.querySelectorAll('.technology-architecture__node')[1].focus()");
   await key("Enter","Enter",13);
   check("technology inspector keyboard selection",await evaluate("document.querySelectorAll('.technology-architecture__node')[1].getAttribute('aria-pressed')==='true'"));
-  check("technology groups and nodes preserved",await evaluate("document.querySelectorAll('.technology-architecture__layer').length===5 && document.querySelectorAll('.technology-architecture__node').length===22"));
+  check("technology groups and curated nodes",await evaluate("document.querySelectorAll('.technology-architecture__layer').length===5 && document.querySelectorAll('.technology-architecture__node').length===29"));
+  for(const name of ['React','TypeScript','Tailwind CSS','Motion','Vite','Supabase Edge Functions','LiveKit','Cloudflare Turnstile','Lemon Squeezy','PostgreSQL','Supabase','LLM Integration','OpenAI Responses API','Vercel']) {
+    await click(`button[aria-label="Inspect ${name}"]`);
+    check(name+' flagship association',await evaluate(`(()=>{const n=document.querySelector('button[aria-label="Inspect ${name}"]'),p=document.getElementById(n.getAttribute('aria-controls'));return n.getAttribute('aria-pressed')==='true'&&p.querySelector('.technology-architecture__projects li').textContent==='Nemissive'})()`));
+  }
+  for(const name of ['Node.js','Express','Python','FastAPI','Google Gemini','Prisma','Firebase','Upstash']) {
+    await click(`button[aria-label="Inspect ${name}"]`);
+    check(name+' no unsupported Nemissive association',await evaluate(`(()=>{const n=document.querySelector('button[aria-label="Inspect ${name}"]'),p=document.getElementById(n.getAttribute('aria-controls'));return ![...p.querySelectorAll('.technology-architecture__projects li')].some(e=>e.textContent==='Nemissive')})()`));
+  }
 
   await motion("no-preference");
   await reload();
-  for(let i=0;i<3;i++){
+  for(let i=0;i<projects.length;i++){
     await evaluate(`document.querySelectorAll('.work-case video')[${i}].scrollIntoView({block:'center',behavior:'instant'})`);
     await until(`document.querySelectorAll('.work-case video')[${i}].readyState>=2`,8000);await pause(250);
     await until(`!document.querySelectorAll('.work-case video')[${i}].paused`,4000);
     const state=await evaluate(`({ready:document.querySelectorAll('.work-case video')[${i}].readyState,playing:!document.querySelectorAll('.work-case video')[${i}].paused,error:document.querySelectorAll('.work-case video')[${i}].error?.code??null,playingCount:[...document.querySelectorAll('.work-case video')].filter(v=>!v.paused).length,loaded:[...document.querySelectorAll('.work-case video')].filter(v=>v.getAttribute('src')).length,hidden:document.hidden,reduced:matchMedia('(prefers-reduced-motion:reduce)').matches})`);
     check("project video "+(i+1)+" plays in viewport",state.ready>=2&&state.playing&&state.error===null&&state.playingCount<=1,state);
+    await evaluate(`document.querySelectorAll('.work-case__notes-action')[${i}].click()`);await pause(180);
+    check(projects[i].title+' Notes pauses all videos',await evaluate("[...document.querySelectorAll('.work-case video')].every(v=>v.paused)"));
+    await key('Escape','Escape',27);await until("!document.querySelector('.project-notes__panel')&&!document.body.style.position");await pause(80);
   }
   await motion("reduce");
   await reload();
   await pause(200);
   check("reduced-motion videos paused",await evaluate("[...document.querySelectorAll('.work-case video')].every(v=>v.paused)"));
-  for(let i=0;i<3;i++){
-    const selector=`.work-case:nth-child(${i+1}) .work-case__notes-action`;
+  for(let i=0;i<projects.length;i++){
     await evaluate(`document.querySelectorAll('.work-case__notes-action')[${i}].scrollIntoView({block:'center',behavior:'instant'})`);
     // Let passive navigation settle before measuring its label-dependent width.
     await until("document.querySelector('.scene-nav__current-label').textContent==='Selected Work'");
     const before=await evaluate("({y:scrollY,width:document.querySelector('main').getBoundingClientRect().width,navX:document.querySelector('.scene-nav').getBoundingClientRect().left})");
     await evaluate(`document.querySelectorAll('.work-case__notes-action')[${i}].click()`);await pause(150);
+    check(projects[i].title+' correct Notes title/number/index',await evaluate(`document.querySelector('.project-notes__panel h2').textContent==='${projects[i].title}'&&document.querySelector('.project-notes__panel').textContent.includes('PROJECT / ${String(i+1).padStart(2,'0')}')&&document.querySelectorAll('.project-notes__index button').length===${projects[i].sections}`));
+    if(i===0) check('Nemissive Notes qualifications and links',await evaluate("(()=>{const p=document.querySelector('.project-notes__panel'),t=p.textContent;return t.includes('Test Mode')&&t.includes('API credit')&&t.includes('no separate Express/Node')&&!!p.querySelector('a[href=\"https://nemissive.vercel.app\"]')&&!!p.querySelector('a[href=\"https://github.com/jbta-sandrone/Nemissive\"]')})()"));
     check("notes "+(i+1)+" dialog and lock",await evaluate(`!!document.querySelector('[role=dialog][aria-modal=true]')&&document.getElementById('root').inert&&document.body.style.position==='fixed'&&Math.abs(document.querySelector('main').getBoundingClientRect().width-${before.width})<1&&Math.abs(document.querySelector('.scene-nav').getBoundingClientRect().left-${before.navX})<1`),{before,after:await evaluate("({fixed:document.body.style.position,inert:document.getElementById('root').inert,width:document.querySelector('main').getBoundingClientRect().width,navX:document.querySelector('.scene-nav').getBoundingClientRect().left})")});
     await evaluate("document.querySelector('.project-notes__scroll').scrollTop=220");
     check("notes own document scroll",await evaluate("document.querySelector('.project-notes__scroll').scrollTop>0"));
@@ -254,7 +289,12 @@ async function main() {
     check("notes focus trap",await evaluate("document.activeElement===document.querySelector('.project-notes__close')"));
     await key("Escape","Escape",27);await pause(180);
     check("notes "+(i+1)+" exact restoration",await evaluate(`!document.querySelector('.project-notes__panel')&&!document.getElementById('root').inert&&Math.abs(scrollY-${before.y})<2&&document.activeElement===document.querySelectorAll('.work-case__notes-action')[${i}]`));
-    void selector;
+    await evaluate(`document.querySelectorAll('.work-case__notes-action')[${i}].click()`);await pause(130);
+    await click('.project-notes__index li:last-child button');await pause(100);
+    check(projects[i].title+' Notes index reaches final section',await evaluate("document.querySelector('.project-notes__scroll').scrollTop>200"));
+    await send('Input.dispatchMouseEvent',{type:'mousePressed',x:2,y:2,button:'left',clickCount:1});
+    await send('Input.dispatchMouseEvent',{type:'mouseReleased',x:2,y:2,button:'left',clickCount:1});await pause(180);
+    check(projects[i].title+' backdrop / exact restoration',await evaluate(`!document.querySelector('.project-notes__panel')&&Math.abs(scrollY-${before.y})<2&&document.activeElement===document.querySelectorAll('.work-case__notes-action')[${i}]`));
   }
   await scrollToSection("connect");
   check("canonical mailto / profile / resume destinations",await evaluate("document.querySelector('.connection-endpoint__email-actions a').getAttribute('href')==='mailto:ablogjonelbryan@gmail.com' && document.querySelectorAll('.connection-endpoint__route-actions a').length===4 && !!document.querySelector('a[href=\"/Jonel_Ablog_Resume.pdf\"]')"));
@@ -274,6 +314,25 @@ async function main() {
   // Suggestions have an exit transition: an exiting option still handles
   // Escape locally until it is removed. Test panel Escape from its input.
   await until("!document.querySelector('.neli-suggestion-panel') && document.activeElement.id==='jbta-assistant-input'");
+  for(const [question,expected] of [
+    ['What is Nemissive?',['flagship','Supabase','LiveKit','Test Mode','API credit','does not use a separate']],
+    ['Tell me about Nemissive',['direct/group','Row Level Security','OpenAI Responses API']],
+    ["What is Jonel's best project?",['Nemissive','Project 01']],
+    ['What is his strongest project?',['Nemissive','flagship']],
+    ['What is his flagship project?',['Nemissive','Test Mode']],
+    ['What projects has Jonel built?',['Nemissive','I-Nelory','IntelliCLIQ','Nelume']],
+    ['Tell me about I-Nelory',['memory journal','Prisma']],
+    ['Tell me about IntelliCLIQ',['café ordering','Firebase']],
+    ['Tell me about Nelume',['career platform','FastAPI']],
+    ['What AI experience does Jonel have?',['OpenAI','API credit','local portfolio answer rules']],
+  ]) {
+    const count=await evaluate("document.querySelectorAll('.neli-message-bubble--oracle').length");
+    await evaluate("document.getElementById('jbta-assistant-input').focus()");
+    await send('Input.insertText',{text:question});await key('Enter','Enter',13);
+    await until(`document.querySelectorAll('.neli-message-bubble--oracle').length>${count}`);
+    const answer=await evaluate("[...document.querySelectorAll('.neli-message-bubble--oracle')].at(-1).textContent");
+    check('NELI '+question,expected.every(text=>answer.includes(text)),answer);
+  }
   await key("Escape","Escape",27);await until("!document.querySelector('.neli-panel')");check("NELI Escape",await evaluate("document.querySelector('.neli-summon-button').getAttribute('aria-expanded')==='false'"));
   await scrollToSection("ending");await nativeClick(".closing-frame__action button");await until("location.hash==='#connect'&&Math.abs(document.getElementById('connect').getBoundingClientRect().top)<3");
   check("closing CTA to Contact",await evaluate("location.hash==='#connect'&&Math.abs(document.getElementById('connect').getBoundingClientRect().top)<3"));
@@ -312,6 +371,6 @@ async function main() {
   check("no runtime errors or failed local resources",runtimeErrors.length===0&&failedResources.length===0,{runtimeErrors,failedResources});
   const failed=checks.filter(item=>!item.pass);
   console.log(JSON.stringify({checks:checks.length,failures:failed,introMs,reducedIntroMs,viewportCases:matrix.length,videoRequests:videoRequests.size,runtimeErrors,failedResources},null,2));
-  ws.close();if(failed.length)process.exitCode=1;
+  ws.close();await fetch(`http://127.0.0.1:${cdpPort}/json/close/${target.id}`);if(failed.length)process.exitCode=1;
 }
 main().catch(error=>{console.error(error);process.exit(1);});

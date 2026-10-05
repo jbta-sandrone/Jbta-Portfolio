@@ -45,6 +45,25 @@ This website showcases my journey as a Full-Stack Web Developer, featuring proje
 
 # 🚀 Featured Projects
 
+Selected Work order: **01 Nemissive · 02 I-Nelory · 03 IntelliCLIQ · 04 Nelume**.
+
+## Nemissive — Flagship / 01
+
+A full-stack real-time messaging application with shared direct/group conversations, private media, voice/video calls, and server-authorized account lifecycles.
+
+- Supabase Auth, PostgreSQL/RLS, protected RPCs, Realtime, and private Storage
+- TypeScript/Deno Edge Functions for provider integrations; no separate Express/Node application server
+- LiveKit call transport with Supabase-authorized eligibility, lifecycle, and history
+- Group roles, membership transitions, private attachments, Notes, Reminders, and Gallery
+- Premium entitlements and renewal controls using Lemon Squeezy **Test Mode**
+- Ask AI workspace and OpenAI Responses API integration; live generation depends on provider configuration and API credit
+
+`React 19` `TypeScript` `Vite` `Tailwind CSS` `Supabase` `LiveKit` `Cloudflare Turnstile` `Lemon Squeezy` `Vercel`
+
+[Live Demo](https://nemissive.vercel.app) · [GitHub](https://github.com/jbta-sandrone/Nemissive)
+
+---
+
 ## 🌌 I-Nelory
 
 A full-stack personal memory platform designed for preserving, organizing, and rediscovering meaningful moments. Users can create memories, upload media, organize content into folders, and use AI-powered search to find memories naturally.
@@ -65,6 +84,27 @@ A full-stack personal memory platform designed for preserving, organizing, and r
 `React` `TypeScript` `Tailwind CSS` `Node.js` `Express.js`  
 `Prisma` `PostgreSQL` `Google Gemini` `Cloudinary` `JWT`  
 `Vercel` `Render`
+
+---
+
+## ☕ IntelliCLIQ
+
+An intelligent café ordering platform that improves the ordering experience through AI-powered recommendations based on customer preferences.
+
+### ✨ Highlights
+
+- AI Smart Search using Google Gemini
+- Ordering and cart management
+- Firebase Authentication
+- Order tracking and history
+- Administrative dashboard
+- Sales analytics and reports
+- Responsive design
+
+### 🛠️ Tech Stack
+
+`HTML` `CSS` `JavaScript` `Node.js` `Express.js`<br>
+`Firebase` `Google Gemini` `GitHub Pages` `Render`
 
 ---
 
@@ -89,27 +129,6 @@ A full-stack AI-powered career assistant designed to help students, fresh gradua
 
 `React` `TypeScript` `CSS3` `Python` `FastAPI`  
 `REST API` `Upstash Redis` `Vercel` `Render` `Google Gemini` 
-
----
-
-## ☕ IntelliCLIQ
-
-An intelligent café ordering platform that improves the ordering experience through AI-powered recommendations based on customer preferences.
-
-### ✨ Highlights
-
-- AI Smart Search using Google Gemini
-- Ordering and cart management
-- Firebase Authentication
-- Order tracking and history
-- Administrative dashboard
-- Sales analytics and reports
-- Responsive design
-
-### 🛠️ Tech Stack
-
-`HTML` `CSS` `JavaScript` `Node.js` `Express.js`  
-`Firebase` `Google Gemini` `GitHub Pages` `Render`
 
 ---
 

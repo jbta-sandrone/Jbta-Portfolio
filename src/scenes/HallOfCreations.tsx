@@ -7,6 +7,7 @@ import { projectNotes, type ProjectNoteId } from "../data/projectNotes";
 import iNeloryVideo from "../assets/videos/Project video.mp4";
 import nelumeVideo from "../assets/videos/Nelume video.mp4";
 import intelliCliqVideo from "../assets/videos/IntelliCLIQ video.mp4";
+import nemissiveVideo from "../assets/videos/Nemissive.mp4";
 import "../styles/hall-of-creations.css";
 
 type Project = {
@@ -23,6 +24,18 @@ type Project = {
 };
 
 const projects: readonly Project[] = [
+  {
+    id: "nemissive",
+    title: "Nemissive",
+    descriptor: "Full-Stack Real-Time Messaging Application",
+    category: "REALTIME + AUTHORIZED LIFECYCLES",
+    video: nemissiveVideo,
+    liveUrl: "https://nemissive.vercel.app",
+    githubUrl: "https://github.com/jbta-sandrone/Nemissive",
+    description: "A full-stack messaging application connecting direct and group conversations, private media, and voice/video calls through server-authorized lifecycles. This portfolio demo includes premium entitlements in Test Mode and a provider-dependent Ask AI workspace.",
+    capabilities: ["Shared direct and group messaging", "Private media and LiveKit calls", "Authorization and premium lifecycles"],
+    technologies: ["React", "TypeScript", "Supabase", "PostgreSQL", "Edge Functions", "LiveKit", "Lemon Squeezy"],
+  },
   {
     id: "i-nelory",
     title: "I-Nelory",
@@ -238,10 +251,10 @@ export default function HallOfCreations() {
           </div>
           <div className="selected-work__intro-grid">
             <h2 data-section-heading tabIndex={-1} id="featured-work-title" className="professional-heading professional-enter">Selected systems, <span>built around real needs.</span></h2>
-            <p className="professional-body professional-enter">Three projects across personal memory, café ordering, and career support. Each combines interface work with the systems behind it.</p>
+            <p className="professional-body professional-enter">Four projects across real-time messaging, personal memory, café ordering, and career support. Each combines interface work with the systems behind it.</p>
           </div>
-          <div className="selected-work__overview-line" aria-hidden="true"><span>01</span><span>02</span><span>03</span></div>
-          <a className="selected-work__explore professional-link" href="#i-nelory-case" onClick={(event) => { event.preventDefault(); document.getElementById("i-nelory-case")?.scrollIntoView({ behavior: reducedMotion ? "instant" : "smooth", block: "start" }); }}>
+          <div className="selected-work__overview-line" aria-hidden="true">{projects.map((project, index) => <span key={project.id}>{String(index + 1).padStart(2, "0")}</span>)}</div>
+          <a className="selected-work__explore professional-link" href="#nemissive-case" onClick={(event) => { event.preventDefault(); document.getElementById("nemissive-case")?.scrollIntoView({ behavior: reducedMotion ? "instant" : "smooth", block: "start" }); }}>
             Explore the work <ArrowDownRight size={18} aria-hidden="true" />
           </a>
         </header>

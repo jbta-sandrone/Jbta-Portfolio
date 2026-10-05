@@ -115,6 +115,12 @@
   align-self: start;
 }
 
+/* Longer case-study indices stay in document flow so every entry can be
+   reached on short screens without introducing a second scroll container. */
+.project-notes__index--extended {
+  position: static;
+}
+
 .project-notes__index > p {
   margin: 0 0 1rem;
   color: var(--portfolio-text-muted);

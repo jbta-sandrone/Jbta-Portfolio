@@ -6,8 +6,8 @@ const sizes = [[1440,1000],[1280,800],[1024,768],[768,1024],[430,932],[390,844],
 const ids = ['arrival','behind-the-work','featured-work','quest-board','craft','connect','ending'];
 const wait = ms => new Promise(r => setTimeout(r, ms));
 async function main() {
-  const targets = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json();
-  const ws = new WebSocket(targets.find(t => t.type === 'page').webSocketDebuggerUrl);
+  const target = await (await fetch(`http://127.0.0.1:${port}/json/new?about:blank`,{method:'PUT'})).json();
+  const ws = new WebSocket(target.webSocketDebuggerUrl);
   await new Promise(r => ws.addEventListener('open',r,{once:true}));
   let seq=0; const pending=new Map(), checks=[], errors=[];
   ws.addEventListener('message',({data})=>{const m=JSON.parse(data);if(m.id){const p=pending.get(m.id);pending.delete(m.id);if(p)m.error?p.reject(m.error):p.resolve(m.result);}else if(m.method==='Runtime.exceptionThrown') errors.push(m.params.exceptionDetails.text);});
@@ -87,6 +87,12 @@ async function main() {
         const r=await ev(`(() => {const b=document.querySelector('.theme-toggle'),t=b.getBoundingClientRect(),n=document.querySelector('.scene-nav__controls').getBoundingClientRect(),a=document.querySelector('.neli-summon-button').getBoundingClientRect();const c=getComputedStyle(document.getElementById('${id}'));return {overflow:document.documentElement.scrollWidth>innerWidth,toggle:t.left>=0&&t.right<=innerWidth&&t.top>=0&&t.bottom<=innerHeight&&t.width>=44&&t.height>=44,hit:b.contains(document.elementFromPoint(t.left+t.width/2,t.top+t.height/2)),nav:t.bottom<n.top||t.right<n.left,avatar:t.bottom<a.top||t.top>a.bottom||t.right<a.left,bg:c.backgroundColor,color:c.color};})()`);
         check(key+' '+id,!r.overflow&&r.toggle&&r.hit&&r.nav&&r.avatar&&r.bg===(theme==='dark'?'rgb(9, 10, 12)':'rgb(248, 248, 245)'),r);
         if(process.argv.includes('--screenshots')&&((w===1440&&h===1000)||(w===768&&h===1024)||(w===390&&h===844))){await wait(300);fs.writeFileSync(artifact+'/'+theme+'-'+w+'-'+id+'.png',Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));}
+        if(id==='featured-work'&&process.argv.includes('--screenshots')&&((w===1440&&h===1000)||(w===768&&h===1024)||(w===390&&h===844))) {
+          for(const project of ['nemissive','i-nelory','cliq','nelume']) {
+            await ev(`document.getElementById('${project}-case').scrollIntoView({behavior:'instant'})`);await wait(180);
+            fs.writeFileSync(artifact+'/'+theme+'-'+w+'-'+project+'.png',Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
+          }
+        }
       }
       await ev("document.getElementById('quest-board').scrollIntoView({behavior:'instant'})");
       for(const expanded of [false,true]) {
@@ -131,15 +137,19 @@ async function main() {
     await ev(`localStorage.setItem('jbta-portfolio-theme','${theme}')`);await load();
     check(theme+' browser theme-color',await ev(`document.querySelector('meta[name="theme-color"]').content==='${theme==='dark'?'#090a0c':'#f8f8f5'}'`));
     for(const [w,h] of [[1440,1000],[768,1024],[390,844],[390,480]]) {
-      await resize(w,h);await ev("document.querySelector('.work-case__notes-action').scrollIntoView({block:'center',behavior:'instant'})");await wait(150);
+      await resize(w,h);
+      for(let i=0;i<4;i++) {
+      const titles=['Nemissive','I-Nelory','IntelliCLIQ','Nelume'];
+      await ev(`document.querySelectorAll('.work-case__notes-action')[${i}].scrollIntoView({block:'center',behavior:'instant'})`);await wait(150);
       const position=await ev('scrollY');
-      await ev("document.querySelector('.work-case__notes-action').click()");await wait(150);
-      check(theme+' '+w+'x'+h+' notes palette/lock',await ev(`document.getElementById('root').inert && document.body.style.position==='fixed' && getComputedStyle(document.querySelector('.project-notes__panel')).backgroundColor==='${theme==='dark'?'rgb(14, 16, 20)':'rgb(248, 248, 245)'}'`));
-      if(process.argv.includes('--screenshots'))fs.writeFileSync(artifact+'/'+theme+'-'+w+'-'+h+'-notes.png',Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
+      await ev(`document.querySelectorAll('.work-case__notes-action')[${i}].click()`);await wait(150);
+      check(theme+' '+w+'x'+h+' '+titles[i]+' notes palette/lock',await ev(`document.querySelector('.project-notes__panel h2').textContent==='${titles[i]}'&&document.getElementById('root').inert && document.body.style.position==='fixed' && getComputedStyle(document.querySelector('.project-notes__panel')).backgroundColor==='${theme==='dark'?'rgb(14, 16, 20)':'rgb(248, 248, 245)'}'`));
+      if(process.argv.includes('--screenshots'))fs.writeFileSync(artifact+'/'+theme+'-'+w+'-'+h+'-'+i+'-notes.png',Buffer.from((await send('Page.captureScreenshot',{format:'png'})).data,'base64'));
       await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:130,y:150});await wait(50);
       if(w>=768)check(theme+' '+w+' notes cursor',await ev("document.querySelector('.portfolio-cursor') && getComputedStyle(document.querySelector('.portfolio-cursor')).pointerEvents==='none'"));
       await key('Escape','Escape',27);await wait(160);
       check(theme+' '+w+' notes restores position',await ev(`!document.getElementById('root').inert && Math.abs(scrollY-${position})<2 && !document.querySelector('.project-notes__panel')`));
+      }
       await ev("document.getElementById('arrival').scrollIntoView({behavior:'instant'})");await wait(150);
       check(theme+' '+w+' hero Explore not covered by toggle',await ev("(() => {const a=document.querySelector('.arrival-hero__explore').getBoundingClientRect(),b=document.querySelector('.theme-toggle').getBoundingClientRect();return a.bottom<=b.top||a.top>=b.bottom||a.right<=b.left||a.left>=b.right})()"));
     }
@@ -186,6 +196,6 @@ async function main() {
   }
   check('no uncaught browser exceptions',errors.length===0,errors);
   fs.writeFileSync(artifact+'/results.json',JSON.stringify(checks,null,2));
-  const failed=checks.filter(c=>!c.pass);console.log(JSON.stringify({checks:checks.length,passed:checks.length-failed.length,failed},null,2));ws.close();if(failed.length)process.exitCode=1;
+  const failed=checks.filter(c=>!c.pass);console.log(JSON.stringify({checks:checks.length,passed:checks.length-failed.length,failed},null,2));ws.close();await fetch(`http://127.0.0.1:${port}/json/close/${target.id}`);if(failed.length)process.exitCode=1;
 }
 main().catch(e=>{console.error(e);process.exit(1);});

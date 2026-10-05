@@ -47,6 +47,7 @@ export const chatbotSuggestionGroups: readonly ChatbotSuggestionGroup[] = [
     label: "Projects",
     questions: [
       "What projects has Jonel built?",
+      "Tell me about Nemissive",
       "Tell me about I-Nelory",
       "Tell me about CLIQ",
       "Tell me about Nelume",
@@ -63,6 +64,20 @@ export const chatbotSuggestionGroups: readonly ChatbotSuggestionGroup[] = [
 ] as const;
 
 export const chatbotRules: readonly ChatbotRule[] = [
+  {
+    id: "nemissive",
+    keywords: ["nemissive"],
+    patterns: [/\bnemissive\b/i],
+    answer:
+      "Nemissive is Jonel's current flagship portfolio project: a full-stack real-time messaging application with shared direct/group conversations, private media, and voice/video calls. React, TypeScript, and Vite connect to Supabase Auth, PostgreSQL, Row Level Security, protected RPCs, Realtime, and private Storage. TypeScript/Deno Edge Functions handle provider integrations; it does not use a separate Express/Node or FastAPI application backend. LiveKit handles call transport while Supabase governs eligibility, lifecycle, and history. Server-side authorization, signed media URLs, group membership boundaries, and verified webhooks support its engineering design; it does not claim end-to-end encryption or call recording. Premium purchases, Elite subscriptions, and storage packs use Lemon Squeezy Test Mode. Ask AI has an implemented text workspace and OpenAI Responses API integration, but live generation depends on provider configuration and API credit. Demo: https://nemissive.vercel.app — GitHub: https://github.com/jbta-sandrone/Nemissive",
+  },
+  {
+    id: "flagship-project",
+    keywords: ["flagship", "best project", "strongest project"],
+    patterns: [/\b(flagship|best|strongest)\b.*\bprojects?\b/i, /\bprojects?\b.*\b(flagship|best|strongest)\b/i],
+    answer:
+      "Nemissive is Jonel's current flagship and strongest portfolio project, and leads Selected Work as Project 01. It brings together direct/group real-time messaging, private media, LiveKit voice/video calls, and Supabase/PostgreSQL authorization and lifecycle management. That is the portfolio's presentation priority, not a claim of objective superiority over other products. It is a portfolio/demo: Lemon Squeezy billing uses Test Mode, and Ask AI generation depends on provider configuration and API credit. You can explore its Project Notes in Selected Work.",
+  },
   {
     id: "greeting",
     keywords: ["hello", "hi", "hey"],
@@ -110,7 +125,7 @@ export const chatbotRules: readonly ChatbotRule[] = [
       /full[- ]stack (service|development|skills)/i,
     ],
     answer:
-      "Yes. Jonel's full-stack projects demonstrate hands-on experience connecting responsive React and TypeScript interfaces with Node.js, Express, FastAPI or Python services, PostgreSQL and Firebase data services, Prisma ORM, authentication flows, cloud media, AI features, and deployment. Nelume also uses Upstash Redis for AI usage enforcement. The exact architecture would depend on the project's requirements.",
+      "Yes. Jonel's full-stack projects connect React and TypeScript interfaces with application services, authentication, data, media, and deployment. Nemissive uses Supabase/PostgreSQL and TypeScript/Deno Edge Functions for authorized real-time messaging and provider integrations. I-Nelory and IntelliCLIQ use Node.js/Express; Nelume uses Python/FastAPI with Upstash Redis for AI usage enforcement. The exact architecture would depend on the project's requirements.",
   },
   {
     id: "quest-frontend",
@@ -130,7 +145,7 @@ export const chatbotRules: readonly ChatbotRule[] = [
       /backend (and |& )?api (service|development)/i,
     ],
     answer:
-      "Yes. Jonel has hands-on project experience with application logic, REST APIs, database-connected services, and JWT authentication flows using Node.js, Express, Python, FastAPI, Firebase, PostgreSQL, and Prisma.",
+      "Yes. Jonel has hands-on experience with application logic, REST APIs, authentication, and database-connected services using Node.js, Express, Python, FastAPI, Firebase, PostgreSQL, and Prisma. Nemissive adds Supabase authorization, protected database RPCs, and TypeScript/Deno Edge Functions; it does not use a separate Express/Node application server.",
   },
   {
     id: "quest-ai-integration",
@@ -141,7 +156,7 @@ export const chatbotRules: readonly ChatbotRule[] = [
       /what ai (features|services) can (jonel|he)/i,
     ],
     answer:
-      "Yes. Jonel has integrated practical AI features into his projects, including memory search, resume evaluation, product recommendations, structured AI output, and chatbot guidance using Google Gemini and prompt-engineered workflows. His focus is on adding AI where it provides a clear product benefit, not on training foundation models.",
+      "Yes. Jonel's projects use Google Gemini for memory search, resume evaluation, product recommendations, structured output, and career guidance. Nemissive also implements an Ask AI text workspace with the OpenAI Responses API; live generation depends on provider configuration and API credit. His focus is practical integration, not foundation-model training.",
   },
   {
     id: "quest-database-auth",
@@ -151,7 +166,7 @@ export const chatbotRules: readonly ChatbotRule[] = [
       /database (and |& )?authentication (service|systems?)/i,
     ],
     answer:
-      "Yes. Jonel's projects demonstrate experience with user accounts, permissions, JWT authentication, Firebase Authentication, Firebase Realtime Database, PostgreSQL, and Prisma. Nelume also uses Upstash Redis for AI usage enforcement. He can help connect application data and access flows to a project's interface and backend requirements.",
+      "Yes. Jonel's projects demonstrate user accounts, permissions, JWT authentication, Firebase Authentication, Firebase Realtime Database, PostgreSQL, and Prisma. Nemissive uses Supabase Auth, Row Level Security, protected RPCs, and private Storage. Nelume uses Upstash Redis for AI usage enforcement. He can help connect application data and authorized access flows to interface and backend requirements.",
   },
   {
     id: "quest-deployment-maintenance",
@@ -308,30 +323,31 @@ export const chatbotRules: readonly ChatbotRule[] = [
   },
   {
     id: "backend",
-    keywords: ["backend", "back-end", "node", "express", "python", "fastapi", "rest api"],
+    keywords: ["backend", "back-end", "node", "express", "python", "fastapi", "rest api", "edge functions", "deno", "livekit", "turnstile", "lemon squeezy"],
     patterns: [
       /back-?end/i,
       /\b(node(\.js)?|express|python|fastapi|rest apis?)\b/i,
+      /edge functions|\b(deno|livekit|turnstile)\b|lemon squeezy/i,
     ],
     answer:
-      "Jonel’s backend experience includes Node.js, Express, Python, FastAPI, and REST APIs. He has used these technologies across I-Nelory, CLIQ, and Nelume.",
+      "Jonel's backend experience includes Node.js/Express in I-Nelory and IntelliCLIQ, and Python/FastAPI in Nelume. Nemissive instead uses Supabase with protected PostgreSQL RPCs and TypeScript/Deno Edge Functions. Its server integrations include LiveKit, Cloudflare Turnstile, and Lemon Squeezy Test Mode billing; there is no separate Express/Node application server for Nemissive.",
   },
   {
     id: "database",
-    keywords: ["database", "postgresql", "postgres", "prisma", "firebase", "upstash"],
-    patterns: [/databases?/i, /\b(postgresql|postgres|prisma|firebase|upstash)\b/i],
+    keywords: ["database", "postgresql", "postgres", "prisma", "firebase", "upstash", "supabase"],
+    patterns: [/databases?/i, /\b(postgresql|postgres|prisma|firebase|upstash|supabase)\b/i],
     answer:
-      "Jonel's data experience includes PostgreSQL, Prisma, Firebase, and Upstash Redis. His projects demonstrate relational data modeling, realtime application data, authentication-connected workflows, and AI usage enforcement.",
+      "Jonel's data experience includes Supabase, PostgreSQL, Prisma, Firebase, and Upstash Redis. Nemissive uses Supabase Auth, Row Level Security, protected RPCs, Realtime, and private Storage. The other projects demonstrate relational modeling, realtime data, authentication workflows, and AI usage enforcement.",
   },
   {
     id: "ai-integration",
-    keywords: ["ai", "gemini", "prompt engineering", "llm", "artificial intelligence"],
+    keywords: ["ai", "gemini", "prompt engineering", "llm", "artificial intelligence", "openai"],
     patterns: [
       /\b(ai|llm)\b/i,
-      /gemini|prompt engineering|artificial intelligence/i,
+      /gemini|openai|prompt engineering|artificial intelligence/i,
     ],
     answer:
-      "Jonel has integrated Google Gemini into I-Nelory, CLIQ, and Nelume. His portfolio demonstrates practical experience with prompt engineering, structured AI output, recommendations, memory search, resume evaluation, and chatbot guidance. It does not claim foundation-model training or machine-learning research.",
+      "Jonel has integrated Google Gemini into I-Nelory, IntelliCLIQ, and Nelume for memory search, recommendations, resume evaluation, and career guidance. Nemissive implements a separate Ask AI workspace with streaming threads and the OpenAI Responses API, but live provider generation depends on configuration and API credit. These are practical integrations, not foundation-model training or machine-learning research. NELI itself uses local portfolio answer rules, not an external model/API.",
   },
   {
     id: "portfolio",
@@ -365,7 +381,7 @@ export const chatbotRules: readonly ChatbotRule[] = [
       /featured work/i,
     ],
     answer:
-      "Jonel's featured projects are I-Nelory, a personal memory journal; IntelliCLIQ, an AI-powered café ordering application; and Nelume, an AI-powered career platform. This portfolio also demonstrates his interface and motion work.",
+      "Jonel's four Selected Work projects are, in order: Nemissive, his flagship full-stack real-time messaging application; I-Nelory, a private personal memory journal; IntelliCLIQ, an AI-powered café ordering application; and Nelume, an AI-powered career platform. Each has a project preview and Project Notes in Selected Work.",
   },
   {
     id: "journey",
@@ -400,17 +416,17 @@ export const chatbotRules: readonly ChatbotRule[] = [
       /(jonel'?s|his) (skills|tech stack|technologies)/i,
     ],
     answer:
-      "Jonel works with HTML, CSS, JavaScript, React, TypeScript, Tailwind CSS, Motion, Node.js, Express, Python, FastAPI, REST APIs, PostgreSQL, Prisma, Firebase, Upstash Redis, Google Gemini, GitHub, Vercel, and Render.",
+      "Jonel's toolkit includes React, TypeScript, Vite, HTML/CSS/JavaScript, Tailwind CSS, Motion, Node.js/Express, Python/FastAPI, PostgreSQL, Prisma, Firebase, Upstash Redis, Gemini, GitHub, Vercel, and Render. Nemissive adds Supabase Auth/Realtime/Storage, protected RPCs, TypeScript/Deno Edge Functions, LiveKit, Cloudflare Turnstile, Lemon Squeezy Test Mode billing, and a provider-dependent OpenAI Responses API integration.",
   },
 ] as const;
 
 const explicitOwnerContextPattern =
   /\b(jonel|his|him|he|jbta)\b|\b(this|jonel'?s|his) (portfolio|projects?)\b/i;
 
-const namedProjectPattern = /\b(i[-\s]?nelory|cliq|intellicliq|nelume)\b/i;
+const namedProjectPattern = /\b(nemissive|i[-\s]?nelory|cliq|intellicliq|nelume)\b/i;
 
 const directPortfolioTopicPattern =
-  /\b(i[-\s]?nelory|cliq|intellicliq|nelume|quest board|adventurer'?s guild|services?|full[- ]stack|frontend|backend|apis?|authentication|database|upstash|gemini|ai integration|github|linkedin|facebook|resume|résumé|education|degree|career|available|availability|opportunities|collaboration|contact|deployment|debugging|maintenance|vercel|render|skills|technologies|experience|background|projects?|portfolio)\b/i;
+  /\b(nemissive|i[-\s]?nelory|cliq|intellicliq|nelume|flagship|strongest|quest board|adventurer'?s guild|services?|full[- ]stack|frontend|backend|apis?|authentication|database|upstash|supabase|gemini|openai|livekit|turnstile|lemon squeezy|edge functions|deno|ai integration|github|linkedin|facebook|resume|résumé|education|degree|career|available|availability|opportunities|collaboration|contact|deployment|debugging|maintenance|vercel|render|skills|technologies|experience|background|projects?|portfolio)\b/i;
 
 const unrelatedCodingRequestPattern =
   /\b(how (do|can) i|how to|write|code|program|debug|fix (my|this)|error|tutorial|implement|generate|create (a|an|me)|build (a|an|me)|what is)\b/i;
